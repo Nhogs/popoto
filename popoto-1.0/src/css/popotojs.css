@@ -1,0 +1,374 @@
+/*
+* Copyright (C) 2014 Frederic Ciminera
+*
+* Popoto.js is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Popoto.js is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*
+* contact@popotojs.com
+*/
+
+/***********************************************************/
+/* Asap font*/
+@font-face {
+    font-family: "Asap";
+    src: url("font/asap/Asap-Regular.otf");
+}
+
+@font-face {
+    font-family: "Asap";
+    src: url("font/asap/Asap-Bold.otf");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Asap";
+    src: url("font/asap/Asap-Italic.otf");
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Asap";
+    src: url("font/asap/Asap-BoldItalic.otf");
+    font-weight: bold;
+    font-style: italic;
+}
+
+/**********************************************************************************/
+.ppt-body {
+    background-color: #2e3138;
+    margin: 22px;
+    font-family: Asap, sans-serif;
+    color: #ffffff;
+}
+
+/* Main HTML container element containing the taxonomy filter and graph */
+.ppt-container-graph {
+    background-color: #22252a;
+    height: 750px;
+    padding: 0 0 0;
+    border-bottom-right-radius: 5px 5px;
+    border-bottom-left-radius: 5px 5px;
+    overflow: hidden;
+}
+
+/**************************/
+/* Taxonomy Filter*/
+.ppt-taxo-nav {
+    overflow: auto;
+    padding: 18px 35px 18px 18px;
+    background-color: #444951;
+    height: 100%;
+    float: left;
+    white-space: nowrap;
+}
+
+.ppt-taxo-nav.disabled {
+    display: none;
+}
+
+.ppt-taxo-nav ul {
+    list-style-type: none;
+    display: block;
+    vertical-align: top; /* | top | bottom */
+    padding: 0 0 0 10px;
+    margin: 0;
+}
+
+.ppt-taxo-nav li {
+}
+
+.ppt-taxo-nav li img {
+    vertical-align: middle; /* | top | bottom */
+}
+
+.ppt-taxo-tag {
+    display: inline-block;
+    background-image: url(image/category.png);
+    background-position: center;
+    width: 24px;
+}
+
+/**************************/
+/* Div containing SVG element*/
+.ppt-div-graph {
+    position: relative;
+    background-color: #22252a;
+    height: 100%;
+    padding: 0;
+    border-bottom-right-radius: 5px 5px;
+    overflow: hidden;
+}
+
+.ppt-div-graph:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+}
+
+.ppt-div-graph:fullscreen {
+    width: 100%;
+    height: 100%;
+}
+
+/**********************************************************************************/
+
+.ppt-header {
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: #525863;
+    border-radius: 5px 5px;
+    height: 70px;
+    min-width: 560px;
+    line-height: 70px;
+    font-weight: bold;
+    font-size: 22px;
+    background-image: url('image/popoto-small-g.png');
+    background-repeat: no-repeat;
+    background-position-x: 20px;
+    background-position-y: 50%;
+}
+
+.ppt-section-header {
+    min-width: 560px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: #525863;
+    height: 68px;
+    line-height: 67px;
+    margin-top: 22px;
+    border-top-right-radius: 5px 5px;
+    border-top-left-radius: 5px 5px;
+    font-weight: bold;
+}
+
+.ppt-section-tips {
+    min-width: 560px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: #525863;
+    margin-top: 22px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-size: 14px;
+    line-height: 35px;
+}
+
+.ppt-section-tips a {
+    color: #8bb71a;
+}
+
+.ppt-section-tips p {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.ppt-toolbar {
+    padding: 12px;
+    position: absolute;
+    right: 0;
+}
+
+.ppt-header-span {
+    color: #8bb71a;
+}
+
+.ppt-section-main {
+}
+
+.ppt-container-query {
+    text-align: center;
+    margin-top: 22px;
+    min-width: 560px;
+    background-color: #22252a;
+    border-radius: 5px 5px;
+    padding: 18px;
+}
+
+.ppt-container-cypher {
+    text-align: center;
+    margin-top: 22px;
+    min-width: 560px;
+    background-color: #22252a;
+    border-radius: 5px 5px;
+    padding: 18px;
+}
+
+.ppt-container-results {
+    width: 100%;
+    float: left;
+    min-width: 300px;
+    background-color: #22252a;
+    padding: 0;
+    border-bottom-right-radius: 5px 5px;
+    border-bottom-left-radius: 5px 5px;
+    overflow: auto;
+}
+
+.ppt-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: #525863;
+    border-radius: 5px 5px;
+
+    height: 70px;
+    min-width: 560px;
+    line-height: 70px;
+
+    font-weight: bold;
+    font-size: 22px;
+}
+
+/*****************************/
+
+.ppt-menu {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    margin-left: 12px;
+    background: url("image/tools.png") no-repeat 0 0;
+}
+
+.ppt-menu.taxonomy {
+    background-position: 0 0;
+}
+
+.ppt-menu.reset {
+    background-position: -288px 0;
+}
+
+.ppt-menu.fullscreen {
+    background-position: -256px 0;
+}
+
+.ppt-menu.center {
+    background-position: -96px 0;
+}
+
+.ppt-menu.taxonomy:hover {
+    background-position: 0 -32px;
+}
+
+.ppt-menu.reset:hover {
+    background-position: -288px -32px;
+}
+
+.ppt-menu.fullscreen:hover {
+    background-position: -256px -32px;
+}
+
+.ppt-menu.center:hover {
+    background-position: -96px -32px;
+}
+
+.ppt-count {
+    cursor: pointer;
+    color: #2aa1d3;
+}
+
+.ppt-label {
+    cursor: pointer;
+}
+
+.ppt-label:hover {
+    color: #f0b017;
+}
+
+.ppt-result {
+    background-color: #444951;
+    padding: 9px 18px;
+    margin: 1px 0 0;
+}
+
+.ppt-result:hover {
+    background-color: #525863;
+}
+
+.ppt-result-table {
+}
+
+.ppt-result-table th,td {
+    text-align: left;
+}
+/****************** Query span Styles *************************/
+
+/* P elements containing query constraints */
+.ppt-query-constraint-elements {
+}
+
+/* P elements containing query inactive constraints */
+.ppt-query-elements {
+}
+
+.ppt-span {
+    color: #ffffff;
+}
+
+.ppt-span-link {
+    color: #ffffff;
+}
+
+.ppt-span-root {
+    color: #2aa1d3;
+    cursor: pointer;
+}
+
+.ppt-span-root-value {
+    color: #8f5bcc;
+    cursor: pointer;
+}
+
+.ppt-span-choose {
+    color: #8bb71a;
+    cursor: pointer;
+}
+
+.ppt-span-group {
+    color: #8e8e8e;
+    cursor: pointer;
+}
+
+.ppt-span-value {
+    color: #f0b017;
+    cursor: pointer;
+}
+
+.ppt-span-link.hover {
+    color: #ee4e10;
+    font-weight: bold;
+}
+
+.ppt-span-root.hover {
+    color: #ee4e10;
+    font-weight: bold;
+}
+.ppt-span-root-value.hover {
+    color: #ee4e10;
+    font-weight: bold;
+}
+
+.ppt-span-choose.hover {
+    color: #ee4e10;
+    font-weight: bold;
+}
+
+.ppt-span-group.hover {
+    color: #ee4e10;
+    font-weight: bold;
+}
+
+.ppt-span-value.hover {
+    color: #ee4e10;
+    font-weight: bold;
+}
+

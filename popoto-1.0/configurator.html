@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="css/jquery/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/jquery/jquery-ui.structure.min.css">
+    <link rel="stylesheet" href="css/jquery/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="css/hljs/hybrid.css">
+    <link rel="stylesheet" href="css/popoto.min.css">
+    <style>
+
+        /*Remove blue outline on Jquery UI elements*/
+        .ui-state-focus {
+            outline: none;
+        }
+
+        .ui-state-focus:focus {
+            outline: none;
+        }
+
+        *:focus {
+            outline: none;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+
+        .attrli {
+            overflow: hidden;
+            margin: 5px;
+            padding: 5px;
+            width: 150px;
+        }
+
+        legend {
+            /*color: #ffffff;*/
+            /*color: #f0b017;*/
+            color: #8bb71a;
+        }
+
+        h4 {
+            color: #8bb71a;
+        }
+
+        .labeloption {
+            color: #2aa1d3;
+        }
+
+        fieldset {
+            background-color: rgb(46, 49, 56);
+        }
+
+        .inputdiv label {
+            display: inline-block;
+            width: 140px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        input[type=text],
+        input[type=password],
+        input[type=number],
+        select {
+            width: 300px;
+            background-color: #22252a;
+            color: #ffffff;
+            padding: 5px;
+            border: 2px solid #ccc;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+        .colFirst {
+            text-align: right;
+            /*vertical-align: top;*/
+            width: 140px;
+            padding-right: 10px;
+        }
+
+        article {
+            padding-left: 25px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        .nodepreview {
+            width: 100%;
+            text-align: center;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #2E3138;
+        }
+
+        .nodepreview.Text {
+            background-image: url("image/text.png");
+        }
+
+        .nodepreview.Image {
+            background-image: url("image/image.png");
+        }
+
+        .nodepreview.SVG {
+            background-image: url("image/svg.png");
+        }
+
+        .portlet {
+            margin: 0 1em 1em 0;
+            padding: 0.3em;
+        }
+
+        .portlet-header {
+            padding: 0.2em 0.3em;
+            margin-bottom: 0.5em;
+            position: relative;
+        }
+
+        .portlet-toggle {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            margin-top: -8px;
+        }
+
+        .portlet-content {
+            padding: 0.4em;
+        }
+
+        .ui-accordion-header.s1 .ui-icon {
+            background-position: -48px -144px;
+        }
+
+        .ui-accordion-header.s2 .ui-icon {
+            background-position: -176px -112px;
+        }
+
+        .ui-accordion-header.s3 .ui-icon {
+            background-position: -240px -96px;
+        }
+
+        .ui-accordion-header.s4 .ui-icon {
+            background-position: -224px -96px;
+        }
+
+        .ui-accordion-header.s5 .ui-icon {
+            background-position: -240px -128px;
+        }
+
+        .cypher .hljs-keyword {
+            color: #1d75b3;
+        }
+
+        .cypher .hljs-label {
+            font-weight: bold;
+        }
+
+        .cypher .hljs-comment {
+            color: gray;
+        }
+
+        .cypher .hljs-properties {
+            font-style: italic;
+            color: black;
+        }
+
+        .cypher .hljs-node {
+            color: #75438a;
+        }
+
+        .cypher .hljs-relationship {
+            color: #047d65;
+        }
+
+
+    </style>
+</head>
+<body style="background: #2E3138; margin: 22px;">
+
+<header style="text-align: center;">
+    <img src="image/configurator.png">
+    <p class="ui-widget ui-widget-content">Generate and try Popoto.js configuration on your own data</p>
+</header>
+
+<div id="accordion">
+
+    <!-- HELP Accordion section -->
+    <h3 class="s1 ui-icon-script">Help</h3>
+
+    <div>
+        <p>Popoto.js configurator version 1.0.1</p>
+
+        <p>
+            This page is a full JavaScript application, running on client side only, designed to help generate a configuration of Popoto.js on your own Neo4j server.
+            <br>
+            The recommended steps to generate a configuration are described below:
+        </p>
+        <h4><span class="ui-icon ui-icon-wrench" style="display: inline-block;"></span> Database:</h4>
+        <article>
+            <p>
+                Please ensure that your Neo4 server is running.
+                <br>
+                Set the configuration for your server and run a test to check that the REST API is accessible.
+            </p>
+
+            <p>
+                The test will just try to access the service root and return the neo4j_version.
+                <br>
+                Note that your server must accept request from your machine (or from the client running the Javascript code).
+                <br>
+                See <a href="http://neo4j.com/docs/stable/security-server.html" target="_blank">Securing access to the Neo4j Server</a> documentation for more info.
+            </p>
+
+            <p>
+                In case of error, only the "<span style="color: #ff0000; font-weight: bold;">ERROR</span>" status is displayed, to get more details you can look in the browser console for network messages.
+            </p>
+        </article>
+        <h4><span class="ui-icon ui-icon-tag" style="display: inline-block;"></span> Labels:</h4>
+        <article>
+
+            <p>
+                Click on the "Load labels from server" button to retrieve the list of labels defined on your Neo4j server.
+                <br>
+                A request is sent to the databse to get the labels and the list of attributes.
+            </p>
+
+            <p>
+                Depending on the server level two different strategies are used:
+                <br>
+                For version 2.2 and upper the following query is run to retrieve all the labels and their attribute:
+            </p>
+
+            <pre><code class="cypher">match (n) unwind(labels(n)) as labels unwind(keys(n)) as keys return distinct(labels) as labels, collect(distinct keys) as keys</code></pre>
+
+            <p>
+                For older versions a first request is sent to the REST API to get the list of labels, then for each label the list of attributes is based on the first node instance found.
+                <br>
+                This option can run faster on big database but can miss some attributes as only one instance object for a given label is used to get the attribute list. Use "Force old version" option to use this method on recent servers.
+            </p>
+
+            <p>
+                Once the labels have been loaded you can change the default settings:
+            </p>
+
+            <p>
+                <strong class="labeloption">visibility:</strong>
+                <br>
+                Defines whether or not this label is required.
+                <br>
+                If set to <strong>Hide</strong>, the label is ignored and nothing will be generated in the source file for the label.
+            </p>
+
+            <p>
+                <strong class="labeloption">constraintAttribute:</strong>
+                <br>
+                Defines the attribute used to identify a node. This attribute is used in generated Cypher query to match the selected value.
+                <br>
+                In most case an ID or a unique value should be used here, but any attribute can be used.
+                <br>
+                For example if you use person last_name all the person with the same last name will be considered as the same value and the node is displayed only once in graph.
+            </p>
+
+            <p>
+                <strong class="labeloption">returnAttributes:</strong>
+                <br>
+                Defines the list of attributes available for this labels.
+            </p>
+
+            <p>
+                <strong class="labeloption">displayAttribute:</strong>
+                <br>
+                Defines the attribute to use to display a label for nodes in graph.
+            </p>
+
+            <p>
+                <strong class="labeloption">displayType:</strong>
+                <br>
+                Defines the rendering type for the nodes in graph.
+                <br>
+                It can be one of the following types: <strong>Text</strong>, <strong>Image</strong> or <strong>SVG</strong>.
+                <br>
+                Depending on this type a full working example will be generated in source code you can customize and modify to fit your application.
+            </p>
+        </article>
+        <h4><span class="ui-icon ui-icon-bookmark" style="display: inline-block;"></span> Page Layout:</h4>
+        <article>
+
+            <p>
+                The page layout section displays the list of components available in Popoto.js page.
+                <br>
+                Select the components required for your configuration.
+                <br>
+                A page preview is displayed corresponding to the selected options.
+            </p>
+        </article>
+        <h4><span class="ui-icon ui-icon-script" style="display: inline-block;"></span> Source code:</h4>
+        <article>
+
+            <p>
+                The Source code section contains two buttons, one to test the application with the current configuration and one to Generate the full index.html file you can copy and paste in your Popoto.js instance.
+            </p>
+        </article>
+    </div>
+
+    <!-- SERVER CONFIGURATION Accordion section -->
+    <h3 class="s2">Database</h3>
+
+    <div>
+        <form id="server-form">
+            <fieldset>
+                <legend>Database connection</legend>
+                <table>
+                    <!-- Protocol -->
+                    <tr>
+                        <td class="colFirst">
+                            <label for="protocol">Protocol:</label>
+                        </td>
+                        <td>
+                            <div id="protocol">
+                                <input type="radio" id="http" name="protocol" value="http" checked="checked"><label for="http">HTTP</label>
+                                <input type="radio" id="https" name="protocol" value="https"><label for="https">HTTPS</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Host -->
+                    <tr>
+                        <td class="colFirst">
+                            <label for="host">Host:</label>
+                        </td>
+                        <td>
+                            <input id="host" name="host" type="text" placeholder="localhost" title="Host of the running Neo4j server where to access the REST API">
+                        </td>
+                    </tr>
+                    <!-- Port -->
+                    <tr>
+                        <td class="colFirst">
+                            <label for="port">Port:</label>
+                        </td>
+                        <td>
+                            <input id="port" name="port" type="number" placeholder="7474" title="Port of the Neo4j server REST API">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset>
+                <legend>Credentials</legend>
+                <table>
+                    <!-- Use credentials -->
+                    <tr>
+                        <td class="colFirst">
+                            <label for="use-credentials">
+                                <input type="checkbox" id="use-credentials" name="use-credentials" checked="checked" title="Use credentials if the server require authentication">
+                                Use credentials
+                            </label>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </table>
+                <table id="credentials">
+                    <!-- User -->
+                    <tr>
+                        <td class="colFirst">
+                            <label for="user">Username:</label>
+                        </td>
+                        <td>
+                            <input id="user" name="user" type="text" placeholder="neo4j" title="Username of an authorized user to access the REST API">
+                        </td>
+                    </tr>
+                    <!-- Password -->
+                    <tr>
+                        <td class="colFirst">
+                            <label for="password">Password:</label>
+                        </td>
+                        <td>
+                            <input id="password" name="password" type="password" placeholder="neo4j" title="Password of the user to access REST API">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset>
+                <legend>Configuration test</legend>
+                <table>
+                    <!-- Test Config -->
+                    <tr>
+                        <td class="colFirst">
+                            <button id="test-server-button" name="test-server-button" type="button">Test</button>
+                        </td>
+                        <!-- Show token -->
+                        <td>
+                            <label for="show-authorization" id="authorization">
+                                <input type="checkbox" id="show-authorization" name="show-authorization" title="If checked the authorization token required in popoto.rest.AUTHORIZATION property will be displayed in test">
+                                Show Authorization token
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+
+            </fieldset>
+
+            <fieldset>
+                <legend>Connection status</legend>
+                <div id="status">
+                    Click test config button to get status
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <!-- LABELS PROVIDERS Accordion section -->
+    <h3 class="s3">Labels</h3>
+
+    <div>
+
+        <form id="labels-form">
+            <div>
+                <button id="test-labels" name="test-labels" type="button">Test</button>
+                <button id="load-labels" name="load-labels" type="button">Load labels from server</button>
+                <label for="oldVersion"><input type="checkbox" id="oldVersion" value="oldVersion" title="If checked, the list of label is retrieved using the rest API and the list of attributes from first object found for each label."> Force old version</label>
+            </div>
+
+            <div id="labels">
+            </div>
+        </form>
+    </div>
+
+    <!-- PAGE LAYOUT Accordion section -->
+    <h3 class="s4">Page Layout</h3>
+
+    <div>
+        <button id="test-layout" name="test-layout" type="button">Test</button>
+        <form id="layout-form">
+            <fieldset>
+                <legend>Components</legend>
+
+                <div>
+                    <div>
+                        <label for="header">
+                            <input type="checkbox" name="components" id="header" value="header" checked>
+                            Header
+                        </label>
+                    </div>
+                    <div>
+                        <label for="taxonomies">
+                            <input type="checkbox" name="components" id="taxonomies" value="taxonomies" checked>
+                            Taxonomies
+                        </label>
+                    </div>
+                    <div>
+                        <label for="query">
+                            <input type="checkbox" name="components" id="query" value="query" checked>
+                            Query Viewer
+                        </label>
+                    </div>
+                    <div>
+                        <label for="cypher">
+                            <input type="checkbox" name="components" id="cypher" value="cypher" checked>
+                            Cypher Viewer
+                        </label>
+                    </div>
+                    <div>
+                        <label for="results">
+                            <input type="checkbox" name="components" id="results" value="results" checked>
+                            Results
+                        </label>
+                    </div>
+                </div>
+
+            </fieldset>
+            <fieldset>
+                <legend>Preview</legend>
+
+                <header class="ppt-header" id="header-elmt">
+                </header>
+
+                <section class="ppt-section-main">
+                    <div class="ppt-section-header">
+                        <span class="ppt-header-span">Graph</span> search
+                    </div>
+
+                    <div class="ppt-container-graph" style="height: 300px;">
+                        <nav id="taxonomies-elmt" class="ppt-taxo-nav">
+                            <ul>
+                                <li id="popoto-lbl-0" value="Person"><span class="ppt-taxo-tag">&nbsp;</span><span class="ppt-label">Person</span><span class="ppt-count"> (133)</span></li>
+                                <li id="popoto-lbl-1" value="Movie"><span class="ppt-taxo-tag">&nbsp;</span><span class="ppt-label">Movie</span><span class="ppt-count"> (38)</span></li>
+                            </ul>
+                        </nav>
+                        <div id="popoto-graph" class="ppt-div-graph">
+                            <img src="image/graph.png" style="display: block; margin-left: auto; margin-right: auto;">
+                        </div>
+                    </div>
+
+                    <div id="query-elmt" class="ppt-container-query">
+                        <p class="ppt-query-constraint-elements" style="margin: 0"><span id="0" class="ppt-span">I'm looking for </span><span id="1" class="ppt-span-root">Person </span></p>
+                    </div>
+
+                    <div id="cypher-elmt" class="ppt-container-cypher">
+                        MATCH (person:`Person`) RETURN person
+                    </div>
+
+                    <div id="results-elmt">
+                        <div class="ppt-section-header">
+                            <!-- The total results count is updated with a listener defined below -->
+                            RESULTS <span id="result-total-count" class="ppt-count">(133)</span>
+                        </div>
+                    </div>
+
+                </section>
+
+            </fieldset>
+        </form>
+    </div>
+
+    <!-- GENERAL Accordion section -->
+    <h3 class="s5">Source code</h3>
+
+    <div>
+        <form id="general">
+            <button id="test-page" name="test-page" type="button">Test</button>
+            <button id="view-source" name="view-source" type="button">Generate index.html</button>
+
+            <fieldset>
+                <legend>Source code to copy paste in your Popoto.js instance</legend>
+                <pre><code class="html" id="codeViewer">Click on "Generate index.html" button to get code.</code></pre>
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+<script src="js/jquery-2.1.0.min.js" charset="utf-8"></script>
+<script src="js/d3.v3.min.js" charset="utf-8"></script>
+<script src="js/popoto.min.js" charset="utf-8"></script>
+<script src="js/highlight.pack.js" charset="utf-8"></script>
+<script src="js/jquery-ui.min.js" charset="utf-8"></script>
+<!-- Used only on www.popotojs.com website, this reference can be safely removed -->
+<script src="js/analytics.js"></script>
+<script>
+
+    //TODO temp code for cypher highlighting
+    hljs.registerLanguage("cypher", cypher);
+    hljs.initHighlightingOnLoad();
+    function cypher(hljs) {
+        var labelName = {
+            cN: 'labelName',
+            b: /:./,
+            e: /(:| )/
+        };
+
+
+        var labelDefinition = {
+            cN: 'label',
+            b: /:/
+        };
+
+
+        var properties = {
+            cN: 'properties',
+            b: /\{/,
+            e: /\}/
+        };
+
+
+        var nodeMode = {
+            cN: 'node',
+            b: /\(/,
+            e: /\)/,
+            c: [labelDefinition, labelName, properties]
+        };
+
+
+        var relationshipMode = {
+            cN: 'relationship',
+            b: /\[/,
+            e: /\]/,
+            c: [labelDefinition, labelName, properties]
+        };
+
+
+        return {
+            cI: true,
+            k: {
+                keyword: 'start match return with limit skip create merge where unique union remove delete set constaint assert is case unique optional',
+                literal: 'true false'
+            },
+            c: [hljs.CLCM, hljs.ASM, hljs.QSM, nodeMode, relationshipMode]
+        }
+    }
+
+
+    var version = "1.0";
+    // Default configuration
+    var config = {
+        server: {
+            protocol: "http",
+            host: "",
+            port: "",
+            credentials: {
+                use: true,
+                user: "",
+                password: "",
+                token: false
+            }
+        },
+        layout: {
+            header: true,
+            taxonomies: true,
+            query: true,
+            cypher: true,
+            results: true
+        },
+        labels: [],
+        forceOldVersion: false
+    };
+
+    $(function () {
+        $("#accordion").accordion({
+            active: 1,
+            heightStyle: "content",
+            collapsible: true
+        });
+        //================SERVER
+        {
+            //-------------- PROTOCOL
+            $("#protocol").buttonset();
+            $("input[name=\"protocol\"]").change(function () {
+                config.server.protocol = this.value;
+            });
+
+            //-------------- Host
+            $("#host").change(function () {
+                config.server.host = this.value;
+            });
+
+            //-------------- Port
+            $("#port").change(function () {
+                config.server.port = this.value;
+            });
+            //-------------- Use credentials
+            $("#use-credentials").change(function () {
+                config.server.credentials.use = this.checked;
+                if (this.checked) {
+                    $("#credentials").show();
+                    $("#authorization").show();
+                } else {
+                    $("#credentials").hide();
+                    $("#authorization").hide();
+                }
+            });
+
+            //-------------- User
+            $("#user").change(function () {
+                config.server.credentials.user = this.value;
+            });
+
+            //-------------- Password
+            $("#password").change(function () {
+                config.server.credentials.password = this.value;
+            });
+
+            //-------------- Token
+            $("#show-authorization").change(function () {
+                config.server.credentials.token = this.checked;
+            });
+
+            $("#test-server-button").button().click(testServer);
+        }
+
+        //================LABELS
+        {
+            $("#test-labels").button({
+                icons: {
+                    primary: "ui-icon-gear"
+                }
+            }).click(testPage).hide();
+            $("#load-labels").button({
+                icons: {
+                    primary: "ui-icon-transferthick-e-w"
+                }
+            }).click(loadLabels);
+        }
+
+        //================LAYOUT
+        {
+            $("#test-layout").button({
+                icons: {
+                    primary: "ui-icon-gear"
+                }
+            }).click(testPage);
+
+            $("input[name=\"components\"]").change(function () {
+                config.layout[this.id] = this.checked;
+
+                if (this.checked) {
+                    $("#" + this.id + "-elmt").show();
+                } else {
+                    $("#" + this.id + "-elmt").hide();
+                }
+            });
+        }
+
+        //================SOURCE
+        {
+            //------- Test Page
+            {
+                $("#test-page").button({
+                    icons: {
+                        primary: "ui-icon-gear"
+                    }
+                }).click(testPage);
+            }
+            //------- View Source
+            {
+                $("#view-source").button({
+                    icons: {
+                        primary: "ui-icon-script"
+                    }
+                }).click(viewSource);
+            }
+        }
+
+        $("#oldVersion").change(
+                function () {
+                    config.forceOldVersion = this.checked;
+                });
+
+        // Update tooltips with JQuery UI style
+        $("[title]").tooltip({
+            position: {
+                my: "left top",
+                at: "right+5 top-5"
+            }
+        });
+    });
+
+    function buildURL() {
+        var host = config.server.host;
+        if (host == "") {
+            // use default value
+            host = "localhost";
+        }
+
+        var port = config.server.port;
+        if (port == "") {
+            // use default value
+            port = "7474";
+        }
+
+        return config.server.protocol + "://" + host + ":" + port;
+    }
+
+    function buildAuthorization() {
+        var authorization;
+
+        if (config.server.credentials.use) {
+            var user = config.server.credentials.user;
+            if (user == "") {
+                // use default value
+                user = "neo4j";
+            }
+
+            var password = config.server.credentials.password;
+            if (password == "") {
+                // use default value
+                password = "neo4j";
+            }
+
+            authorization = "Basic " + btoa(user + ":" + password);
+        }
+
+        return authorization;
+    }
+
+    function restGET(url, authorization) {
+        return $.ajax({
+            type: "GET",
+            timeout: 15000,
+            beforeSend: function (request) {
+                if (authorization) {
+                    request.setRequestHeader("Authorization", authorization);
+                }
+            },
+            url: url,
+            contentType: "application/json"
+        })
+    }
+
+    function restPOST(url, authorization, data) {
+        return $.ajax({
+            type: "POST",
+            beforeSend: function (request) {
+                if (authorization) {
+                    request.setRequestHeader("Authorization", authorization);
+                }
+            },
+            url: url,
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        });
+    }
+
+    /**
+     * Test server using config and update the status panel
+     */
+    function testServer() {
+        $("#status").empty().append("<img src='image/ajax-loader.gif'>");
+        $("#accordion").accordion("refresh");
+
+        var url = buildURL() + "/db/data/";
+        var authorization = buildAuthorization();
+
+        restGET(url, authorization)
+                .done(function (data, textStatus, jqXHR) {
+                    var status = $("#status")
+                            .empty()
+                            .append("<div>GET URL: <span>" + url + "</span></div>")
+                            .append("<div>Status: <span style='color: #008800; font-weight: bold'>" + textStatus.toUpperCase() + "</span></div>")
+                            .append("<div>Neo4j Version: <span style='color: #2aa1d3; font-weight: bold'>" + data.neo4j_version + "</span></div>");
+
+                    if (config.server.credentials.token) {
+                        status.append("popoto.rest.AUTHORIZATION = <span style='color: #8bb71a; font-weight: bold'>\"" + authorization + "\"</span>");
+                    }
+                })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    var status = $("#status")
+                            .empty()
+                            .append("<div>GET URL: <span>" + url + "</span></div>")
+                            .append("<div>Status: <span style='color: #ff0000; font-weight: bold'>" + textStatus.toUpperCase() + "</span></div>")
+                            .append("<div>Cannot access the REST API with this configuration</div>");
+                    if (config.server.credentials.token) {
+                        status.append("popoto.rest.AUTHORIZATION = <span style='color: #8bb71a; font-weight: bold'>\"" + authorization + "\"</span>");
+                    }
+                })
+                .always(function (xhr, textStatus, errorThrown) {
+                    $("#accordion").accordion("refresh");
+                });
+    }
+
+    function loadLabels() {
+        // Disable button to avoid multi clicks
+        $("#load-labels").button("option", "disabled", true);
+        $("#labels").empty().append("<p><img src='image/ajax-loader.gif'><p>");
+
+
+        var url = buildURL() + "/db/data/";
+        var authorization = buildAuthorization();
+
+        if (config.forceOldVersion) {
+            loadLabelsOld();
+        } else {
+            restGET(url, authorization)
+                    .done(function (data) {
+                        var version = data.neo4j_version;
+                        var parsed = version.split(".");
+                        if (parsed.length > 0 && parseInt(parsed[0]) >= 2) {
+                            if (parsed.length > 1 && parseInt(parsed[1]) >= 2) {
+                                loadLabels_2_2();
+                            }
+                            else {
+                                loadLabelsOld();
+                            }
+                        } else {
+                            loadLabelsOld();
+                        }
+                    })
+                    .fail(function (xhr, textStatus, errorThrown) {
+                        updateErrorLabelComponents(url, textStatus);
+                    })
+                    .always(function (xhr, textStatus, errorThrown) {
+                        // Reactivate button
+                        $("#load-labels").button("option", "disabled", false);
+                    });
+        }
+    }
+
+    function loadLabelsOld() {
+        var url = buildURL() + "/db/data/labels";
+        var authorization = buildAuthorization();
+
+        restGET(url, authorization)
+                .done(function (data) {
+                    config.labels = [];
+                    for (var i = 0; i < data.length; i++) {
+
+                        config.labels.push({
+                            id: i,
+                            name: data[i],
+                            use: true,
+                            constraint: "",
+                            attributes: [],
+                            node: "",
+                            type: "text",
+                            toString: function () {
+                                return this.name;
+                            }
+                        });
+                    }
+
+                    loadAttributesOld();
+                })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    updateErrorLabelComponents(url, textStatus);
+                })
+                .always(function (xhr, textStatus, errorThrown) {
+                    // Reactivate button
+                    $("#load-labels").button("option", "disabled", false);
+                });
+    }
+
+    function loadAttributesOld() {
+        var query = "match (n:`$`) return n LIMIT 1";
+        var statements = [];
+
+        var url = buildURL() + "/db/data/transaction/commit";
+        var authorization = buildAuthorization();
+
+        for (var i = 0; i < config.labels.length; i++) {
+            statements.push(
+                    {
+                        "statement": query.replace("$", config.labels[i].name)
+                    });
+        }
+
+        restPOST(url, authorization,
+                {
+                    "statements": statements
+                })
+                .done(function (data, textStatus, jqXHR) {
+                    if (data.errors.length > 0) {
+                        //TODO
+                    } else {
+                        for (var i = 0; i < config.labels.length; i++) {
+                            var labelInstance = data.results[i].data[0].row[0];
+
+                            var j = 0;
+                            for (var attribute in labelInstance) {
+                                if (labelInstance.hasOwnProperty(attribute)) {
+                                    if (j == 0) {
+                                        // Use first attribute as default value
+                                        config.labels[i].constraint = attribute;
+                                        config.labels[i].node = attribute;
+                                    }
+
+                                    config.labels[i].attributes.push(
+                                            {
+                                                id: j++,
+                                                name: attribute,
+                                                toString: function () {
+                                                    return this.name;
+                                                }
+                                            });
+                                }
+                            }
+                        }
+                        updateLabelComponents();
+                    }
+                })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    updateErrorLabelComponents(url, textStatus);
+                })
+                .always(function (xhr, textStatus, errorThrown) {
+                    $("#accordion").accordion("refresh");
+                });
+    }
+
+    function loadLabels_2_2() {
+        var query = "match (n) unwind(labels(n)) as labels unwind(keys(n)) as keys return distinct(labels), collect(distinct keys) as keys";
+
+        var url = buildURL() + "/db/data/transaction/commit";
+        var authorization = buildAuthorization();
+
+        restPOST(url, authorization,
+                {
+                    "statements": [
+                        {
+                            "statement": query
+                        }]
+                })
+                .done(function (data, textStatus, jqXHR) {
+                    if (data.errors.length > 0) {
+                        //TODO
+                    } else {
+                        var lbls = data.results[0].data;
+
+                        // Clear old labels
+                        config.labels = [];
+                        for (var i = 0; i < lbls.length; i++) {
+                            var attributes = [];
+
+                            for (var j = 0; j < lbls[i].row[1].length; j++) {
+                                attributes.push({
+                                    id: j,
+                                    name: lbls[i].row[1][j],
+                                    toString: function () {
+                                        return this.name;
+                                    }
+                                });
+                            }
+                            config.labels.push({
+                                id: i,
+                                name: lbls[i].row[0],
+                                use: true,
+                                constraint: attributes.length > 0 ? attributes[0].name : "",
+                                attributes: attributes,
+                                node: attributes.length > 0 ? attributes[0].name : "",
+                                type: "text",
+                                toString: function () {
+                                    return this.name;
+                                }
+                            });
+                        }
+
+                        updateLabelComponents();
+                    }
+                })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    updateErrorLabelComponents(url, textStatus);
+                })
+                .always(function (xhr, textStatus, errorThrown) {
+                    $("#accordion").accordion("refresh");
+                });
+    }
+
+    function updateErrorLabelComponents(url, textStatus) {
+        $("#test-labels").hide();
+        $("#labels")
+                .empty()
+                .append("<p><div>URL: <span>" + url + "</span></div>")
+                .append("<div>Status: <span style=\"color: #ff0000; font-weight: bold;\">" + textStatus.toUpperCase() + "</span></div></p>");
+    }
+
+    function updateLabelComponents() {
+        $("#test-labels").show();
+
+        // clear old labels elements first
+        $("#labels").empty();
+
+        var fieldset = d3.select("#labels").append("fieldset");
+        fieldset.append("legend").text("Labels");
+        fieldset.append("div").attr("id", "labelsAccordion");
+
+        var enter = d3.select("#labelsAccordion").selectAll("h3").data(config.labels, function (d) {
+            return d.id;
+        }).enter();
+
+        enter.append("H3").text(function (d) {
+            return d.name;
+        });
+
+        var contentDiv = enter.insert("div");
+
+        $("#labelsAccordion").accordion({
+            active: 0,
+            icons: {
+                header: "ui-icon-tag",
+                activeHeader: "ui-icon-tag"
+            },
+            heightStyle: "content",
+            collapsible: true
+        });
+
+        //========================================== Visibility
+        var mainTable = contentDiv.append("table");
+        var trVisibility = mainTable
+                .append("tr");
+
+        trVisibility.append("td")
+                .attr("class", "colFirst")
+                .append("label")
+                .attr("for", function (d) {
+                    return "visibility-" + d.id;
+                }).text("visibility:");
+
+        var visibilityDiv = trVisibility.append("td")
+                .append("div").attr("id", function (d) {
+                    return "visibility-" + d.id;
+                });
+
+        visibilityDiv.append("input")
+                .attr("type", "radio")
+                .attr("checked", "checked")
+                .attr("name", function (d) {
+                    return "label-visibility-" + d.id;
+                })
+                .attr("id", function (d) {
+                    return "show-" + d.id;
+                })
+                .attr("value", "show");
+
+        visibilityDiv.append("label")
+                .attr("for", function (d) {
+                    return "show-" + d.id;
+                })
+                .text("Show");
+
+        visibilityDiv.append("input")
+                .attr("type", "radio")
+                .attr("name", function (d) {
+                    return "label-visibility-" + d.id;
+                })
+                .attr("id", function (d) {
+                    return "hide-" + d.id;
+                })
+                .attr("value", "hide");
+
+        visibilityDiv.append("label")
+                .attr("for", function (d) {
+                    return "hide-" + d.id;
+                })
+                .text("Hide");
+
+        //========================================== Content
+
+        var table = contentDiv.append("table")
+                .attr("id", function (d) {
+                    return "labelsTable-" + d.id
+                })
+                .filter(function (d) {
+                    return d.attributes.length > 0;
+                });
+
+        var headerTR = table.append("tr");
+
+        headerTR.append("th");
+
+        headerTR.append("th");
+
+        headerTR.append("th").text("Node preview");
+
+
+        //========================================== Parent Label
+//        var trParentLabel = table.append("tr");
+//
+//        trParentLabel.append("td")
+//                .attr("class", "colFirst")
+//                .append("label")
+//                .attr("for", function (d) {
+//                    return "parentLabel-" + d.id;
+//                }).text("Parent label:");
+//        trParentLabel.append("td")
+//                .append("select")
+//                .attr("id", function (d) {
+//                    return "parentLabel-" + d.id;
+//                })
+//                .selectAll("option")
+//                .data(config.labels, function (d) {
+//                    return d.id;
+//                })
+//                .enter()
+//                .append("option")
+//                .attr("value", function (d) {
+//                    return d.name;
+//                })
+//                .text(function (d) {
+//                    return d.name;
+//                });
+
+        //========================================== Constraint Attribute
+        var trConstraintAttr = table.append("tr");
+
+        trConstraintAttr.append("td")
+                .attr("class", "colFirst")
+                .append("label")
+                .attr("for", function (d) {
+                    return "constraintAttribute-" + d.id;
+                }).text("constraintAttribute:");
+        trConstraintAttr.append("td")
+                .append("select")
+                .attr("id", function (d) {
+                    return "constraintAttribute-" + d.id;
+                })
+                .selectAll("option")
+                .data(function (d) {
+                    if (d.attributes) {
+                        return d.attributes;
+                    } else {
+                        return [];
+                    }
+                }, function (d) {
+                    return d.id;
+                })
+                .enter()
+                .append("option")
+                .attr("value", function (d) {
+                    return d.value;
+                })
+                .text(function (d) {
+                    return d.name;
+                });
+
+        //========================================== Preview
+        var nodePreview = trConstraintAttr.append("td")
+                .attr("id", function (d) {
+                    return "preview-" + d.id;
+                }).attr("rowspan", 4)
+                .attr("class", "nodepreview Text").text(function (d) {
+                    if (d.attributes && d.attributes.length > 0) {
+                        return d.attributes[0];
+                    } else {
+                        return "preview";
+                    }
+                });
+
+        //========================================== Return attributes
+        var trReturnAttr = table.append("tr");
+        trReturnAttr.append("td")
+                .attr("class", "colFirst")
+                .append("label")
+                .text("returnAttributes:");
+
+        trReturnAttr.append("td").append("ul")
+                .attr("id", function (d) {
+                    return "returnAttrs-" + d.id;
+                })
+                .selectAll("li")
+                .data(function (d) {
+                    if (d.attributes) {
+                        return d.attributes;
+                    } else {
+                        return [];
+                    }
+                }, function (d) {
+                    return d.id;
+                })
+                .enter()
+                .append("li")
+                .attr("class", "ui-state-default attrli")
+                .attr("id", function (d) {
+                    return "returnAttrs-" + d3.select(this.parentNode).datum().id + "-" + d.id;
+                })
+                .text(function (d) {
+                    return d.name;
+                });
+
+        //========================================== Attribute displayed in nodes
+        var trAttrInGraph = table.append("tr");
+        trAttrInGraph.append("td")
+                .attr("class", "colFirst")
+                .append("label")
+                .attr("for", function (d) {
+                    return "attrInGraph-" + d.id;
+                }).text("displayAttribute:");
+
+        // ComboBox
+        trAttrInGraph.append("td")
+                .append("select")
+                .attr("id", function (d) {
+                    return "attrInGraph-" + d.id;
+                })
+                .selectAll("option")
+                .data(function (d) {
+                    if (d.attributes) {
+                        return d.attributes;
+                    } else {
+                        return [];
+                    }
+                }, function (d) {
+                    return d.id;
+                })
+                .enter()
+                .append("option")
+                .attr("value", function (d) {
+                    return d.name;
+                })
+                .text(function (d) {
+                    return d.name;
+                });
+
+        //========================================== Display type
+        var trDisplayType = table.append("tr");
+        trDisplayType.append("td")
+                .attr("class", "colFirst")
+                .append("label")
+                .attr("for", function (d) {
+                    return "displayType-" + d.id;
+                }).text("displayType:");
+
+        trDisplayType.append("td")
+                .append("select")
+                .attr("id", function (d) {
+                    return "displayType-" + d.id;
+                })
+                .selectAll("option")
+                .data(["Text", "Image", "SVG"])
+                .enter()
+                .append("option")
+                .attr("value", function (d) {
+                    return d;
+                })
+                .text(function (d) {
+                    return d;
+                });
+
+
+        //========================================== Update components
+        for (var i = 0; i < config.labels.length; i++) {
+
+            // ----------- Visibility
+            $("#visibility-" + i).buttonset();
+            $("input[name=\"label-visibility-" + i + "\"]").change(function () {
+                var label = d3.select(this).datum();
+                if (this.value == "hide") {
+                    label.use = false;
+                    $("#labelsTable-" + label.id).hide();
+                } else {
+                    label.use = true;
+                    $("#labelsTable-" + label.id).show();
+                }
+            });
+
+
+            // ----------- constraint attribute
+            $("#constraintAttribute-" + i).selectmenu({
+                change: function (event, ui) {
+                    var label = d3.select(this).datum();
+                    label.constraint = this.value;
+                }
+            });
+            $("#constraintAttribute-" + i + "-button").tooltip({
+                items: "span",
+                position: {
+                    my: "left top",
+                    at: "right+5 top-5"
+                },
+                content: "Attribute used to identify a node, this attribute is used in generated Cypher query to match the selected value."
+            });
+
+            // ----------- return attributes tooltips TODO
+//            $("#returnAttrs-" + i).tooltip({
+//                items: "span",
+//                position: {
+//                    my: "left top",
+//                    at: "right+5 top-5"
+//                },
+//                content: "List of attributes returned for the nodes, they will be added in the Cypher query"
+//            });
+
+            // ----------- attribute in graph
+            $("#attrInGraph-" + i).selectmenu({
+                change: function (event, ui) {
+                    var label = d3.select(this).datum();
+                    label.node = this.value;
+                    d3.select("#preview-" + label.id).text(this.value);
+                }
+            });
+            $("#attrInGraph-" + i + "-button").tooltip({
+                items: "span",
+                position: {
+                    my: "left top",
+                    at: "right+5 top-5"
+                },
+                content: "Attribute used in displayed nodes in graph"
+            });
+
+            // ----------- Display type
+            $("#displayType-" + i).selectmenu({
+                change: function (event, ui) {
+                    var label = d3.select(this).datum();
+                    label.type = this.value;
+                    d3.select("#preview-" + label.id).attr("class", "nodepreview " + label.type);
+                }
+            });
+            $("#displayType-" + i + "-button").tooltip({
+                items: "span",
+                position: {
+                    my: "left top",
+                    at: "right+5 top-5"
+                },
+                content: "Display type of the node. The generated code uses an example you can modify afterward"
+            });
+        }
+    }
+
+    function generatePage() {
+        var page =
+                "<!DOCTYPE html>\n" +
+                "<!-- Generated with Popoto.js Configurator " + version + " -->\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"UTF-8\">\n" +
+                "    <title>Popoto Search</title>\n" +
+                "    <link rel=\"stylesheet\" href=\"css/popoto.min.css\">\n" +
+                "</head>\n" +
+                "<body class=\"ppt-body\">\n";
+
+        if (config.layout.header) {
+            page +=
+                    "<header class=\"ppt-header\">\n" +
+                    "</header>\n";
+        }
+
+        page +=
+                "<section class=\"ppt-section-main\">\n" +
+                "    <div class=\"ppt-section-header\">\n" +
+                "        <span class=\"ppt-header-span\">Graph</span> search\n" +
+                "    </div>\n" +
+                "    <div class=\"ppt-container-graph\">\n";
+
+        if (config.layout.taxonomies) {
+            page +=
+                    "        <nav id=\"popoto-taxonomy\" class=\"ppt-taxo-nav\">\n" +
+                    "            <!-- Label/taxonomy filter will be generated here -->\n" +
+                    "        </nav>\n";
+        }
+
+        page +=
+                "        <div id=\"popoto-graph\" class=\"ppt-div-graph\">\n" +
+                "            <!-- Graph will be generated here -->\n" +
+                "        </div>\n" +
+                "    </div>\n";
+
+        if (config.layout.query) {
+            page +=
+                    "    <div id=\"popoto-query\" class=\"ppt-container-query\">\n" +
+                    "        <!-- Query viewer will be generated here -->\n" +
+                    "    </div>\n";
+        }
+
+        if (config.layout.cypher) {
+            page +=
+                    "    <div id=\"popoto-cypher\" class=\"ppt-container-cypher\">\n" +
+                    "        <!-- Cypher query viewer will be generated here -->\n" +
+                    "    </div>\n";
+        }
+
+        if (config.layout.results) {
+            page +=
+                    "    <div class=\"ppt-section-header\">\n" +
+                    "        <!-- The total results count is updated with a listener defined in script -->\n" +
+                    "        RESULTS <span id=\"result-total-count\" class=\"ppt-count\"></span>\n" +
+                    "    </div>\n" +
+                    "    <div id=\"popoto-results\" class=\"ppt-container-results\">\n" +
+                    "        <!-- Results will be generated here -->\n" +
+                    "    </div>\n";
+        }
+
+        page +=
+                "</section>\n" +
+                "<script src=\"js/jquery-2.1.0.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
+                "<script src=\"js/d3.v3.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
+                "<script src=\"js/popoto.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
+                "<script>\n" +
+                "// URL used to access Neo4j REST API to execute queries.\n" +
+                "popoto.rest.CYPHER_URL = \"" + buildURL() + "/db/data/transaction/commit" + "\";\n";
+
+        if (config.server.credentials.use) {
+            page += "popoto.rest.AUTHORIZATION = \"" + buildAuthorization() + "\";\n"
+        }
+
+        if (config.labels.length > 0) {
+            page +=
+                    "popoto.provider.nodeProviders = {\n";
+
+            for (var i = 0; i < config.labels.length; i++) {
+                var labelConfig = config.labels[i];
+
+                if (labelConfig.use) {
+
+                    page +=
+                            "    \"" + labelConfig.name + "\":{\n";
+
+                    if (labelConfig.attributes.length > 0) {
+                        //============== returnAttributes:
+                        page +=
+                                "        returnAttributes:[\"" + labelConfig.attributes.join("\", \"") + "\"]" + ",\n";
+
+                        //============== constraintAttribute:
+                        page +=
+                                "        constraintAttribute:\"" + labelConfig.constraint + "\",\n";
+
+                        //============== node value:
+                        if (labelConfig.node != labelConfig.constraint) {
+
+                            page +=
+                                    "        \"getTextValue\": function (node) {\n" +
+                                    "            var text;\n" +
+                                    "            if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                                    "                text = \"\" + node.attributes[\"" + labelConfig.node + "\"];\n" +
+                                    "            } else {\n" +
+                                    "                if (node.value === undefined) {\n" +
+                                    "                    text = node.label;\n" +
+                                    "                } else {\n" +
+                                    "                    text = \"\" + node.value.attributes[\"" + labelConfig.node + "\"];\n" +
+                                    "                }\n" +
+                                    "            }\n" +
+                                    "            // Text is truncated to avoid node overflow\n" +
+                                    "            return text.substring(0, 12);\n" +
+                                    "        },\n";
+                        }
+
+                        //============== node type:
+                        if (labelConfig.type == "Text") {
+                            // Nothing to do as it is default value
+                        } else if (labelConfig.type == "Image") {
+                            page +=
+                                    "        \"getDisplayType\": function (node) {\n" +
+                                    "            return popoto.provider.NodeDisplayTypes.IMAGE;\n" +
+                                    "        },\n" +
+                                    "        \"getImagePath\": function (node) {\n" +
+                                    "            if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                                    "                return \"css/image/node-yellow.png\";\n" +
+                                    "            } else {\n" +
+                                    "                if (node.value === undefined) {\n" +
+                                    "                    if (node.count == 0) {\n" +
+                                    "                        return \"css/image/node-black.png\";\n" +
+                                    "                    } else {\n" +
+                                    "                       if (node.type === popoto.graph.node.NodeTypes.ROOT) {\n" +
+                                    "                           return \"css/image/node-blue.png\";\n" +
+                                    "                       }\n" +
+                                    "                       if (node.type === popoto.graph.node.NodeTypes.CHOOSE) {\n" +
+                                    "                           return \"css/image/node-green.png\";\n" +
+                                    "                       }\n" +
+                                    "                       if (node.type === popoto.graph.node.NodeTypes.GROUP) {\n" +
+                                    "                           return \"css/image/node-gray.png\";\n" +
+                                    "                       }\n" +
+                                    "                    }\n" +
+                                    "                } else {\n" +
+                                    "                    return \"css/image/node-orange.png\";\n" +
+                                    "                }\n" +
+                                    "            }\n" +
+                                    "        },\n" +
+                                    "        \"getImageWidth\": function (node) {\n" +
+                                    "            return 125;\n" +
+                                    "        },\n" +
+                                    "        \"getImageHeight\": function (node) {\n" +
+                                    "            return 125;\n" +
+                                    "        },\n";
+                        } else if (labelConfig.type == "SVG") {
+                            page +=
+                                    "        \"getDisplayType\": function (node) {\n" +
+                                    "            return popoto.provider.NodeDisplayTypes.SVG;\n" +
+                                    "        },\n" +
+                                    "        \"getSVGPaths\": function (node) {\n" +
+                                    "            if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                                    "                return [{\n" +
+                                    "                    \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
+                                    "                    \"class\": \"ppt-svg-yellow\"\n" +
+                                    "                }];\n" +
+                                    "            } else {\n" +
+                                    "                if (node.value === undefined) {\n" +
+                                    "                    if (node.count == 0) {\n" +
+                                    "                        return [{\n" +
+                                    "                            \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
+                                    "                            \"class\": \"ppt-svg-black\"\n" +
+                                    "                        }];\n" +
+                                    "                    } else {\n" +
+                                    "                       if (node.type === popoto.graph.node.NodeTypes.ROOT) {\n" +
+                                    "                           return [{\n" +
+                                    "                               \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
+                                    "                               \"class\": \"ppt-svg-blue\"\n" +
+                                    "                            }];\n" +
+                                    "                       }\n" +
+                                    "                       if (node.type === popoto.graph.node.NodeTypes.CHOOSE) {\n" +
+                                    "                           return [{\n" +
+                                    "                               \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
+                                    "                               \"class\": \"ppt-svg-green\"\n" +
+                                    "                           }];\n" +
+                                    "                       }\n" +
+                                    "                    }\n" +
+                                    "                } else {\n" +
+                                    "                    return [{\n" +
+                                    "                        \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
+                                    "                        \"class\": \"ppt-svg-purple\"\n" +
+                                    "                    }];\n" +
+                                    "                }\n" +
+                                    "            }\n" +
+                                    "        }\n";
+                        }
+                    } else {
+                        page += "        // This label doesn't have any attribute, internal id is used by default\n";
+                    }
+                    page +=
+                            "    },\n";
+                }
+            }
+
+
+            page +=
+                    "};\n"
+        }
+
+        if (config.layout.results) {
+            page +=
+                    "popoto.result.onTotalResultCount(function (count) {\n" +
+                    "    document.getElementById(\"result-total-count\").innerHTML = \"(\" + count + \")\";\n" +
+                    "});\n";
+        }
+
+        page +=
+                "popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;\n" +
+                "popoto.start(\"" + ((config.labels.length > 0) ? config.labels[0].name : "Person") + "\");\n" +
+                "</scr" + "ipt>\n" +
+                "</body>\n" +
+                "</html>";
+
+
+        return page;
+    }
+
+    function viewSource() {
+        var codeViewer = $("#codeViewer").empty().text(generatePage());
+
+        $('pre code').each(function (i, block) {
+            hljs.highlightBlock(block);
+        });
+    }
+
+    function testPage() {
+        var page = generatePage();
+        var id = new Date().getTime();
+        var newWindow = window.open("", "conf" + id);
+        newWindow.document.write(page);
+        newWindow.document.close();
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>Popoto Search</title>
+    <link rel="stylesheet" href="css/popoto.min.css">
+</head>
+<body class="ppt-body">
+
+<header class="ppt-header">
+</header>
+
+<section class="ppt-section-main">
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Graph</span> search
+    </div>
+
+    <div class="ppt-container-graph">
+        <nav id="popoto-taxonomy" class="ppt-taxo-nav">
+            <!-- Label/taxonomy filter will be generated here -->
+        </nav>
+        <div id="popoto-graph" class="ppt-div-graph">
+            <!-- Graph will be generated here-->
+        </div>
+    </div>
+
+    <div id="popoto-query" class="ppt-container-query">
+        <!-- Query viewer will be generated here -->
+    </div>
+
+    <div id="popoto-cypher" class="ppt-container-cypher">
+        <!-- Cypher query viewer will be generated here -->
+    </div>
+
+    <div class="ppt-section-header">
+        <!-- The total results count is updated with a listener defined below -->
+        RESULTS <span id="result-total-count" class="ppt-count"></span>
+    </div>
+
+    <div id="popoto-results" class="ppt-container-results">
+        <!-- Results will be generated here -->
+    </div>
+
+</section>
+
+<!---------------------->
+<!-- Required scripts -->
+
+<!-- Jquery is only used in popoto.js to send ajax POST request on Neo4j REST API -->
+<!-- This dependency will probably be removed in future releases -->
+<script src="js/jquery-2.1.0.min.js" charset="utf-8"></script>
+
+<script src="js/d3.v3.min.js" charset="utf-8"></script>
+<script src="js/popoto.min.js" charset="utf-8"></script>
+
+<script>
+    /**
+     * URL used to access Neo4j REST API to execute queries.
+     * Update this parameter to your running server instance.
+     *
+     * For more information on Neo4J REST API the documentation is available here: http://neo4j.com/docs/stable/rest-api-cypher.html
+     */
+    popoto.rest.CYPHER_URL = "http://localhost:7474/db/data/transaction/commit";
+
+    /**
+     * Add this authorization property if your Neo4j server uses basic HTTP authentication.
+     * The value of this property must be "Basic <payload>", where "payload" is a base64 encoded string of "username:password".
+     *
+     * "btoa" is a JavaScript function that can be used to encode the user and password value in base64 but it is recommended to directly use the Base64 value.
+     *
+     *  For example Base64 encoded value of "neo4j:password" is "bmVvNGo6cGFzc3dvcmQ="
+     */
+    //popoto.rest.AUTHORIZATION = "Basic " + btoa("neo4j:password");
+
+    /**
+     * Define the Label provider you need for your application.
+     * This configuration is mandatory and should contain at least all the labels you could find in your graph model.
+     *
+     * In this version only nodes with a label are supported.
+     *
+     * By default If no attributes are specified Neo4j internal ID will be used.
+     * These label provider configuration can be used to customize the node display in the graph.
+     * See www.popotojs.com or example for more details on available configuration options.
+     */
+    popoto.provider.nodeProviders = {
+        "Person": {
+            "returnAttributes": ["name", "born"],
+            "constraintAttribute": "name"
+        },
+        "Movie": {
+            "returnAttributes": ["title", "released", "tagline"],
+            "constraintAttribute": "title"
+        }
+    };
+
+    /**
+     * Here a listener is used to retrieve the total results count and update the page accordingly.
+     * This listener will be called on every graph modification.
+     */
+    popoto.result.onTotalResultCount(function (count) {
+        document.getElementById("result-total-count").innerHTML = "(" + count + ")";
+    });
+
+    /**
+     * The number of results returned can be changed with the following parameter.
+     * Default value is 100.
+     *
+     * Note that in this current version no pagination mechanism is available in displayed results
+     */
+    //popoto.query.RESULTS_PAGE_SIZE = 100;
+
+
+    /**
+     * For this version, popoto.js has been generated with debug traces you can activate with the following properties:
+     * The value can be one in DEBUG, INFO, WARN, ERROR, NONE.
+     *
+     * With INFO level all the executed cypher query can be seen in the navigator console.
+     * Default is NONE
+     */
+    //popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;
+
+    /**
+     * Start popoto.js generation.
+     * The function requires the label to use as root element in the graph.
+     */
+    popoto.start("Person");
+</script>
+</body>
+</html>

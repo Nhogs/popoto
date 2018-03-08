@@ -1,3 +1,14 @@
+popoto-1.1.2
+ 2017-05-02
+
+    - Fixed textPath issue update on Edge browser.
+
+    - Added popoto.graph.DISABLE_COUNT property to disable all counts on nodes.
+
+    - Added "schema" property in label providers to auto generate graph in popoto for a label without retrieving relation on database.
+
+    - Added support of predefined graph schema in start function to open graph in a predefined state.
+
 popoto-1.1.1
  2017-01-23
 

@@ -565,6 +565,10 @@
     content: "\f05b";
 }
 
+.ppt-menu.save:before {
+    content: "\f093";
+}
+
 .ppt-menu.taxonomy:hover {
     color: #f0b017;
 }
@@ -578,6 +582,10 @@
 }
 
 .ppt-menu.center:hover {
+    color: #f0b017;
+}
+
+.ppt-menu.save:hover {
     color: #f0b017;
 }
 

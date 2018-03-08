@@ -93,8 +93,7 @@
 
 .ppt-taxo-tag {
     display: inline-block;
-    background-image: url(image/category.png);
-    background-position: center;
+    background: url(image/category.png) center;
     width: 24px;
 }
 
@@ -109,12 +108,22 @@
     overflow: hidden;
 }
 
-.ppt-div-graph:-webkit-full-screen {
+#popoto-graph:fullscreen {
     width: 100%;
     height: 100%;
 }
 
-.ppt-div-graph:fullscreen {
+#popoto-graph:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+}
+
+#popoto-graph:-moz-full-screen {
+    width: 100%;
+    height: 100%;
+}
+
+#popoto-graph:-ms-fullscreen {
     width: 100%;
     height: 100%;
 }
@@ -124,15 +133,13 @@
 .ppt-header {
     padding-left: 16px;
     padding-right: 16px;
-    background-color: #525863;
     border-radius: 5px 5px;
     height: 70px;
     min-width: 560px;
     line-height: 70px;
     font-weight: bold;
     font-size: 22px;
-    background-image: url('image/popoto-small-g.png');
-    background-repeat: no-repeat;
+    background: #525863 url('image/popoto-small-g.png') no-repeat;
     background-position-x: 20px;
     background-position-y: 50%;
 }

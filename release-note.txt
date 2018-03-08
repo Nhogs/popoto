@@ -1,15 +1,34 @@
+popoto-1.1.0
+ 2016-12-28
+
+    - Minor fixes on Cypher viewer.
+
+    - Added use of parameters in generated queries.
+
+    - Fixed internal errors when some data is invalid or missing in REST API call.
+
+    - Removed extra query execution to get result count, the count was already available in root node.
+
+    - Added support of graph results, this feature can be used to display the results as a graph instead of rows like in Neo4j Browser.
+
+    - Added support of new configuration options:
+      - "filterResultQuery", "filterNodeValueQuery", "filterNodeCountQuery", "filterNodeRelationQuery" to customize generated Cypher queries depending on labels.
+      - "autoExpandRelations" to automatically expand nodes with a specific labels. This can be used to pre-open graph on page load.
+
+    - Fixed nodes Drag behavior, nodes now are no more opened or collapsed when they are dragged on graph.
+
 popoto-1.0
  2015-11-03
 
-    - Added Cypher query viewer support
+    - Added Cypher query viewer support.
 
-    - Added first version of Configurator
+    - Added first version of Configurator.
 
-    - Removed app template js file, everything is in the index.html page now
+    - Removed app template js file, everything is in the index.html page now.
 
-    - Changed generated taxonomies elements to use css image
+    - Changed generated taxonomies elements to use css image.
 
-    - Fixed default display results on internal Neo4j IDs
+    - Fixed default display results on internal Neo4j IDs.
 
 popoto-0.0.a6
  2015-06-21

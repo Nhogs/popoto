@@ -2,7 +2,7 @@
  * Popoto.js is a JavaScript library built with D3.js providing a graph based search interface generated in HTML and SVG usable on any modern browser.
  * This library generates an interactive graph query builder into any website or web based application to create dynamic queries on Neo4j databases and display the results.
  *
- * Copyright (C) 2014-2015 Frederic Ciminera
+ * Copyright (C) 2014-2016 Frederic Ciminera
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  */
 popoto = function () {
     var popoto = {
-        version: "1.0"
+        version: "1.1.0"
     };
 
     /**
@@ -126,7 +126,7 @@ popoto = function () {
         // Results are updated only if needed.
         // If id found in html page or if result listeners have been added.
         // In this case the query must be executed.
-        if (popoto.result.isActive || popoto.result.resultListeners.length > 0 || popoto.result.resultCountListeners.length > 0) {
+        if (popoto.result.isActive || popoto.result.resultListeners.length > 0 || popoto.result.resultCountListeners.length > 0 || popoto.result.graphResultListeners.length > 0) {
             popoto.result.updateResults();
         }
     };
@@ -337,7 +337,10 @@ popoto = function () {
                 })
                 .done(function (returnedData) {
                     for (var i = 0; i < taxonomies.length; i++) {
-                        var count = returnedData.results[i].data[0].row[0];
+                        var count = 0;
+                        if (returnedData && returnedData.hasOwnProperty("results") && returnedData.results.length > 0) {
+                            count = returnedData.results[i].data[0].row[0];
+                        }
                         d3.select("#" + taxonomies[i].id)
                             .select(".ppt-count")
                             .text(" (" + count + ")");
@@ -402,7 +405,7 @@ popoto = function () {
         // Workaround to avoid click on taxonomies if root node has not yet been initialized
         // If it contains a count it mean all the initialization has been done
         var root = popoto.graph.getRootNode();
-        if (root.count === undefined) {
+        if (!root || root.count === undefined) {
             return;
         }
 
@@ -711,7 +714,7 @@ popoto = function () {
      * Contains the list off root node add listeners.
      */
     popoto.graph.rootNodeAddListeners = [];
-    popoto.graph.nodeExpandRelationsipListeners = [];
+    popoto.graph.nodeExpandRelationshipListeners = [];
 
     /**
      *  Create the D3.js force layout for the graph query builder.
@@ -767,7 +770,7 @@ popoto = function () {
             popoto.graph.rootNodeAddListeners.push(listener);
         }
         if (event === popoto.graph.Events.NODE_EXPAND_RELATIONSHIP) {
-            popoto.graph.nodeExpandRelationsipListeners.push(listener);
+            popoto.graph.nodeExpandRelationshipListeners.push(listener);
         }
     };
 
@@ -779,7 +782,7 @@ popoto = function () {
      */
     popoto.graph.addRootNode = function (label) {
         if (popoto.graph.force.nodes().length > 0) {
-            popoto.logger.debug("popoto.graph.addRootNode is called but the graph is not empty.");
+            popoto.logger.warn("popoto.graph.addRootNode is called but the graph is not empty.");
         }
 
         popoto.graph.force.nodes().push({
@@ -802,6 +805,10 @@ popoto = function () {
         popoto.graph.rootNodeAddListeners.forEach(function (listener) {
             listener(popoto.graph.getRootNode());
         });
+
+        if (popoto.provider.getIsAutoExpandRelations(label)) {
+            popoto.graph.node.expandRelationData(popoto.graph.getRootNode());
+        }
     };
 
     /**
@@ -1072,7 +1079,7 @@ popoto = function () {
      * @returns {string}
      */
     popoto.graph.node.generateInternalLabel = function (nodeLabel) {
-        var label = nodeLabel.toLowerCase().replace(/ /g, '');
+        var label = nodeLabel ? nodeLabel.toLowerCase().replace(/ /g, '') : "n";
 
         if (label in popoto.graph.node.internalLabels) {
             popoto.graph.node.internalLabels[label] = popoto.graph.node.internalLabels[label] + 1;
@@ -1112,22 +1119,23 @@ popoto = function () {
     };
 
     /**
-     * Update nodes count by executing a query for every nodes with the new graph structure.
+     * Update nodes and result counts by executing a query for every nodes with the new graph structure.
      */
     popoto.graph.node.updateCount = function () {
 
         var statements = [];
 
-        var counterNodes = popoto.graph.force.nodes()
+        var countedNodes = popoto.graph.force.nodes()
             .filter(function (d) {
-                return d.type !== popoto.graph.node.NodeTypes.VALUE && d.type !== popoto.graph.node.NodeTypes.GROUP;
+                return popoto.graph.node.NodeTypes.VALUE !== d.type && popoto.graph.node.NodeTypes.GROUP !== d.type;
             });
 
-        counterNodes.forEach(function (node) {
-            var query = popoto.query.generateNodeCountCypherQuery(node);
+        countedNodes.forEach(function (node) {
+            var query = popoto.query.generateNodeCountQuery(node);
             statements.push(
                 {
-                    "statement": query
+                    "statement": query.statement,
+                    "parameters": query.parameters
                 }
             );
         });
@@ -1139,25 +1147,34 @@ popoto = function () {
             })
             .done(function (returnedData) {
 
-                if (returnedData.errors && returnedData.errors.length > 0) {
-                    popoto.logger.error("Cypher query error:" + JSON.stringify(returnedData.errors));
+                if (returnedData) {
+                    if (returnedData.hasOwnProperty("errors") && returnedData.errors.length > 0) {
+                        popoto.logger.error("Cypher query error:" + JSON.stringify(returnedData.errors));
+                    }
+
+                    if (returnedData.hasOwnProperty("results") && returnedData.results.length > 0) {
+                        for (var i = 0; i < countedNodes.length; i++) {
+                            countedNodes[i].count = returnedData.results[i].data[0].row[0];
+                        }
+                    } else {
+                        countedNodes.forEach(function (node) {
+                            node.count = 0;
+                        });
+                    }
+
+                    // Update result count with root node new count
+                    if (popoto.result.resultCountListeners.length > 0) {
+                        popoto.result.updateResultsCount();
+                    }
+
+                    popoto.graph.node.updateElements();
+                    popoto.graph.link.updateElements();
                 }
 
-                if (returnedData.results && returnedData.results.length > 0) {
-                    for (var i = 0; i < counterNodes.length; i++) {
-                        counterNodes[i].count = returnedData.results[i].data[0].row[0];
-                    }
-                } else {
-                    counterNodes.forEach(function (node) {
-                        node.count = 0;
-                    });
-                }
-                popoto.graph.node.updateElements();
-                popoto.graph.link.updateElements();
             })
             .fail(function (xhr, textStatus, errorThrown) {
                 popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
-                counterNodes.forEach(function (node) {
+                countedNodes.forEach(function (node) {
                     node.count = 0;
                 });
                 popoto.graph.node.updateElements();
@@ -1341,8 +1358,8 @@ popoto = function () {
 
         // Arrows icons added only for root and choose nodes
         var gArrow = foreground.filter(function (d) {
-            return d.type === popoto.graph.node.NodeTypes.ROOT || d.type === popoto.graph.node.NodeTypes.CHOOSE;
-        })
+                return d.type === popoto.graph.node.NodeTypes.ROOT || d.type === popoto.graph.node.NodeTypes.CHOOSE;
+            })
             .append("g")
             .attr("class", "ppt-node-foreground-g-arrows");
 
@@ -1738,16 +1755,18 @@ popoto = function () {
      * Handle the click event on nodes.
      */
     popoto.graph.node.nodeClick = function () {
-        var clickedNode = d3.select(this).data()[0]; // Clicked node data
-        popoto.logger.debug("nodeClick (" + clickedNode.label + ")");
+        if (!d3.event.defaultPrevented) { // To avoid click on drag end
+            var clickedNode = d3.select(this).data()[0]; // Clicked node data
+            popoto.logger.debug("nodeClick (" + clickedNode.label + ")");
 
-        if (clickedNode.type === popoto.graph.node.NodeTypes.VALUE) {
-            popoto.graph.node.valueNodeClick(clickedNode);
-        } else if (clickedNode.type === popoto.graph.node.NodeTypes.CHOOSE || clickedNode.type === popoto.graph.node.NodeTypes.ROOT) {
-            if (clickedNode.valueExpanded) {
-                popoto.graph.node.collapseNode(clickedNode);
-            } else {
-                popoto.graph.node.chooseNodeClick(clickedNode);
+            if (clickedNode.type === popoto.graph.node.NodeTypes.VALUE) {
+                popoto.graph.node.valueNodeClick(clickedNode);
+            } else if (clickedNode.type === popoto.graph.node.NodeTypes.CHOOSE || clickedNode.type === popoto.graph.node.NodeTypes.ROOT) {
+                if (clickedNode.valueExpanded) {
+                    popoto.graph.node.collapseNode(clickedNode);
+                } else {
+                    popoto.graph.node.chooseNodeClick(clickedNode);
+                }
             }
         }
     };
@@ -1831,14 +1850,19 @@ popoto = function () {
             popoto.graph.node.chooseWaiting = true;
 
             popoto.logger.info("Values (" + clickedNode.label + ") ==> ");
+            var query = popoto.query.generateNodeValueQuery(clickedNode);
             popoto.rest.post(
                 {
                     "statements": [
                         {
-                            "statement": popoto.query.generateValueQuery(clickedNode)
+                            "statement": query.statement,
+                            "parameters": query.parameters
                         }]
                 })
                 .done(function (data) {
+                    if (data && data.hasOwnProperty("errors") && data.errors.length > 0) {
+                        popoto.logger.error(JSON.stringify(data.errors)); // TODO add general error handling for responses
+                    }
                     clickedNode.id = (++popoto.graph.node.idgen);
                     clickedNode.data = popoto.graph.node.parseResultData(data);
                     clickedNode.page = 1;
@@ -1861,15 +1885,16 @@ popoto = function () {
      */
     popoto.graph.node.parseResultData = function (data) {
         var results = [];
+        if (data && data.hasOwnProperty("results") && data.results.length > 0) {
+            for (var x = 0; x < data.results[0].data.length; x++) {
+                var obj = {};
 
-        for (var x = 0; x < data.results[0].data.length; x++) {
-            var obj = {};
+                for (var i = 0; i < data.results[0].columns.length; i++) {
+                    obj[data.results[0].columns[i]] = data.results[0].data[x].row[i];
+                }
 
-            for (var i = 0; i < data.results[0].columns.length; i++) {
-                obj[data.results[0].columns[i]] = data.results[0].data[x].row[i];
+                results.push(obj);
             }
-
-            results.push(obj);
         }
 
         return results;
@@ -1978,7 +2003,7 @@ popoto = function () {
     };
 
     /**
-     * Function called on a right click on a node.
+     * Function to call to expand relationship on a node.
      *
      * In this case all expanded nodes in the graph will first be closed then if no relation have been added yet a Cypher query is executed to get all the related nodes.
      * A first coordinate pre-computation is done to dispatch the new node correctly around the parent node and the nodes are added with a link in the model.
@@ -1987,11 +2012,11 @@ popoto = function () {
      *
      */
     popoto.graph.node.expandRelationship = function () {
-        // Prevent default right click event opening menu.
+        // Prevent defaults like right click event opening browser menu.
         d3.event.preventDefault();
 
         // Notify listeners
-        popoto.graph.nodeExpandRelationsipListeners.forEach(function (listener) {
+        popoto.graph.nodeExpandRelationshipListeners.forEach(function (listener) {
             listener(this);
         });
 
@@ -1999,83 +2024,96 @@ popoto = function () {
         var clickedNode = d3.select(this).data()[0];
 
         if (!clickedNode.linkExpanded && !popoto.graph.node.linkWaiting && !clickedNode.valueExpanded) {
-            popoto.graph.node.linkWaiting = true;
-
-            popoto.logger.info("Relations (" + clickedNode.label + ") ==> ");
-            popoto.rest.post(
-                {
-                    "statements": [
-                        {
-                            "statement": popoto.query.generateLinkQuery(clickedNode)
-                        }]
-                })
-                .done(function (data) {
-                    var parsedData = popoto.graph.node.parseResultData(data);
-
-                    parsedData = parsedData.filter(function (d) {
-                        return popoto.query.filterRelation(d);
-                    });
-
-                    if (parsedData.length <= 0) {
-                        // Set linkExpanded to true to avoid a new query call on next right click
-                        clickedNode.linkExpanded = true;
-                        clickedNode.linkCount = 0;
-                        popoto.graph.hasGraphChanged = true;
-                        popoto.update();
-                    } else {
-                        var parentAngle = popoto.graph.computeParentAngle(clickedNode);
-
-                        var i = 1;
-                        parsedData.forEach(function (d) {
-                            var angleDeg;
-                            if (parentAngle) {
-                                angleDeg = (((360 / (parsedData.length + 1)) * i));
-                            } else {
-                                angleDeg = (((360 / (parsedData.length)) * i));
-                            }
-
-                            var nx = clickedNode.x + (100 * Math.cos((angleDeg * (Math.PI / 180)) - parentAngle)),
-                                ny = clickedNode.y + (100 * Math.sin((angleDeg * (Math.PI / 180)) - parentAngle));
-
-                            var isGroupNode = popoto.provider.getIsGroup(d);
-                            var node = {
-                                "id": "" + (++popoto.graph.node.idgen),
-                                "parent": clickedNode,
-                                "type": (isGroupNode) ? popoto.graph.node.NodeTypes.GROUP : popoto.graph.node.NodeTypes.CHOOSE,
-                                "label": d.label,
-                                "fixed": false,
-                                "internalLabel": popoto.graph.node.generateInternalLabel(d.label),
-                                "x": nx,
-                                "y": ny
-                            };
-
-                            popoto.graph.force.nodes().push(node);
-
-                            popoto.graph.force.links().push(
-                                {
-                                    id: "l" + (++popoto.graph.node.idgen),
-                                    source: clickedNode,
-                                    target: node,
-                                    type: popoto.graph.link.LinkTypes.RELATION,
-                                    label: d.relationship
-                                }
-                            );
-
-                            i++;
-                        });
-
-                        popoto.graph.hasGraphChanged = true;
-                        clickedNode.linkExpanded = true;
-                        clickedNode.linkCount = parsedData.length;
-                        popoto.update();
-                    }
-                    popoto.graph.node.linkWaiting = false;
-                })
-                .fail(function (xhr, textStatus, errorThrown) {
-                    popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
-                    popoto.graph.node.linkWaiting = false;
-                });
+            popoto.graph.node.expandRelationData(clickedNode);
         }
+    };
+
+    popoto.graph.node.expandRelationData = function (expandedNode) {
+        popoto.graph.node.linkWaiting = true;
+        popoto.logger.info("Relations (" + expandedNode.label + ") ==> ");
+        var query = popoto.query.generateNodeRelationQuery(expandedNode);
+        popoto.rest.post(
+            {
+                "statements": [
+                    {
+                        "statement": query.statement,
+                        "parameters": query.parameters
+                    }]
+            })
+            .done(function (data) {
+                if (data && data.hasOwnProperty("errors") && data.errors.length > 0) {
+                    popoto.logger.error(JSON.stringify(data.errors)); // TODO add general error handling for responses
+                }
+                var parsedData = popoto.graph.node.parseResultData(data);
+
+                // Filter data to eventually remove relations if a filter has been defined.
+                parsedData = parsedData.filter(function (d) {
+                    return popoto.query.filterRelation(d);
+                });
+
+                if (parsedData.length > 0) {
+                    popoto.graph.addRelationshipData(expandedNode, parsedData);
+                }
+
+                expandedNode.linkCount = parsedData.length;
+                expandedNode.linkExpanded = true;
+
+                popoto.graph.hasGraphChanged = true;
+                popoto.graph.node.linkWaiting = false;
+
+                popoto.update();
+            })
+            .fail(function (xhr, textStatus, errorThrown) {
+                popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
+                popoto.graph.node.linkWaiting = false;
+            });
+    };
+
+    popoto.graph.addRelationshipData = function (clickedNode, parsedData) {
+        var parentAngle = popoto.graph.computeParentAngle(clickedNode);
+
+        var i = 1;
+        parsedData.forEach(function (d) {
+            var angleDeg;
+            if (parentAngle) {
+                angleDeg = (((360 / (parsedData.length + 1)) * i));
+            } else {
+                angleDeg = (((360 / (parsedData.length)) * i));
+            }
+
+            var nx = clickedNode.x + (100 * Math.cos((angleDeg * (Math.PI / 180)) - parentAngle)),
+                ny = clickedNode.y + (100 * Math.sin((angleDeg * (Math.PI / 180)) - parentAngle));
+
+            var isGroupNode = popoto.provider.getIsGroup(d);
+            var node = {
+                "id": "" + (++popoto.graph.node.idgen),
+                "parent": clickedNode,
+                "type": (isGroupNode) ? popoto.graph.node.NodeTypes.GROUP : popoto.graph.node.NodeTypes.CHOOSE,
+                "label": d.label,
+                "fixed": false,
+                "internalLabel": popoto.graph.node.generateInternalLabel(d.label),
+                "x": nx,
+                "y": ny
+            };
+
+            popoto.graph.force.nodes().push(node);
+
+            popoto.graph.force.links().push(
+                {
+                    id: "l" + (++popoto.graph.node.idgen),
+                    source: clickedNode,
+                    target: node,
+                    type: popoto.graph.link.LinkTypes.RELATION,
+                    label: d.relationship
+                }
+            );
+
+            if (popoto.provider.getIsAutoExpandRelations(node.label)) {
+                popoto.graph.node.expandRelationData(node);
+            }
+
+            i++;
+        });
     };
 
     /**
@@ -2148,7 +2186,7 @@ popoto = function () {
 
     /**
      * Function to add on node event to clear the selection.
-     * Call to this function on a node will remove the selected value and triger a graph update.
+     * Call to this function on a node will remove the selected value and trigger a graph update.
      */
     popoto.graph.node.clearSelection = function () {
         // Prevent default event like right click  opening menu.
@@ -2500,24 +2538,24 @@ popoto = function () {
 
         // Update all spans:
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.KEYWORD;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.KEYWORD;
+            })
             .attr("class", "ppt-span")
             .text(function (d) {
                 return " " + d.value + " ";
             });
 
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.SEPARATOR;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.SEPARATOR;
+            })
             .attr("class", "ppt-span")
             .text(function (d) {
                 return d.value + " ";
             });
 
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.NODE;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.NODE;
+            })
             .attr("class", function (d) {
                 if (d.node.value) {
                     return "ppt-span-root-value";
@@ -2546,8 +2584,8 @@ popoto = function () {
             });
 
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.SOURCE;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.SOURCE;
+            })
             .attr("class", function (d) {
                 if (d.node === popoto.graph.getRootNode()) {
                     if (d.node.value) {
@@ -2569,16 +2607,16 @@ popoto = function () {
             });
 
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.LINK;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.LINK;
+            })
             .attr("class", "ppt-span-link")
             .text(function (d) {
-                return "-[:`" + d.link.label + "`]->";
+                return "-[:`" + d.link.label + "`]-" + (popoto.query.USE_RELATION_DIRECTION ? ">" : "");
             });
 
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.TARGET;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.TARGET;
+            })
             .attr("class", function (d) {
                 if (d.node.value) {
                     return "ppt-span-value";
@@ -2608,8 +2646,8 @@ popoto = function () {
             });
 
         popoto.cypherviewer.querySpanElements.filter(function (d) {
-            return d.type === popoto.cypherviewer.QueryElementTypes.RETURN;
-        })
+                return d.type === popoto.cypherviewer.QueryElementTypes.RETURN;
+            })
             .attr("class", function (d) {
                 if (d.node.value) {
                     return "ppt-span-root-value";
@@ -2832,7 +2870,7 @@ popoto = function () {
      * Define the number of results displayed in result list.
      */
     popoto.query.RESULTS_PAGE_SIZE = 100;
-    popoto.query.VALUE_QUERY_LIMIT = 1000;
+    popoto.query.VALUE_QUERY_LIMIT = 100;
     popoto.query.USE_PARENT_RELATION = false;
     popoto.query.USE_RELATION_DIRECTION = true;
 
@@ -2885,6 +2923,9 @@ popoto = function () {
     popoto.query.generateQueryElements = function (rootNode, selectedNode, links, isConstraintNeeded) {
         var matchElements = [];
         var whereElements = [];
+        var relationElements = [];
+        var parameters = {};
+
         var rel = popoto.query.USE_RELATION_DIRECTION ? "->" : "-";
 
         var rootPredefinedConstraints = popoto.provider.getPredefinedConstraints(rootNode.label);
@@ -2901,22 +2942,22 @@ popoto = function () {
                 whereElements.push("ID(" + rootNode.internalLabel + ") = " + rootNode.value.internalID);
             } else {
                 var constraintValue = rootNode.value.attributes[rootConstraintAttr];
-
-                if (typeof constraintValue === "boolean" || typeof constraintValue === "number") {
-                    matchElements.push("(" + rootNode.internalLabel + ":`" + rootNode.label + "`{`" + rootConstraintAttr + "`:" + constraintValue + "})");
-                } else {
-                    matchElements.push("(" + rootNode.internalLabel + ":`" + rootNode.label + "`{`" + rootConstraintAttr + "`:\"" + constraintValue + "\"})");
-                }
+                var paramName = rootNode.internalLabel + "_" + rootConstraintAttr;
+                parameters[paramName] = constraintValue;
+                matchElements.push("(" + rootNode.internalLabel + ":`" + rootNode.label + "`{`" + rootConstraintAttr + "`:{`" + paramName + "`}})");
             }
         } else {
             matchElements.push("(" + rootNode.internalLabel + ":`" + rootNode.label + "`)");
         }
 
+        var relId = 0;
+
         // Generate match elements for each links
         links.forEach(function (l) {
             var sourceNode = l.source;
             var targetNode = l.target;
-
+            var relIdentifier = "r" + relId++;
+            relationElements.push(relIdentifier);
             var predefinedConstraints = popoto.provider.getPredefinedConstraints(targetNode.label);
 
             predefinedConstraints.forEach(function (predefinedConstraint) {
@@ -2926,22 +2967,26 @@ popoto = function () {
             if (targetNode.value && targetNode !== selectedNode && (isConstraintNeeded || rootNode.immutable)) {
                 var constraintAttr = popoto.provider.getConstraintAttribute(targetNode.label);
                 var constraintValue = targetNode.value.attributes[constraintAttr];
+                var paramName = targetNode.internalLabel + "_" + constraintAttr;
+                parameters[paramName] = constraintValue;
+
                 if (constraintAttr === popoto.query.NEO4J_INTERNAL_ID) {
-                    matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[:`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`)");
+                    matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`)");
                     whereElements.push("ID(" + targetNode.internalLabel + ") = " + targetNode.value.internalID);
                 } else {
-                    if (typeof constraintValue === "boolean" || typeof constraintValue === "number") {
-                        matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[:`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`{`" + constraintAttr + "`:" + constraintValue + "})");
-                    } else {
-                        matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[:`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`{`" + constraintAttr + "`:\"" + constraintValue + "\"})");
-                    }
+                    matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`{`" + constraintAttr + "`:{`" + paramName + "`}})");
                 }
             } else {
-                matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[:`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`)");
+                matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`)");
             }
         });
 
-        return {"matchElements": matchElements, "whereElements": whereElements};
+        return {
+            "matchElements": matchElements,
+            "whereElements": whereElements,
+            "relationElements": relationElements,
+            "parameters": parameters
+        };
     };
 
     /**
@@ -3035,120 +3080,117 @@ popoto = function () {
     };
 
     /**
-     * Generate a Cypher query to retrieve all the relation available for a given node.
+     * Generate a Cypher query to retrieve the results matching the current graph.
      *
-     * @param targetNode
-     * @returns {string}
+     * @param isGraph
+     * @returns {{statement: string, parameters: (*|{})}}
      */
-    popoto.query.generateLinkQuery = function (targetNode) {
-
-        var linksToRoot = popoto.query.getLinksToRoot(targetNode, popoto.graph.force.links());
-        var queryElements = popoto.query.generateQueryElements(popoto.graph.getRootNode(), targetNode, linksToRoot, false);
-        var matchElements = queryElements.matchElements,
-            returnElements = [],
-            whereElements = queryElements.whereElements,
-            endElements = [];
-        var rel = popoto.query.USE_RELATION_DIRECTION ? "->" : "-";
-
-        matchElements.push("(" + targetNode.internalLabel + ":`" + targetNode.label + "`)-[r]" + rel + "(x)");
-        returnElements.push("type(r) AS relationship");
-        if (popoto.query.USE_PARENT_RELATION) {
-            returnElements.push("head(labels(x)) AS label");
-        } else {
-            returnElements.push("last(labels(x)) AS label");
-        }
-        returnElements.push("count(r) AS count");
-        endElements.push("ORDER BY count(r) DESC");
-
-        return "MATCH " + matchElements.join(", ") + ((whereElements.length > 0) ? " WHERE " + whereElements.join(" AND ") : "") + " RETURN " + returnElements.join(", ") + " " + endElements.join(" ");
-    };
-
-    /**
-     * Generate a Cypher query
-     * @returns {string}
-     */
-    popoto.query.generateResultCypherQuery = function () {
-
+    popoto.query.generateResultQuery = function (isGraph) {
         var rootNode = popoto.graph.getRootNode();
         var queryElements = popoto.query.generateQueryElements(rootNode, rootNode, popoto.query.getRelevantLinks(rootNode, rootNode, popoto.graph.force.links()), true);
-        var matchElements = queryElements.matchElements,
-            returnElements = [],
-            whereElements = queryElements.whereElements,
-            endElements = [];
+        var queryMatchElements = queryElements.matchElements,
+            queryWhereElements = queryElements.whereElements,
+            queryRelationElements = queryElements.relationElements,
+            queryReturnElements = [],
+            queryEndElements = [],
+            queryParameters = queryElements.parameters;
 
         // Sort results by specified attribute
         var resultOrderByAttribute = popoto.provider.getResultOrderByAttribute(rootNode.label);
         if (resultOrderByAttribute) {
             var order = popoto.provider.isResultOrderAscending(rootNode.label) ? "ASC" : "DESC";
-            endElements.push("ORDER BY " + resultOrderByAttribute + " " + order);
+            queryEndElements.push("ORDER BY " + resultOrderByAttribute + " " + order);
         }
 
-        endElements.push("LIMIT " + popoto.query.RESULTS_PAGE_SIZE);
+        queryEndElements.push("LIMIT " + popoto.query.RESULTS_PAGE_SIZE);
 
         var resultAttributes = popoto.provider.getReturnAttributes(rootNode.label);
         var constraintAttribute = popoto.provider.getConstraintAttribute(rootNode.label);
 
-        for (var i = 0; i < resultAttributes.length; i++) {
-            var attribute = resultAttributes[i];
-            if (attribute === popoto.query.NEO4J_INTERNAL_ID) {
-                if (attribute == constraintAttribute) {
-                    returnElements.push("ID(" + rootNode.internalLabel + ") AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
+        if (!isGraph) {
+            for (var i = 0; i < resultAttributes.length; i++) {
+                var attribute = resultAttributes[i];
+                if (attribute === popoto.query.NEO4J_INTERNAL_ID) {
+                    if (attribute == constraintAttribute) {
+                        queryReturnElements.push("ID(" + rootNode.internalLabel + ") AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
+                    } else {
+                        queryReturnElements.push("COLLECT(DISTINCT ID(" + rootNode.internalLabel + ")) AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
+                    }
                 } else {
-                    returnElements.push("COLLECT(DISTINCT ID(" + rootNode.internalLabel + ")) AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
-                }
-            } else {
-                if (attribute == constraintAttribute) {
-                    returnElements.push(rootNode.internalLabel + "." + attribute + " AS " + attribute);
-                } else {
-                    returnElements.push("COLLECT(DISTINCT " + rootNode.internalLabel + "." + attribute + ") AS " + attribute);
+                    if (attribute == constraintAttribute) {
+                        queryReturnElements.push(rootNode.internalLabel + "." + attribute + " AS " + attribute);
+                    } else {
+                        queryReturnElements.push("COLLECT(DISTINCT " + rootNode.internalLabel + "." + attribute + ") AS " + attribute);
+                    }
                 }
             }
-        }
-
-        return "MATCH " + matchElements.join(", ") + ((whereElements.length > 0) ? " WHERE " + whereElements.join(" AND ") : "") + " RETURN DISTINCT " + returnElements.join(", ") + " " + endElements.join(" ");
-    };
-
-    popoto.query.generateResultCypherQueryCount = function () {
-
-        var rootNode = popoto.graph.getRootNode();
-        var queryElements = popoto.query.generateQueryElements(rootNode, rootNode, popoto.query.getRelevantLinks(rootNode, rootNode, popoto.graph.force.links()), true);
-        var constraintAttribute = popoto.provider.getConstraintAttribute(rootNode.label);
-        var matchElements = queryElements.matchElements,
-            returnElements = [],
-            whereElements = queryElements.whereElements,
-            endElements = [];
-
-        if (constraintAttribute === popoto.query.NEO4J_INTERNAL_ID) {
-            returnElements.push("count(DISTINCT ID(" + rootNode.internalLabel + ")) AS count");
         } else {
-            returnElements.push("count(DISTINCT " + rootNode.internalLabel + "." + constraintAttribute + ") AS count");
+            // Only return relations
+            queryReturnElements.push(rootNode.internalLabel);
+            queryRelationElements.forEach(
+                function (el) {
+                    queryReturnElements.push(el);
+                }
+            );
         }
 
-        return "MATCH " + matchElements.join(", ") + ((whereElements.length > 0) ? " WHERE " + whereElements.join(" AND ") : "") + " RETURN " + returnElements.join(", ") + (endElements.length > 0 ? " " + endElements.join(" ") : "");
+        var queryStatement = "MATCH " + queryMatchElements.join(", ") + ((queryWhereElements.length > 0) ? " WHERE " + queryWhereElements.join(" AND ") : "") + " RETURN DISTINCT " + queryReturnElements.join(", ") + " " + queryEndElements.join(" ");
+
+        // Filter the query if defined in config
+        var queryStructure = popoto.provider.filterResultQuery(rootNode.label,{
+            statement: queryStatement,
+            matchElements:queryMatchElements,
+            whereElements: queryWhereElements,
+            returnElements: queryReturnElements,
+            endElements: queryEndElements,
+            parameters:queryParameters
+        });
+
+        return {
+            statement: queryStructure.statement,
+            parameters: queryStructure.parameters
+        };
     };
 
     /**
-     * Generate the query to update node counts.
+     * Generate a cypher query to the get the node count, set as parameter matching the current graph.
      *
      * @param countedNode the counted node
-     * @returns {string} the node count cypher query;
+     * @returns {string} the node count cypher query
      */
-    popoto.query.generateNodeCountCypherQuery = function (countedNode) {
+    popoto.query.generateNodeCountQuery = function (countedNode) {
 
         var queryElements = popoto.query.generateQueryElements(popoto.graph.getRootNode(), countedNode, popoto.query.getRelevantLinks(popoto.graph.getRootNode(), countedNode, popoto.graph.force.links()), true);
-        var matchElements = queryElements.matchElements,
-            whereElements = queryElements.whereElements,
-            returnElements = [];
+        var queryMatchElements = queryElements.matchElements,
+            queryWhereElements = queryElements.whereElements,
+            queryReturnElements = [],
+            queryEndElements = [],
+            queryParameters = queryElements.parameters;
 
         var countAttr = popoto.provider.getConstraintAttribute(countedNode.label);
 
         if (countAttr === popoto.query.NEO4J_INTERNAL_ID) {
-            returnElements.push("count(DISTINCT ID(" + countedNode.internalLabel + ")) as count");
+            queryReturnElements.push("count(DISTINCT ID(" + countedNode.internalLabel + ")) as count");
         } else {
-            returnElements.push("count(DISTINCT " + countedNode.internalLabel + "." + countAttr + ") as count");
+            queryReturnElements.push("count(DISTINCT " + countedNode.internalLabel + "." + countAttr + ") as count");
         }
 
-        return "MATCH " + matchElements.join(", ") + ((whereElements.length > 0) ? " WHERE " + whereElements.join(" AND ") : "") + " RETURN " + returnElements.join(", ");
+        var queryStatement = "MATCH " + queryMatchElements.join(", ") + ((queryWhereElements.length > 0) ? " WHERE " + queryWhereElements.join(" AND ") : "") + " RETURN " + queryReturnElements.join(", ");
+
+        // Filter the query if defined in config
+        var queryStructure = popoto.provider.filterNodeCountQuery(countedNode,{
+            statement: queryStatement,
+            matchElements:queryMatchElements,
+            whereElements: queryWhereElements,
+            returnElements: queryReturnElements,
+            endElements: queryEndElements,
+            parameters:queryParameters
+        });
+
+        return {
+            statement: queryStructure.statement,
+            parameters: queryStructure.parameters
+        };
     };
 
     /**
@@ -3157,23 +3199,24 @@ popoto = function () {
      * @param targetNode node in the graph to get the values.
      * @returns {string} the query to execute to get all the values of targetNode corresponding to the graph.
      */
-    popoto.query.generateValueQuery = function (targetNode) {
+    popoto.query.generateNodeValueQuery = function (targetNode) {
 
         var rootNode = popoto.graph.getRootNode();
         var queryElements = popoto.query.generateQueryElements(rootNode, targetNode, popoto.query.getRelevantLinks(rootNode, targetNode, popoto.graph.force.links()), true);
-        var matchElements = queryElements.matchElements,
-            endElements = [],
-            whereElements = queryElements.whereElements,
-            returnElements = [];
+        var queryMatchElements = queryElements.matchElements,
+            queryWhereElements = queryElements.whereElements,
+            queryReturnElements = [],
+            queryEndElements = [],
+            queryParameters = queryElements.parameters;
 
         // Sort results by specified attribute
         var valueOrderByAttribute = popoto.provider.getValueOrderByAttribute(targetNode.label);
         if (valueOrderByAttribute) {
             var order = popoto.provider.isValueOrderAscending(targetNode.label) ? "ASC" : "DESC";
-            endElements.push("ORDER BY " + valueOrderByAttribute + " " + order);
+            queryEndElements.push("ORDER BY " + valueOrderByAttribute + " " + order);
         }
 
-        endElements.push("LIMIT " + popoto.query.VALUE_QUERY_LIMIT);
+        queryEndElements.push("LIMIT " + popoto.query.VALUE_QUERY_LIMIT);
 
         var resultAttributes = popoto.provider.getReturnAttributes(targetNode.label);
         var constraintAttribute = popoto.provider.getConstraintAttribute(targetNode.label);
@@ -3181,15 +3224,15 @@ popoto = function () {
         for (var i = 0; i < resultAttributes.length; i++) {
             if (resultAttributes[i] === popoto.query.NEO4J_INTERNAL_ID) {
                 if (resultAttributes[i] == constraintAttribute) {
-                    returnElements.push("ID(" + targetNode.internalLabel + ") AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
+                    queryReturnElements.push("ID(" + targetNode.internalLabel + ") AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
                 } else {
-                    returnElements.push("COLLECT (DISTINCT ID(" + targetNode.internalLabel + ")) AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
+                    queryReturnElements.push("COLLECT (DISTINCT ID(" + targetNode.internalLabel + ")) AS " + popoto.query.NEO4J_INTERNAL_ID.queryInternalName);
                 }
             } else {
                 if (resultAttributes[i] == constraintAttribute) {
-                    returnElements.push(targetNode.internalLabel + "." + resultAttributes[i] + " AS " + resultAttributes[i]);
+                    queryReturnElements.push(targetNode.internalLabel + "." + resultAttributes[i] + " AS " + resultAttributes[i]);
                 } else {
-                    returnElements.push("COLLECT(DISTINCT " + targetNode.internalLabel + "." + resultAttributes[i] + ") AS " + resultAttributes[i]);
+                    queryReturnElements.push("COLLECT(DISTINCT " + targetNode.internalLabel + "." + resultAttributes[i] + ") AS " + resultAttributes[i]);
                 }
             }
         }
@@ -3198,12 +3241,74 @@ popoto = function () {
         var rootConstraintAttr = popoto.provider.getConstraintAttribute(rootNode.label);
 
         if (rootConstraintAttr === popoto.query.NEO4J_INTERNAL_ID) {
-            returnElements.push("count(DISTINCT ID(" + rootNode.internalLabel + ")) AS count");
+            queryReturnElements.push("count(DISTINCT ID(" + rootNode.internalLabel + ")) AS count");
         } else {
-            returnElements.push("count(DISTINCT " + rootNode.internalLabel + "." + rootConstraintAttr + ") AS count");
+            queryReturnElements.push("count(DISTINCT " + rootNode.internalLabel + "." + rootConstraintAttr + ") AS count");
         }
 
-        return "MATCH " + matchElements.join(", ") + ((whereElements.length > 0) ? " WHERE " + whereElements.join(" AND ") : "") + " RETURN DISTINCT " + returnElements.join(", ") + " " + endElements.join(" ");
+        var queryStatement = "MATCH " + queryMatchElements.join(", ") + ((queryWhereElements.length > 0) ? " WHERE " + queryWhereElements.join(" AND ") : "") + " RETURN DISTINCT " + queryReturnElements.join(", ") + " " + queryEndElements.join(" ");
+
+        // Filter the query if defined in config
+        var queryStructure = popoto.provider.filterNodeValueQuery(targetNode,{
+            statement: queryStatement,
+            matchElements:queryMatchElements,
+            whereElements: queryWhereElements,
+            returnElements: queryReturnElements,
+            endElements: queryEndElements,
+            parameters:queryParameters
+        });
+
+        return {
+            statement: queryStructure.statement,
+            parameters: queryStructure.parameters
+        };
+
+    };
+
+    /**
+     * Generate a Cypher query to retrieve all the relation available for a given node.
+     *
+     * @param targetNode
+     * @returns {string}
+     */
+    popoto.query.generateNodeRelationQuery = function (targetNode) {
+
+        var linksToRoot = popoto.query.getLinksToRoot(targetNode, popoto.graph.force.links());
+        var queryElements = popoto.query.generateQueryElements(popoto.graph.getRootNode(), targetNode, linksToRoot, false);
+        var queryMatchElements = queryElements.matchElements,
+            queryWhereElements = queryElements.whereElements,
+            queryReturnElements = [],
+            queryEndElements = [],
+            queryParameters = queryElements.parameters;
+
+        var rel = popoto.query.USE_RELATION_DIRECTION ? "->" : "-";
+
+        queryMatchElements.push("(" + targetNode.internalLabel + ":`" + targetNode.label + "`)-[r]" + rel + "(x)");
+        queryReturnElements.push("type(r) AS relationship");
+        if (popoto.query.USE_PARENT_RELATION) {
+            queryReturnElements.push("head(labels(x)) AS label");
+        } else {
+            queryReturnElements.push("last(labels(x)) AS label");
+        }
+        queryReturnElements.push("count(r) AS count");
+        queryEndElements.push("ORDER BY count(r) DESC");
+
+        var queryStatement = "MATCH " + queryMatchElements.join(", ") + ((queryWhereElements.length > 0) ? " WHERE " + queryWhereElements.join(" AND ") : "") + " RETURN " + queryReturnElements.join(", ") + " " + queryEndElements.join(" ");
+        // Filter the query if defined in config
+        var queryStructure = popoto.provider.filterNodeRelationQuery(targetNode,{
+            statement: queryStatement,
+            matchElements:queryMatchElements,
+            whereElements: queryWhereElements,
+            returnElements: queryReturnElements,
+            endElements: queryEndElements,
+            parameters:queryParameters
+        });
+
+        return {
+            statement: queryStructure.statement,
+            parameters: queryStructure.parameters
+        };
+
     };
 
     ///////////////////////////////////////////////////////////////////
@@ -3214,6 +3319,7 @@ popoto = function () {
     popoto.result.hasChanged = true;
     popoto.result.resultCountListeners = [];
     popoto.result.resultListeners = [];
+    popoto.result.graphResultListeners = [];
 
     /**
      * Register a listener to the result count event.
@@ -3227,6 +3333,10 @@ popoto = function () {
         popoto.result.resultListeners.push(listener);
     };
 
+    popoto.result.onGraphResultReceived = function (listener) {
+        popoto.result.graphResultListeners.push(listener);
+    };
+
     /**
      * Parse REST returned data and generate a list of result objects.
      *
@@ -3236,7 +3346,7 @@ popoto = function () {
     popoto.result.parseResultData = function (data) {
 
         var results = [];
-        if (data.results && data.results.length > 0) {
+        if (data && data.hasOwnProperty("results") && data.results.length > 0) {
             for (var x = 0; x < data.results[0].data.length; x++) {
 
                 var obj = {
@@ -3258,18 +3368,76 @@ popoto = function () {
         return results;
     };
 
+    /**
+     * Parse REST returned Graph data and generate a list of nodes and edges.
+     *
+     * @param data
+     * @returns {{nodes: Array, edges: Array}}
+     */
+    popoto.result.parseGraphResultData = function (data) {
+
+        var nodes = {}, edges = {};
+
+        data.results[1].data.forEach(function (row) {
+            row.graph.nodes.forEach(function (n) {
+                if (!nodes.hasOwnProperty(n.id)) {
+                    nodes[n.id] = n;
+                }
+            });
+
+            row.graph.relationships.forEach(function (r) {
+                if (!edges.hasOwnProperty(r.id)) {
+                    edges[r.id] = r;
+                }
+            });
+        });
+
+        var nodesArray = [], edgesArray = [];
+
+        for (var n in nodes) {
+            if (nodes.hasOwnProperty(n)) {
+                nodesArray.push(nodes[n]);
+            }
+        }
+
+        for (var e in edges) {
+            if (edges.hasOwnProperty(e)) {
+                edgesArray.push(edges[e])
+            }
+        }
+
+        return {nodes: nodesArray, edges: edgesArray};
+    };
+
     popoto.result.updateResults = function () {
         if (popoto.result.hasChanged) {
-            var query = popoto.query.generateResultCypherQuery();
+            var query = popoto.query.generateResultQuery();
+
+            var postData = {
+                "statements": [
+                    {
+                        "statement": query.statement,
+                        "parameters": query.parameters,
+                        "resultDataContents": ["row"]
+                    }
+                ]
+            };
+
+            // Add Graph result query if listener found
+            if (popoto.result.graphResultListeners.length > 0) {
+                var graphQuery = popoto.query.generateResultQuery(true);
+
+                postData.statements.push(
+                    {
+                        "statement": graphQuery.statement,
+                        "parameters": graphQuery.parameters,
+                        "resultDataContents": ["graph"]
+                    });
+            }
 
             popoto.logger.info("Results ==> ");
-            popoto.rest.post(
-                {
-                    "statements": [
-                        {
-                            "statement": query
-                        }]
-                })
+
+            popoto.rest.post(postData)
                 .done(function (data) {
 
                     if (data.errors && data.errors.length > 0) {
@@ -3283,6 +3451,13 @@ popoto = function () {
                     popoto.result.resultListeners.forEach(function (listener) {
                         listener(resultObjects);
                     });
+
+                    if (popoto.result.graphResultListeners.length > 0) {
+                        var graphResultObjects = popoto.result.parseGraphResultData(data);
+                        popoto.result.graphResultListeners.forEach(function (listener) {
+                            listener(graphResultObjects);
+                        });
+                    }
 
                     // Update displayed results only if needed ()
                     if (popoto.result.isActive) {
@@ -3320,43 +3495,15 @@ popoto = function () {
                     });
 
                 });
+        }
+    };
 
-            // Execute query to get total result count
-            // But only if needed, if listeners have been added
-            if (popoto.result.resultCountListeners.length > 0) {
-                popoto.logger.info("Results count ==> ");
-                popoto.rest.post(
-                    {
-                        "statements": [
-                            {
-                                "statement": popoto.query.generateResultCypherQueryCount()
-                            }]
-                    })
-                    .done(function (data) {
-
-                        if (data.errors && data.errors.length > 0) {
-                            popoto.logger.error("Cypher query error:" + JSON.stringify(data.errors));
-                        }
-
-                        var count = 0;
-
-                        if (data.results && data.results.length > 0) {
-                            count = data.results[0].data[0].row[0];
-                        }
-
-                        popoto.result.resultCountListeners.forEach(function (listener) {
-                            listener(count);
-                        });
-
-                    })
-                    .fail(function (xhr, textStatus, errorThrown) {
-                        popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
-
-                        popoto.result.resultCountListeners.forEach(function (listener) {
-                            listener(0);
-                        });
-                    });
-            }
+    popoto.result.updateResultsCount = function () {
+        // Update result counts with root node count
+        if (popoto.result.resultCountListeners.length > 0) {
+            popoto.result.resultCountListeners.forEach(function (listener) {
+                listener(popoto.graph.getRootNode().count);
+            });
         }
     };
 
@@ -3599,14 +3746,25 @@ popoto = function () {
 
     /**
      * Return the "isSearchable" property for the node label provider.
-     * Is Searchable defined whether the label can be used as graph query builder root.
+     * Is Searchable defines whether the label can be used as graph query builder root.
      * If true the label can be displayed in the taxonomy filter.
      *
      * @param label
-     * @returns {*}
+     * @returns boolean
      */
     popoto.provider.getIsSearchable = function (label) {
         return popoto.provider.getProperty(label, "isSearchable");
+    };
+
+    /**
+     * Return the "autoExpandRelations" property for the node label provider.
+     * Auto expand relations defines whether the label will automatically add its relations when displayed on graph.
+     *
+     * @param label
+     * @returns boolean
+     */
+    popoto.provider.getIsAutoExpandRelations = function (label) {
+        return popoto.provider.getProperty(label, "autoExpandRelations");
     };
 
     /**
@@ -3701,6 +3859,9 @@ popoto = function () {
         return popoto.provider.getProperty(label, "getPredefinedConstraints")();
     };
 
+    popoto.provider.filterResultQuery = function (label, initialQuery) {
+        return popoto.provider.getProperty(label, "filterResultQuery")(initialQuery);
+    };
 
     popoto.provider.getValueOrderByAttribute = function (label) {
         return popoto.provider.getProperty(label, "valueOrderByAttribute");
@@ -3824,6 +3985,18 @@ popoto = function () {
         return popoto.provider.getProperty(node.label, "getImageHeight")(node);
     };
 
+    popoto.provider.filterNodeValueQuery = function (node, initialQuery) {
+        return popoto.provider.getProperty(node.label, "filterNodeValueQuery")(node, initialQuery);
+    };
+
+    popoto.provider.filterNodeCountQuery = function (node, initialQuery) {
+        return popoto.provider.getProperty(node.label, "filterNodeCountQuery")(node, initialQuery);
+    };
+
+    popoto.provider.filterNodeRelationQuery = function (node, initialQuery) {
+        return popoto.provider.getProperty(node.label, "filterNodeRelationQuery")(node, initialQuery);
+    };
+
     /**
      * Return the displayResults function defined in label parameter's provider.
      *
@@ -3854,6 +4027,14 @@ popoto = function () {
              * The default value is true.
              */
             "isSearchable": true,
+
+            /**
+             * Defines whether this label will automatically expend its relations when displayed on graph.
+             * If set to true, once displayed additional request will be sent on the database to retrieve its relations.
+             *
+             * The default value is false.
+             */
+            "autoExpandRelations": false,
 
             /**
              * Defines the list of attribute to return for node of this label.
@@ -3914,6 +4095,16 @@ popoto = function () {
              */
             "getPredefinedConstraints": function () {
                 return [];
+            },
+
+            /**
+             * Filters the query generated to retrieve the queries.
+             *
+             * @param initialQuery contains the query as an object structure.
+             * @returns {*}
+             */
+            "filterResultQuery" : function(initialQuery){
+                return initialQuery;
             },
 
             /**********************************************************************
@@ -4090,6 +4281,37 @@ popoto = function () {
              */
             "getImageHeight": function (node) {
                 return 125;
+            },
+
+            /**
+             * Filters the query generated to retrieve the values on a node.
+             *
+             * @param node
+             * @param initialQuery contains the query as an object structure.
+             * @returns {*}
+             */
+            "filterNodeValueQuery": function (node, initialQuery) {
+                return initialQuery;
+            },
+            /**
+             * Filters the query generated to retrieve the values on a node.
+             *
+             * @param node
+             * @param initialQuery contains the query as an object structure.
+             * @returns {*}
+             */
+            "filterNodeCountQuery": function (node, initialQuery) {
+                return initialQuery;
+            },
+            /**
+             * Filters the query used to retrieve the values on a node.
+             *
+             * @param node
+             * @param initialQuery contains the query as an object structure.
+             * @returns {*}
+             */
+            "filterNodeRelationQuery": function (node, initialQuery) {
+                return initialQuery;
             },
 
             /**********************************************************************

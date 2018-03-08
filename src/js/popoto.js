@@ -2,7 +2,7 @@
  * Popoto.js is a JavaScript library built with D3.js providing a graph based search interface generated in HTML and SVG usable on any modern browser.
  * This library generates an interactive graph query builder into any website or web based application to create dynamic queries on Neo4j databases and display the results.
  *
- * Copyright (C) 2014-2016 Frederic Ciminera
+ * Copyright (C) 2014-2017 Frederic Ciminera
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  */
 popoto = function () {
     var popoto = {
-        version: "1.1.0"
+        version: "1.1.1"
     };
 
     /**
@@ -256,7 +256,8 @@ popoto = function () {
     popoto.taxonomy.createTaxonomyPanel = function () {
         var htmlContainer = d3.select("#" + popoto.taxonomy.containerId);
 
-        var taxoUL = htmlContainer.append("ul");
+        var taxoUL = htmlContainer.append("ul")
+            .attr("class", "ppt-taxo-ul");
 
         var data = popoto.taxonomy.generateTaxonomiesData();
 
@@ -271,7 +272,7 @@ popoto = function () {
             });
 
         taxoli.append("span")
-            .attr("class", "ppt-taxo-tag")
+            .attr("class", "ppt-icon ppt-taxo-tag")
             .html("&nbsp;");
 
         taxoli.append("span")
@@ -367,6 +368,7 @@ popoto = function () {
             var children = d.children;
             if (d.children) {
                 var childLi = li.append("ul")
+                    .attr("class", "ppt-taxo-sub-ul")
                     .selectAll("li")
                     .data(children)
                     .enter()
@@ -379,7 +381,7 @@ popoto = function () {
                     });
 
                 childLi.append("span")
-                    .attr("class", "ppt-taxo-tag")
+                    .attr("class", "ppt-icon ppt-taxo-tag")
                     .html("&nbsp;");
 
                 childLi.append("span")
@@ -602,7 +604,7 @@ popoto = function () {
         if (popoto.tools.RESET_GRAPH) {
             toolbar.append("span")
                 .attr("id", "popoto-reset-menu")
-                .attr("class", "ppt-menu reset")
+                .attr("class", "ppt-icon ppt-menu reset")
                 .attr("title", popoto.graph.TOOL_RESET)
                 .on("click", popoto.tools.reset);
         }
@@ -610,7 +612,7 @@ popoto = function () {
         if (popoto.taxonomy.isActive && popoto.tools.TOGGLE_TAXONOMY) {
             toolbar.append("span")
                 .attr("id", "popoto-taxonomy-menu")
-                .attr("class", "ppt-menu taxonomy")
+                .attr("class", "ppt-icon ppt-menu taxonomy")
                 .attr("title", popoto.graph.TOOL_TAXONOMY)
                 .on("click", popoto.tools.toggleTaxonomy);
         }
@@ -618,7 +620,7 @@ popoto = function () {
         if (popoto.tools.CENTER_GRAPH) {
             toolbar.append("span")
                 .attr("id", "popoto-center-menu")
-                .attr("class", "ppt-menu center")
+                .attr("class", "ppt-icon ppt-menu center")
                 .attr("title", popoto.graph.TOOL_CENTER)
                 .on("click", popoto.tools.center);
         }
@@ -626,7 +628,7 @@ popoto = function () {
         if (popoto.tools.TOGGLE_FULL_SCREEN) {
             toolbar.append("span")
                 .attr("id", "popoto-fullscreen-menu")
-                .attr("class", "ppt-menu fullscreen")
+                .attr("class", "ppt-icon ppt-menu fullscreen")
                 .attr("title", popoto.graph.TOOL_FULL_SCREEN)
                 .on("click", popoto.tools.toggleFullScreen);
         }
@@ -4010,27 +4012,33 @@ popoto = function () {
     /**
      * Label provider used by default if none have been defined for a label.
      * This provider can be changed if needed to customize default behavior.
-     * If some properties are not found in user customized providers, default values will be extracted from this provider.
+     * If some properties are not found in user customized providers, default
+     * values will be extracted from this provider.
      */
     popoto.provider.DEFAULT_PROVIDER = Object.freeze(
         {
             /**********************************************************************
              * Label specific parameters:
              *
-             * These attributes are specific to a node label and will be used for every node having this label.
+             * These attributes are specific to a node label and will be used for
+             * every node having this label.
              **********************************************************************/
 
             /**
-             * Defines whether this label can be used as root element of the graph query builder.
-             * This property is also used to determine whether the label can be displayed in the taxonomy filter.
+             * Defines whether this label can be used as root element of the graph
+             * query builder.
+             * This property is also used to determine whether the label can be
+             * displayed in the taxonomy filter.
              *
              * The default value is true.
              */
             "isSearchable": true,
 
             /**
-             * Defines whether this label will automatically expend its relations when displayed on graph.
-             * If set to true, once displayed additional request will be sent on the database to retrieve its relations.
+             * Defines whether this label will automatically expend its relations
+             * when displayed on graph.
+             * If set to true, once displayed additional request will be sent on
+             * the database to retrieve its relations.
              *
              * The default value is false.
              */
@@ -4038,11 +4046,15 @@ popoto = function () {
 
             /**
              * Defines the list of attribute to return for node of this label.
-             * All the attributes listed here will be added in generated cypher queries and available in result list and in node provider's functions.
+             * All the attributes listed here will be added in generated cypher
+             * queries and available in result list and in node provider's
+             * functions.
              *
              * The default value contains only the Neo4j internal id.
-             * This id is used by default because it is a convenient way to identify a node when nothing is known about its attributes.
-             * But you should really consider using your application attributes instead, it is a bad practice to rely on this attribute.
+             * This id is used by default because it is a convenient way to identify
+             * a node when nothing is known about its attributes.
+             * But you should really consider using your application attributes
+             * instead, it is a bad practice to rely on this attribute.
              */
             "returnAttributes": [popoto.query.NEO4J_INTERNAL_ID],
 
@@ -4054,7 +4066,8 @@ popoto = function () {
             "valueOrderByAttribute": "count",
 
             /**
-             * Defines whether the value query order by is ascending, if false order by will be descending.
+             * Defines whether the value query order by is ascending, if false order
+             * by will be descending.
              *
              * Default value is false (descending)
              */
@@ -4068,19 +4081,24 @@ popoto = function () {
             "resultOrderByAttribute": null,
 
             /**
-             * Defines whether the result query order by is ascending, if false order by will be descending.
+             * Defines whether the result query order by is ascending, if false
+             * order by will be descending.
              *
              * Default value is true (ascending)
              */
             "isResultOrderAscending": true,
 
             /**
-             * Defines the attribute of the node to use in query constraint for nodes of this label.
-             * This attribute is used in the generated cypher query to build the constraints with selected values.
+             * Defines the attribute of the node to use in query constraint for
+             * nodes of this label.
+             * This attribute is used in the generated cypher query to build the
+             * constraints with selected values.
              *
              * The default value is the Neo4j internal id.
-             * This id is used by default because it is a convenient way to identify a node when nothing is known about its attributes.
-             * But you should really consider using your application attributes instead, it is a bad practice to rely on this attribute.
+             * This id is used by default because it is a convenient way to
+             * identify a node when nothing is known about its attributes.
+             * But you should really consider using your application attributes
+             * instead, it is a bad practice to rely on this attribute.
              */
             "constraintAttribute": popoto.query.NEO4J_INTERNAL_ID,
 
@@ -4088,8 +4106,9 @@ popoto = function () {
              * Return the list of predefined constraints to add for the given label.
              * These constraints will be added in every generated Cypher query.
              *
-             * For example if the returned list contain ["$identifier.born > 1976"] for "Person" nodes everywhere in popoto.js the generated Cypher query will add the constraint
-             * "WHERE person.born > 1976"
+             * For example if the returned list contain ["$identifier.born > 1976"]
+             * for "Person" nodes everywhere in popoto.js the generated Cypher
+             * query will add the constraint "WHERE person.born > 1976"
              *
              * @returns {Array}
              */
@@ -4110,10 +4129,13 @@ popoto = function () {
             /**********************************************************************
              * Node specific parameters:
              *
-             * These attributes are specific to nodes (in graph or query viewer) for a given label.
+             * These attributes are specific to nodes (in graph or query viewer)
+             * for a given label.
              * But they can be customized for nodes of the same label.
-             * The parameters are defined by a function that will be called with the node as parameter.
-             * In this function the node internal attributes can be used to customize the value to return.
+             * The parameters are defined by a function that will be called with
+             * the node as parameter.
+             * In this function the node internal attributes can be used to
+             * customize the value to return.
              **********************************************************************/
 
             /**
@@ -4123,7 +4145,8 @@ popoto = function () {
              * The result must be one of the following values:
              *
              * popoto.provider.NodeDisplayTypes.IMAGE
-             *  In this case the node will be drawn as an image and "getImagePath" function is required to return the node image path.
+             *  In this case the node will be drawn as an image and "getImagePath"
+             *  function is required to return the node image path.
              *
              * popoto.provider.NodeDisplayTypes.SVG
              *  In this case the node will be drawn as SVG paths and "getSVGPaths"
@@ -4142,7 +4165,8 @@ popoto = function () {
 
             /**
              * Function defining whether the node is a group node.
-             * In this case no count are displayed and no value can be selected on the node.
+             * In this case no count are displayed and no value can be selected on
+             * the node.
              *
              * Default value is false.
              */
@@ -4151,16 +4175,20 @@ popoto = function () {
             },
 
             /**
-             * Function defining whether the node text representation must be displayed on graph.
-             * If true the value returned for getTextValue on node will be displayed on graph.
+             * Function defining whether the node text representation must be
+             * displayed on graph.
+             * If true the value returned for getTextValue on node will be displayed
+             * on graph.
              *
-             * This text will be added in addition to the getDisplayType representation.
+             * This text will be added in addition to the getDisplayType
+             * representation.
              * It can be displayed on all type of node display, images, SVG or text.
              *
              * Default value is true
              *
              * @param node the node to display on graph.
-             * @returns {boolean} true if text must be displayed on graph for the node.
+             * @returns {boolean} true if text must be displayed on graph for the
+             * node.
              */
             "getIsTextDisplayed": function (node) {
                 return true;
@@ -4170,9 +4198,11 @@ popoto = function () {
              * Function used to return the text representation of a node.
              *
              * The default behavior is to return the label of the node
-             * or the value of constraint attribute of the node if it contains value.
+             * or the value of constraint attribute of the node if it contains
+             * value.
              *
-             * The returned value is truncated using popoto.graph.node.NODE_MAX_CHARS property.
+             * The returned value is truncated using
+             * popoto.graph.node.NODE_MAX_CHARS property.
              *
              * @param node the node to represent as text.
              * @returns {string} the text representation of the node.
@@ -4203,8 +4233,10 @@ popoto = function () {
 
             /**
              * Function used to return a descriptive text representation of a link.
-             * This representation should be more complete than getTextValue and can contain semantic data.
-             * This function is used for example to generate the label in the query viewer.
+             * This representation should be more complete than getTextValue and can
+             * contain semantic data.
+             * This function is used for example to generate the label in the query
+             * viewer.
              *
              * The default behavior is to return the getTextValue not truncated.
              *
@@ -4236,7 +4268,8 @@ popoto = function () {
 
             /**
              * Function returning the image file path to use for a node.
-             * This function is only used for popoto.provider.NodeDisplayTypes.IMAGE type nodes.
+             * This function is only used for popoto.provider.NodeDisplayTypes.IMAGE
+             * type nodes.
              *
              * @param node
              * @returns {string}
@@ -4263,7 +4296,8 @@ popoto = function () {
 
             /**
              * Function returning the image width of the node.
-             * This function is only used for popoto.provider.NodeDisplayTypes.IMAGE type nodes.
+             * This function is only used for popoto.provider.NodeDisplayTypes.IMAGE
+             * type nodes.
              *
              * @param node
              * @returns {number}
@@ -4274,7 +4308,8 @@ popoto = function () {
 
             /**
              * Function returning the image height of the node.
-             * This function is only used for popoto.provider.NodeDisplayTypes.IMAGE type nodes.
+             * This function is only used for popoto.provider.NodeDisplayTypes.IMAGE
+             * type nodes.
              *
              * @param node
              * @returns {number}
@@ -4325,7 +4360,8 @@ popoto = function () {
              *
              * The parameter of the function is the &lt;p&gt; selected with d3.js
              *
-             * The default behavior is to generate a &lt;table&gt; containing all the return attributes in a &lt;th&gt; and their value in a &lt;td&gt;.
+             * The default behavior is to generate a &lt;table&gt; containing all
+             * the return attributes in a &lt;th&gt; and their value in a &lt;td&gt;.
              *
              * @param pElmt the &lt;p&gt; element generated in the result list.
              */
@@ -4337,7 +4373,11 @@ popoto = function () {
                 var table = pElmt.append("table").attr("class", "ppt-result-table");
 
                 returnAttributes.forEach(function (attribute) {
-                    var attributeName = (attribute === popoto.query.NEO4J_INTERNAL_ID) ? popoto.query.NEO4J_INTERNAL_ID.queryInternalName : attribute;
+                    var attributeName = attribute;
+
+                    if (popoto.query.NEO4J_INTERNAL_ID === attribute) {
+                        attributeName = popoto.query.NEO4J_INTERNAL_ID.queryInternalName;
+                    }
 
                     var tr = table.append("tr");
                     tr.append("th").text(function () {

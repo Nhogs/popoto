@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2014 Frederic Ciminera
+* Copyright (C) 2014-2017 Frederic Ciminera
 *
 * Popoto.js is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,36 +18,338 @@
 */
 
 /***********************************************************/
-/* Asap font*/
+/* Custom font containing a set of icons */
 @font-face {
-    font-family: "Asap";
-    src: url("font/asap/Asap-Regular.otf");
+    font-family: 'popoto';
+    src: url('font/popoto/popoto.eot?mrx3j7');
+    src: url('font/popoto/popoto.eot?mrx3j7#iefix') format('embedded-opentype'),
+    url('font/popoto/popoto.ttf?mrx3j7') format('truetype'),
+    url('font/popoto/popoto.woff?mrx3j7') format('woff'),
+    url('font/popoto/popoto.svg?mrx3j7#popoto') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
 
-@font-face {
-    font-family: "Asap";
-    src: url("font/asap/Asap-Bold.otf");
-    font-weight: bold;
+[class^="ppt-icon"], [class*=" ppt-icon"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'popoto', sans-serif !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-@font-face {
-    font-family: "Asap";
-    src: url("font/asap/Asap-Italic.otf");
-    font-style: italic;
+.ppt-icon-logo:before {
+    content: "\ee89";
 }
 
-@font-face {
-    font-family: "Asap";
-    src: url("font/asap/Asap-BoldItalic.otf");
-    font-weight: bold;
-    font-style: italic;
+.ppt-icon-logo-1:before {
+    content: "\ee8a";
+}
+
+.ppt-icon-logo-2:before {
+    content: "\ee8b";
+}
+
+.ppt-icon-logo-3:before {
+    content: "\ee8c";
+}
+
+.ppt-icon-repeat:before {
+    content: "\f01e";
+}
+
+.ppt-icon-undo:before {
+    content: "\f0e2";
+}
+
+.ppt-icon-tags:before {
+    content: "\f02c";
+}
+
+.ppt-icon-crosshairs:before {
+    content: "\f05b";
+}
+
+.ppt-icon-expand:before {
+    content: "\f065";
+}
+
+.ppt-icon-compress:before {
+    content: "\f066";
+}
+
+.ppt-icon-search-plus:before {
+    content: "\f00e";
+}
+
+.ppt-icon-search-minus:before {
+    content: "\f010";
+}
+
+.ppt-icon-tag:before {
+    content: "\f02b";
+}
+
+.ppt-icon-gear:before {
+    content: "\f013";
+}
+
+.ppt-icon-refresh:before {
+    content: "\f021";
+}
+
+.ppt-icon-user:before {
+    content: "\f007";
+}
+
+.ppt-icon-users:before {
+    content: "\f0c0";
+}
+
+.ppt-icon-user-circle:before {
+    content: "\f2bd";
+}
+
+.ppt-icon-user-circle-o:before {
+    content: "\f2be";
+}
+
+.ppt-icon-film:before {
+    content: "\f008";
+}
+
+.ppt-icon-user-plus:before {
+    content: "\f234";
+}
+
+.ppt-icon-user-times:before {
+    content: "\f235";
+}
+
+.ppt-icon-power-off:before {
+    content: "\f011";
+}
+
+.ppt-icon-image:before {
+    content: "\f03e";
+}
+
+.ppt-icon-map-marker:before {
+    content: "\f041";
+}
+
+.ppt-icon-arrows:before {
+    content: "\f047";
+}
+
+.ppt-icon-times-circle-o:before {
+    content: "\f05c";
+}
+
+.ppt-icon-check-circle-o:before {
+    content: "\f05d";
+}
+
+.ppt-icon-arrow-circle-o-right:before {
+    content: "\f18e";
+}
+
+.ppt-icon-arrow-circle-o-left:before {
+    content: "\f190";
+}
+
+.ppt-icon-ban:before {
+    content: "\f05e";
+}
+
+.ppt-icon-eye:before {
+    content: "\f06e";
+}
+
+.ppt-icon-eye-slash:before {
+    content: "\f070";
+}
+
+.ppt-icon-warning:before {
+    content: "\f071";
+}
+
+.ppt-icon-folder:before {
+    content: "\f07b";
+}
+
+.ppt-icon-folder-open:before {
+    content: "\f07c";
+}
+
+.ppt-icon-key:before {
+    content: "\f084";
+}
+
+.ppt-icon-gears:before {
+    content: "\f085";
+}
+
+.ppt-icon-thumbs-o-up:before {
+    content: "\f087";
+}
+
+.ppt-icon-thumbs-o-down:before {
+    content: "\f088";
+}
+
+.ppt-icon-thumbs-up:before {
+    content: "\f164";
+}
+
+.ppt-icon-thumbs-down:before {
+    content: "\f165";
+}
+
+.ppt-icon-thumb-tack:before {
+    content: "\f08d";
+}
+
+.ppt-icon-sign-out:before {
+    content: "\f08b";
+}
+
+.ppt-icon-sign-in:before {
+    content: "\f090";
+}
+
+.ppt-icon-upload:before {
+    content: "\f093";
+}
+
+.ppt-icon-globe:before {
+    content: "\f0ac";
+}
+
+.ppt-icon-wrench:before {
+    content: "\f0ad";
+}
+
+.ppt-icon-filter:before {
+    content: "\f0b0";
+}
+
+.ppt-icon-flask:before {
+    content: "\f0c3";
+}
+
+.ppt-icon-ellipsis-h:before {
+    content: "\f141";
+}
+
+.ppt-icon-ellipsis-v:before {
+    content: "\f142";
+}
+
+.ppt-icon-share-alt:before {
+    content: "\f1e0";
+}
+
+.ppt-icon-plug:before {
+    content: "\f1e6";
+}
+
+.ppt-icon-calendar:before {
+    content: "\f073";
+}
+
+.ppt-icon-calendar-o:before {
+    content: "\f133";
+}
+
+.ppt-icon-calendar-plus-o:before {
+    content: "\f271";
+}
+
+.ppt-icon-calendar-minus-o:before {
+    content: "\f272";
+}
+
+.ppt-icon-calendar-times-o:before {
+    content: "\f273";
+}
+
+.ppt-icon-calendar-check-o:before {
+    content: "\f274";
+}
+
+.ppt-icon-question-circle:before {
+    content: "\f059";
+}
+
+.ppt-icon-info-circle:before {
+    content: "\f05a";
+}
+
+.ppt-icon-exclamation-circle:before {
+    content: "\f06a";
+}
+
+.ppt-icon-times-circle:before {
+    content: "\f057";
+}
+
+.ppt-icon-check-circle:before {
+    content: "\f058";
+}
+
+.ppt-icon-plus-circle:before {
+    content: "\f055";
+}
+
+.ppt-icon-minus-circle:before {
+    content: "\f056";
+}
+
+.ppt-icon-chevron-circle-left:before {
+    content: "\f137";
+}
+
+.ppt-icon-chevron-circle-right:before {
+    content: "\f138";
+}
+
+.ppt-icon-chevron-circle-up:before {
+    content: "\f139";
+}
+
+.ppt-icon-chevron-circle-down:before {
+    content: "\f13a";
+}
+
+.ppt-icon-arrow-circle-left:before {
+    content: "\f0a8";
+}
+
+.ppt-icon-arrow-circle-right:before {
+    content: "\f0a9";
+}
+
+.ppt-icon-arrow-circle-up:before {
+    content: "\f0aa";
+}
+
+.ppt-icon-arrow-circle-down:before {
+    content: "\f0ab";
 }
 
 /**********************************************************************************/
 .ppt-body {
     background-color: #2e3138;
     margin: 22px;
-    font-family: Asap, sans-serif;
+    font-family: sans-serif;
     color: #ffffff;
 }
 
@@ -65,7 +367,7 @@
 /* Taxonomy Filter*/
 .ppt-taxo-nav {
     overflow: auto;
-    padding: 18px 35px 18px 18px;
+    padding: 18px 18px 18px 18px;
     background-color: #444951;
     height: 100%;
     float: left;
@@ -76,25 +378,28 @@
     display: none;
 }
 
-.ppt-taxo-nav ul {
+.ppt-taxo-ul {
     list-style-type: none;
     display: block;
-    vertical-align: top; /* | top | bottom */
-    padding: 0 0 0 10px;
+    vertical-align: top;
+    padding: 0 0 0 0;
+    margin: 0;
+}
+
+.ppt-taxo-sub-ul {
+    list-style-type: none;
+    display: block;
+    vertical-align: top;
+    padding: 0 0 0 1em;
     margin: 0;
 }
 
 .ppt-taxo-nav li {
 }
 
-.ppt-taxo-nav li img {
-    vertical-align: middle; /* | top | bottom */
-}
-
-.ppt-taxo-tag {
-    display: inline-block;
-    background: url(image/category.png) center;
-    width: 24px;
+.ppt-taxo-tag:before {
+    content: "\f02b";
+    color: #8bb71a;
 }
 
 /**************************/
@@ -237,45 +542,43 @@
 /*****************************/
 
 .ppt-menu {
-    width: 32px;
-    height: 32px;
-    display: inline-block;
     vertical-align: middle;
     cursor: pointer;
     margin-left: 12px;
-    background: url("image/tools.png") no-repeat 0 0;
+    font-size: 2em;
+    color: #7b7e84;
 }
 
-.ppt-menu.taxonomy {
-    background-position: 0 0;
+.ppt-menu.taxonomy:before {
+    content: "\f02c";
 }
 
-.ppt-menu.reset {
-    background-position: -288px 0;
+.ppt-menu.reset:before {
+    content: "\f0e2";
 }
 
-.ppt-menu.fullscreen {
-    background-position: -256px 0;
+.ppt-menu.fullscreen:before {
+    content: "\f065";
 }
 
-.ppt-menu.center {
-    background-position: -96px 0;
+.ppt-menu.center:before {
+    content: "\f05b";
 }
 
 .ppt-menu.taxonomy:hover {
-    background-position: 0 -32px;
+    color: #f0b017;
 }
 
 .ppt-menu.reset:hover {
-    background-position: -288px -32px;
+    color: #f0b017;
 }
 
 .ppt-menu.fullscreen:hover {
-    background-position: -256px -32px;
+    color: #f0b017;
 }
 
 .ppt-menu.center:hover {
-    background-position: -96px -32px;
+    color: #f0b017;
 }
 
 .ppt-count {
@@ -304,9 +607,10 @@
 .ppt-result-table {
 }
 
-.ppt-result-table th,td {
+.ppt-result-table th, td {
     text-align: left;
 }
+
 /****************** Query span Styles *************************/
 
 /* P elements containing query constraints */
@@ -359,6 +663,7 @@
     color: #ee4e10;
     font-weight: bold;
 }
+
 .ppt-span-root-value.hover {
     color: #ee4e10;
     font-weight: bold;

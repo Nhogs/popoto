@@ -91,6 +91,7 @@
      * "btoa" is a JavaScript function that can be used to encode the user and password value in base64 but it is recommended to directly use the Base64 value.
      *
      *  For example Base64 encoded value of "neo4j:password" is "bmVvNGo6cGFzc3dvcmQ="
+     *  Note that it is not a safe way to keep credentials as anyone can have access to this code in your web page.
      */
     //popoto.rest.AUTHORIZATION = "Basic " + btoa("neo4j:password");
 
@@ -104,7 +105,7 @@
      * These label provider configuration can be used to customize the node display in the graph.
      * See www.popotojs.com or example for more details on available configuration options.
      */
-    popoto.provider.nodeProviders = {
+    popoto.provider.node.Provider = {
         "Person": {
             "returnAttributes": ["name", "born"],
             "constraintAttribute": "name",

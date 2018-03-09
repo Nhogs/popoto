@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2014-2017 Frederic Ciminera
+* Copyright (C) 2014-2018 Frederic Ciminera
 *
 * Popoto.js is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,10 @@
 
 .ppt-icon-logo-3:before {
     content: "\ee8c";
+}
+
+.ppt-icon-chart-donut:before {
+    content: "\e900";
 }
 
 .ppt-icon-repeat:before {
@@ -352,6 +356,25 @@
     font-family: sans-serif;
     color: #ffffff;
 }
+/* unvisited link */
+.ppt-body a:link {
+    color: #8bb71a;
+}
+
+/* visited link */
+.ppt-body a:visited {
+    color: #6e981a;
+}
+
+/* mouse over link */
+.ppt-body a:hover {
+    color: #abd71a;
+}
+
+/* selected link */
+.ppt-body a:active {
+    color: #abd71a;
+}
 
 /* Main HTML container element containing the taxonomy filter and graph */
 .ppt-container-graph {
@@ -397,7 +420,7 @@
 .ppt-taxo-nav li {
 }
 
-.ppt-taxo-tag:before {
+.ppt-taxo__span-icon:before {
     content: "\f02b";
     color: #8bb71a;
 }
@@ -516,7 +539,6 @@
 
 .ppt-container-results {
     width: 100%;
-    float: left;
     min-width: 300px;
     background-color: #22252a;
     padding: 0;
@@ -557,6 +579,10 @@
     content: "\f0e2";
 }
 
+.ppt-menu.relation:before {
+    content: "\e900";
+}
+
 .ppt-menu.fullscreen:before {
     content: "\f065";
 }
@@ -574,6 +600,10 @@
 }
 
 .ppt-menu.reset:hover {
+    color: #f0b017;
+}
+
+.ppt-menu.relation:hover {
     color: #f0b017;
 }
 
@@ -606,6 +636,7 @@
     background-color: #444951;
     padding: 9px 18px;
     margin: 1px 0 0;
+    color: white;
 }
 
 .ppt-result:hover {
@@ -664,31 +695,25 @@
 
 .ppt-span-link.hover {
     color: #ee4e10;
-    font-weight: bold;
 }
 
 .ppt-span-root.hover {
     color: #ee4e10;
-    font-weight: bold;
 }
 
 .ppt-span-root-value.hover {
     color: #ee4e10;
-    font-weight: bold;
 }
 
 .ppt-span-choose.hover {
     color: #ee4e10;
-    font-weight: bold;
 }
 
 .ppt-span-group.hover {
     color: #ee4e10;
-    font-weight: bold;
 }
 
 .ppt-span-value.hover {
     color: #ee4e10;
-    font-weight: bold;
 }
 

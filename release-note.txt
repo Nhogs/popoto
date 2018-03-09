@@ -1,3 +1,49 @@
+popoto-1.2
+ TBD
+
+    - Added donut representation of node relations around the node in graph.
+
+    - Nodes are now displayed as circle instead of ellipses.
+
+    - Added circle clipPath on node with images to fit in node circle.
+
+    - Added provider to set link color. (the color is also used in donut)
+
+    - Removed plus sign on nodes to expand relationships
+
+    - Added click on links to remove them.
+
+    - Removed background highlight circle.
+
+    - Added TOGGLE_VIEW_RELATION toolbar action.
+
+    - Added SVG defs elements like circle clip path for nodes with images and markers for links. Set popoto.graph.link.SHOW_MARKER to true to display them.
+
+    - Added functions addExpandedValue and removeExpandedValue to allow value selection from outside of the graph.
+
+    - Added new events on graph actions.
+
+    - Added incoming relation in node properties to allow finer customization.
+
+    - Added support of multiple selection on node values which allow OR conditions on generated cypher queries and right click now remove last selected value on a node.
+
+    - Updated graph events code and added event customization on graph reset, node data loaded.
+
+    - Added isCollapsed state in graph schema.
+
+    - Added autoLoadValue in provider configuration to preload node value instead of on node click.
+
+    - Fixed graph save containing expanded values.
+
+    - Added support of not value in nodes.
+
+    - Added getSize option in node configuration to allow dynamic size depending on node attributes.
+
+    - Refactored query generation.
+
+    - Changed results and page size properties, popoto.result.RESULTS_PAGE_SIZE define the number of results displayed in result component, and popoto.query.MAX_RESULTS_COUNT
+     define the number of results returned in cypher query.
+
 popoto-1.1.2
  2017-05-02
 

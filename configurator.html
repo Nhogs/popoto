@@ -99,11 +99,11 @@
             background-color: #2E3138;
         }
 
-        .nodepreview.Text {
+        .nodepreview.TEXT {
             background-image: url("image/text.png");
         }
 
-        .nodepreview.Image {
+        .nodepreview.IMAGE {
             background-image: url("image/image.png");
         }
 
@@ -197,7 +197,8 @@
         <p>Popoto.js configurator version 1.0.1</p>
 
         <p>
-            This page is a full JavaScript application, running on client side only, designed to help generate a configuration of Popoto.js on your own Neo4j server.
+            This page is a full JavaScript application, running on client side only, designed to help generate a
+            configuration of Popoto.js on your own Neo4j server.
             <br>
             The recommended steps to generate a configuration are described below:
         </p>
@@ -212,20 +213,24 @@
             <p>
                 The test will just try to access the service root and return the neo4j_version.
                 <br>
-                Note that your server must accept request from your machine (or from the client running the Javascript code).
+                Note that your server must accept request from your machine (or from the client running the Javascript
+                code).
                 <br>
-                See <a href="http://neo4j.com/docs/stable/security-server.html" target="_blank">Securing access to the Neo4j Server</a> documentation for more info.
+                See <a href="http://neo4j.com/docs/stable/security-server.html" target="_blank">Securing access to the
+                Neo4j Server</a> documentation for more info.
             </p>
 
             <p>
-                In case of error, only the "<span style="color: #ff0000; font-weight: bold;">ERROR</span>" status is displayed, to get more details you can look in the browser console for network messages.
+                In case of error, only the "<span style="color: #ff0000; font-weight: bold;">ERROR</span>" status is
+                displayed, to get more details you can look in the browser console for network messages.
             </p>
         </article>
         <h4><span class="ui-icon ui-icon-tag" style="display: inline-block;"></span> Labels:</h4>
         <article>
 
             <p>
-                Click on the "Load labels from server" button to retrieve the list of labels defined on your Neo4j server.
+                Click on the "Load labels from server" button to retrieve the list of labels defined on your Neo4j
+                server.
                 <br>
                 A request is sent to the databse to get the labels and the list of attributes.
             </p>
@@ -239,9 +244,12 @@
             <pre><code class="cypher">match (n) unwind(labels(n)) as labels unwind(keys(n)) as keys return distinct(labels) as labels, collect(distinct keys) as keys</code></pre>
 
             <p>
-                For older versions a first request is sent to the REST API to get the list of labels, then for each label the list of attributes is based on the first node instance found.
+                For older versions a first request is sent to the REST API to get the list of labels, then for each
+                label the list of attributes is based on the first node instance found.
                 <br>
-                This option can run faster on big database but can miss some attributes as only one instance object for a given label is used to get the attribute list. Use "Force old version" option to use this method on recent servers.
+                This option can run faster on big database but can miss some attributes as only one instance object for
+                a given label is used to get the attribute list. Use "Force old version" option to use this method on
+                recent servers.
             </p>
 
             <p>
@@ -253,17 +261,20 @@
                 <br>
                 Defines whether or not this label is required.
                 <br>
-                If set to <strong>Hide</strong>, the label is ignored and nothing will be generated in the source file for the label.
+                If set to <strong>Hide</strong>, the label is ignored and nothing will be generated in the source file
+                for the label.
             </p>
 
             <p>
                 <strong class="labeloption">constraintAttribute:</strong>
                 <br>
-                Defines the attribute used to identify a node. This attribute is used in generated Cypher query to match the selected value.
+                Defines the attribute used to identify a node. This attribute is used in generated Cypher query to match
+                the selected value.
                 <br>
                 In most case an ID or a unique value should be used here, but any attribute can be used.
                 <br>
-                For example if you use person last_name all the person with the same last name will be considered as the same value and the node is displayed only once in graph.
+                For example if you use person last_name all the person with the same last name will be considered as the
+                same value and the node is displayed only once in graph.
             </p>
 
             <p>
@@ -283,9 +294,11 @@
                 <br>
                 Defines the rendering type for the nodes in graph.
                 <br>
-                It can be one of the following types: <strong>Text</strong>, <strong>Image</strong> or <strong>SVG</strong>.
+                It can be one of the following types: <strong>TEXT</strong>, <strong>IMAGE</strong> or
+                <strong>SVG</strong>.
                 <br>
-                Depending on this type a full working example will be generated in source code you can customize and modify to fit your application.
+                Depending on this type a full working example will be generated in source code you can customize and
+                modify to fit your application.
             </p>
         </article>
         <h4><span class="ui-icon ui-icon-bookmark" style="display: inline-block;"></span> Page Layout:</h4>
@@ -303,7 +316,8 @@
         <article>
 
             <p>
-                The Source code section contains two buttons, one to test the application with the current configuration and one to Generate the full index.html file you can copy and paste in your Popoto.js instance.
+                The Source code section contains two buttons, one to test the application with the current configuration
+                and one to Generate the full index.html file you can copy and paste in your Popoto.js instance.
             </p>
         </article>
     </div>
@@ -323,8 +337,10 @@
                         </td>
                         <td>
                             <div id="protocol">
-                                <input type="radio" id="http" name="protocol" value="http" checked="checked"><label for="http">HTTP</label>
-                                <input type="radio" id="https" name="protocol" value="https"><label for="https">HTTPS</label>
+                                <input type="radio" id="http" name="protocol" value="http" checked="checked"><label
+                                    for="http">HTTP</label>
+                                <input type="radio" id="https" name="protocol" value="https"><label
+                                    for="https">HTTPS</label>
                             </div>
                         </td>
                     </tr>
@@ -334,7 +350,8 @@
                             <label for="host">Host:</label>
                         </td>
                         <td>
-                            <input id="host" name="host" type="text" placeholder="localhost" title="Host of the running Neo4j server where to access the REST API">
+                            <input id="host" name="host" type="text" placeholder="localhost"
+                                   title="Host of the running Neo4j server where to access the REST API">
                         </td>
                     </tr>
                     <!-- Port -->
@@ -343,7 +360,8 @@
                             <label for="port">Port:</label>
                         </td>
                         <td>
-                            <input id="port" name="port" type="number" placeholder="7474" title="Port of the Neo4j server REST API">
+                            <input id="port" name="port" type="number" placeholder="7474"
+                                   title="Port of the Neo4j server REST API">
                         </td>
                     </tr>
                 </table>
@@ -356,7 +374,8 @@
                     <tr>
                         <td class="colFirst">
                             <label for="use-credentials">
-                                <input type="checkbox" id="use-credentials" name="use-credentials" checked="checked" title="Use credentials if the server require authentication">
+                                <input type="checkbox" id="use-credentials" name="use-credentials" checked="checked"
+                                       title="Use credentials if the server require authentication">
                                 Use credentials
                             </label>
                         </td>
@@ -371,7 +390,8 @@
                             <label for="user">Username:</label>
                         </td>
                         <td>
-                            <input id="user" name="user" type="text" placeholder="neo4j" title="Username of an authorized user to access the REST API">
+                            <input id="user" name="user" type="text" placeholder="neo4j"
+                                   title="Username of an authorized user to access the REST API">
                         </td>
                     </tr>
                     <!-- Password -->
@@ -380,7 +400,8 @@
                             <label for="password">Password:</label>
                         </td>
                         <td>
-                            <input id="password" name="password" type="password" placeholder="neo4j" title="Password of the user to access REST API">
+                            <input id="password" name="password" type="password" placeholder="neo4j"
+                                   title="Password of the user to access REST API">
                         </td>
                     </tr>
                 </table>
@@ -397,7 +418,8 @@
                         <!-- Show token -->
                         <td>
                             <label for="show-authorization" id="authorization">
-                                <input type="checkbox" id="show-authorization" name="show-authorization" title="If checked the authorization token required in popoto.rest.AUTHORIZATION property will be displayed in test">
+                                <input type="checkbox" id="show-authorization" name="show-authorization"
+                                       title="If checked the authorization token required in popoto.rest.AUTHORIZATION property will be displayed in test">
                                 Show Authorization token
                             </label>
                         </td>
@@ -424,7 +446,9 @@
             <div>
                 <button id="test-labels" name="test-labels" type="button">Test</button>
                 <button id="load-labels" name="load-labels" type="button">Load labels from server</button>
-                <label for="oldVersion"><input type="checkbox" id="oldVersion" value="oldVersion" title="If checked, the list of label is retrieved using the rest API and the list of attributes from first object found for each label."> Force old version</label>
+                <label for="oldVersion"><input type="checkbox" id="oldVersion" value="oldVersion"
+                                               title="If checked, the list of label is retrieved using the rest API and the list of attributes from first object found for each label.">
+                    Force old version</label>
             </div>
 
             <div id="labels">
@@ -489,8 +513,12 @@
                     <div class="ppt-container-graph" style="height: 300px;">
                         <nav id="taxonomies-elmt" class="ppt-taxo-nav">
                             <ul>
-                                <li id="popoto-lbl-0" value="Person"><span class="ppt-icon ppt-taxo-tag">&nbsp;</span><span class="ppt-label">Person</span><span class="ppt-count"> (133)</span></li>
-                                <li id="popoto-lbl-1" value="Movie"><span class="ppt-icon ppt-taxo-tag">&nbsp;</span><span class="ppt-label">Movie</span><span class="ppt-count"> (38)</span></li>
+                                <li id="popoto-lbl-0" value="Person"><span
+                                        class="ppt-icon ppt-taxo-tag">&nbsp;</span><span class="ppt-label">Person</span><span
+                                        class="ppt-count"> (133)</span></li>
+                                <li id="popoto-lbl-1" value="Movie"><span
+                                        class="ppt-icon ppt-taxo-tag">&nbsp;</span><span
+                                        class="ppt-label">Movie</span><span class="ppt-count"> (38)</span></li>
                             </ul>
                         </nav>
                         <div id="popoto-graph" class="ppt-div-graph">
@@ -499,7 +527,8 @@
                     </div>
 
                     <div id="query-elmt" class="ppt-container-query">
-                        <p class="ppt-query-constraint-elements" style="margin: 0"><span id="0" class="ppt-span">I'm looking for </span><span id="1" class="ppt-span-root">Person </span></p>
+                        <p class="ppt-query-constraint-elements" style="margin: 0"><span id="0" class="ppt-span">I'm looking for </span><span
+                                id="1" class="ppt-span-root">Person </span></p>
                     </div>
 
                     <div id="cypher-elmt" class="ppt-container-cypher">
@@ -546,6 +575,7 @@
     //TODO temp code for cypher highlighting
     hljs.registerLanguage("cypher", cypher);
     hljs.initHighlightingOnLoad();
+
     function cypher(hljs) {
         var labelName = {
             cN: 'labelName',
@@ -726,9 +756,9 @@
         }
 
         $("#oldVersion").change(
-                function () {
-                    config.forceOldVersion = this.checked;
-                });
+            function () {
+                config.forceOldVersion = this.checked;
+            });
 
         // Update tooltips with JQuery UI style
         $("[title]").tooltip({
@@ -816,30 +846,30 @@
         var authorization = buildAuthorization();
 
         restGET(url, authorization)
-                .done(function (data, textStatus, jqXHR) {
-                    var status = $("#status")
-                            .empty()
-                            .append("<div>GET URL: <span>" + url + "</span></div>")
-                            .append("<div>Status: <span style='color: #008800; font-weight: bold'>" + textStatus.toUpperCase() + "</span></div>")
-                            .append("<div>Neo4j Version: <span style='color: #2aa1d3; font-weight: bold'>" + data.neo4j_version + "</span></div>");
+            .done(function (data, textStatus, jqXHR) {
+                var status = $("#status")
+                    .empty()
+                    .append("<div>GET URL: <span>" + url + "</span></div>")
+                    .append("<div>Status: <span style='color: #008800; font-weight: bold'>" + textStatus.toUpperCase() + "</span></div>")
+                    .append("<div>Neo4j Version: <span style='color: #2aa1d3; font-weight: bold'>" + data.neo4j_version + "</span></div>");
 
-                    if (config.server.credentials.token) {
-                        status.append("popoto.rest.AUTHORIZATION = <span style='color: #8bb71a; font-weight: bold'>\"" + authorization + "\"</span>");
-                    }
-                })
-                .fail(function (xhr, textStatus, errorThrown) {
-                    var status = $("#status")
-                            .empty()
-                            .append("<div>GET URL: <span>" + url + "</span></div>")
-                            .append("<div>Status: <span style='color: #ff0000; font-weight: bold'>" + textStatus.toUpperCase() + "</span></div>")
-                            .append("<div>Cannot access the REST API with this configuration</div>");
-                    if (config.server.credentials.token) {
-                        status.append("popoto.rest.AUTHORIZATION = <span style='color: #8bb71a; font-weight: bold'>\"" + authorization + "\"</span>");
-                    }
-                })
-                .always(function (xhr, textStatus, errorThrown) {
-                    $("#accordion").accordion("refresh");
-                });
+                if (config.server.credentials.token) {
+                    status.append("popoto.rest.AUTHORIZATION = <span style='color: #8bb71a; font-weight: bold'>\"" + authorization + "\"</span>");
+                }
+            })
+            .fail(function (xhr, textStatus, errorThrown) {
+                var status = $("#status")
+                    .empty()
+                    .append("<div>GET URL: <span>" + url + "</span></div>")
+                    .append("<div>Status: <span style='color: #ff0000; font-weight: bold'>" + textStatus.toUpperCase() + "</span></div>")
+                    .append("<div>Cannot access the REST API with this configuration</div>");
+                if (config.server.credentials.token) {
+                    status.append("popoto.rest.AUTHORIZATION = <span style='color: #8bb71a; font-weight: bold'>\"" + authorization + "\"</span>");
+                }
+            })
+            .always(function (xhr, textStatus, errorThrown) {
+                $("#accordion").accordion("refresh");
+            });
     }
 
     function loadLabels() {
@@ -855,54 +885,19 @@
             loadLabelsOld();
         } else {
             restGET(url, authorization)
-                    .done(function (data) {
-                        var version = data.neo4j_version;
-                        var parsed = version.split(".");
-                        if (parsed.length > 0 && parseInt(parsed[0]) >= 2) {
-                            if (parsed.length > 1 && parseInt(parsed[1]) >= 2) {
-                                loadLabels_2_2();
-                            }
-                            else {
-                                loadLabelsOld();
-                            }
-                        } else {
+                .done(function (data) {
+                    var version = data.neo4j_version;
+                    var parsed = version.split(".");
+                    if (parsed.length > 0 && parseInt(parsed[0]) >= 2) {
+                        if (parsed.length > 1 && parseInt(parsed[1]) >= 2) {
+                            loadLabels_2_2();
+                        }
+                        else {
                             loadLabelsOld();
                         }
-                    })
-                    .fail(function (xhr, textStatus, errorThrown) {
-                        updateErrorLabelComponents(url, textStatus);
-                    })
-                    .always(function (xhr, textStatus, errorThrown) {
-                        // Reactivate button
-                        $("#load-labels").button("option", "disabled", false);
-                    });
-        }
-    }
-
-    function loadLabelsOld() {
-        var url = buildURL() + "/db/data/labels";
-        var authorization = buildAuthorization();
-
-        restGET(url, authorization)
-                .done(function (data) {
-                    config.labels = [];
-                    for (var i = 0; i < data.length; i++) {
-
-                        config.labels.push({
-                            id: i,
-                            name: data[i],
-                            use: true,
-                            constraint: "",
-                            attributes: [],
-                            node: "",
-                            type: "text",
-                            toString: function () {
-                                return this.name;
-                            }
-                        });
+                    } else {
+                        loadLabelsOld();
                     }
-
-                    loadAttributesOld();
                 })
                 .fail(function (xhr, textStatus, errorThrown) {
                     updateErrorLabelComponents(url, textStatus);
@@ -911,6 +906,41 @@
                     // Reactivate button
                     $("#load-labels").button("option", "disabled", false);
                 });
+        }
+    }
+
+    function loadLabelsOld() {
+        var url = buildURL() + "/db/data/labels";
+        var authorization = buildAuthorization();
+
+        restGET(url, authorization)
+            .done(function (data) {
+                config.labels = [];
+                for (var i = 0; i < data.length; i++) {
+
+                    config.labels.push({
+                        id: i,
+                        name: data[i],
+                        use: true,
+                        constraint: "",
+                        attributes: [],
+                        node: "",
+                        type: "text",
+                        toString: function () {
+                            return this.name;
+                        }
+                    });
+                }
+
+                loadAttributesOld();
+            })
+            .fail(function (xhr, textStatus, errorThrown) {
+                updateErrorLabelComponents(url, textStatus);
+            })
+            .always(function (xhr, textStatus, errorThrown) {
+                // Reactivate button
+                $("#load-labels").button("option", "disabled", false);
+            });
     }
 
     function loadAttributesOld() {
@@ -922,20 +952,22 @@
 
         for (var i = 0; i < config.labels.length; i++) {
             statements.push(
-                    {
-                        "statement": query.replace("$", config.labels[i].name)
-                    });
+                {
+                    "statement": query.replace("$", config.labels[i].name)
+                });
         }
 
         restPOST(url, authorization,
-                {
-                    "statements": statements
-                })
-                .done(function (data, textStatus, jqXHR) {
-                    if (data.errors.length > 0) {
-                        //TODO
-                    } else {
-                        for (var i = 0; i < config.labels.length; i++) {
+            {
+                "statements": statements
+            })
+            .done(function (data, textStatus, jqXHR) {
+                if (data.errors.length > 0) {
+                    //TODO
+                } else {
+                    for (var i = 0; i < config.labels.length; i++) {
+                        if (data.results[i].data.length > 0 && data.results[i].data[0].hasOwnProperty("row")) {
+
                             var labelInstance = data.results[i].data[0].row[0];
 
                             var j = 0;
@@ -948,25 +980,26 @@
                                     }
 
                                     config.labels[i].attributes.push(
-                                            {
-                                                id: j++,
-                                                name: attribute,
-                                                toString: function () {
-                                                    return this.name;
-                                                }
-                                            });
+                                        {
+                                            id: j++,
+                                            name: attribute,
+                                            toString: function () {
+                                                return this.name;
+                                            }
+                                        });
                                 }
                             }
                         }
-                        updateLabelComponents();
                     }
-                })
-                .fail(function (xhr, textStatus, errorThrown) {
-                    updateErrorLabelComponents(url, textStatus);
-                })
-                .always(function (xhr, textStatus, errorThrown) {
-                    $("#accordion").accordion("refresh");
-                });
+                    updateLabelComponents();
+                }
+            })
+            .fail(function (xhr, textStatus, errorThrown) {
+                updateErrorLabelComponents(url, textStatus);
+            })
+            .always(function (xhr, textStatus, errorThrown) {
+                $("#accordion").accordion("refresh");
+            });
     }
 
     function loadLabels_2_2() {
@@ -976,63 +1009,63 @@
         var authorization = buildAuthorization();
 
         restPOST(url, authorization,
-                {
-                    "statements": [
-                        {
-                            "statement": query
-                        }]
-                })
-                .done(function (data, textStatus, jqXHR) {
-                    if (data.errors.length > 0) {
-                        //TODO
-                    } else {
-                        var lbls = data.results[0].data;
+            {
+                "statements": [
+                    {
+                        "statement": query
+                    }]
+            })
+            .done(function (data, textStatus, jqXHR) {
+                if (data.errors.length > 0) {
+                    //TODO
+                } else {
+                    var lbls = data.results[0].data;
 
-                        // Clear old labels
-                        config.labels = [];
-                        for (var i = 0; i < lbls.length; i++) {
-                            var attributes = [];
+                    // Clear old labels
+                    config.labels = [];
+                    for (var i = 0; i < lbls.length; i++) {
+                        var attributes = [];
 
-                            for (var j = 0; j < lbls[i].row[1].length; j++) {
-                                attributes.push({
-                                    id: j,
-                                    name: lbls[i].row[1][j],
-                                    toString: function () {
-                                        return this.name;
-                                    }
-                                });
-                            }
-                            config.labels.push({
-                                id: i,
-                                name: lbls[i].row[0],
-                                use: true,
-                                constraint: attributes.length > 0 ? attributes[0].name : "",
-                                attributes: attributes,
-                                node: attributes.length > 0 ? attributes[0].name : "",
-                                type: "text",
+                        for (var j = 0; j < lbls[i].row[1].length; j++) {
+                            attributes.push({
+                                id: j,
+                                name: lbls[i].row[1][j],
                                 toString: function () {
                                     return this.name;
                                 }
                             });
                         }
-
-                        updateLabelComponents();
+                        config.labels.push({
+                            id: i,
+                            name: lbls[i].row[0],
+                            use: true,
+                            constraint: attributes.length > 0 ? attributes[0].name : "",
+                            attributes: attributes,
+                            node: attributes.length > 0 ? attributes[0].name : "",
+                            type: "text",
+                            toString: function () {
+                                return this.name;
+                            }
+                        });
                     }
-                })
-                .fail(function (xhr, textStatus, errorThrown) {
-                    updateErrorLabelComponents(url, textStatus);
-                })
-                .always(function (xhr, textStatus, errorThrown) {
-                    $("#accordion").accordion("refresh");
-                });
+
+                    updateLabelComponents();
+                }
+            })
+            .fail(function (xhr, textStatus, errorThrown) {
+                updateErrorLabelComponents(url, textStatus);
+            })
+            .always(function (xhr, textStatus, errorThrown) {
+                $("#accordion").accordion("refresh");
+            });
     }
 
     function updateErrorLabelComponents(url, textStatus) {
         $("#test-labels").hide();
         $("#labels")
-                .empty()
-                .append("<p><div>URL: <span>" + url + "</span></div>")
-                .append("<div>Status: <span style=\"color: #ff0000; font-weight: bold;\">" + textStatus.toUpperCase() + "</span></div></p>");
+            .empty()
+            .append("<p><div>URL: <span>" + url + "</span></div>")
+            .append("<div>Status: <span style=\"color: #ff0000; font-weight: bold;\">" + textStatus.toUpperCase() + "</span></div></p>");
     }
 
     function updateLabelComponents() {
@@ -1068,62 +1101,62 @@
         //========================================== Visibility
         var mainTable = contentDiv.append("table");
         var trVisibility = mainTable
-                .append("tr");
+            .append("tr");
 
         trVisibility.append("td")
-                .attr("class", "colFirst")
-                .append("label")
-                .attr("for", function (d) {
-                    return "visibility-" + d.id;
-                }).text("visibility:");
+            .attr("class", "colFirst")
+            .append("label")
+            .attr("for", function (d) {
+                return "visibility-" + d.id;
+            }).text("visibility:");
 
         var visibilityDiv = trVisibility.append("td")
-                .append("div").attr("id", function (d) {
-                    return "visibility-" + d.id;
-                });
+            .append("div").attr("id", function (d) {
+                return "visibility-" + d.id;
+            });
 
         visibilityDiv.append("input")
-                .attr("type", "radio")
-                .attr("checked", "checked")
-                .attr("name", function (d) {
-                    return "label-visibility-" + d.id;
-                })
-                .attr("id", function (d) {
-                    return "show-" + d.id;
-                })
-                .attr("value", "show");
+            .attr("type", "radio")
+            .attr("checked", "checked")
+            .attr("name", function (d) {
+                return "label-visibility-" + d.id;
+            })
+            .attr("id", function (d) {
+                return "show-" + d.id;
+            })
+            .attr("value", "show");
 
         visibilityDiv.append("label")
-                .attr("for", function (d) {
-                    return "show-" + d.id;
-                })
-                .text("Show");
+            .attr("for", function (d) {
+                return "show-" + d.id;
+            })
+            .text("Show");
 
         visibilityDiv.append("input")
-                .attr("type", "radio")
-                .attr("name", function (d) {
-                    return "label-visibility-" + d.id;
-                })
-                .attr("id", function (d) {
-                    return "hide-" + d.id;
-                })
-                .attr("value", "hide");
+            .attr("type", "radio")
+            .attr("name", function (d) {
+                return "label-visibility-" + d.id;
+            })
+            .attr("id", function (d) {
+                return "hide-" + d.id;
+            })
+            .attr("value", "hide");
 
         visibilityDiv.append("label")
-                .attr("for", function (d) {
-                    return "hide-" + d.id;
-                })
-                .text("Hide");
+            .attr("for", function (d) {
+                return "hide-" + d.id;
+            })
+            .text("Hide");
 
         //========================================== Content
 
         var table = contentDiv.append("table")
-                .attr("id", function (d) {
-                    return "labelsTable-" + d.id
-                })
-                .filter(function (d) {
-                    return d.attributes.length > 0;
-                });
+            .attr("id", function (d) {
+                return "labelsTable-" + d.id
+            })
+            .filter(function (d) {
+                return d.attributes.length > 0;
+            });
 
         var headerTR = table.append("tr");
 
@@ -1165,137 +1198,137 @@
         var trConstraintAttr = table.append("tr");
 
         trConstraintAttr.append("td")
-                .attr("class", "colFirst")
-                .append("label")
-                .attr("for", function (d) {
-                    return "constraintAttribute-" + d.id;
-                }).text("constraintAttribute:");
+            .attr("class", "colFirst")
+            .append("label")
+            .attr("for", function (d) {
+                return "constraintAttribute-" + d.id;
+            }).text("constraintAttribute:");
         trConstraintAttr.append("td")
-                .append("select")
-                .attr("id", function (d) {
-                    return "constraintAttribute-" + d.id;
-                })
-                .selectAll("option")
-                .data(function (d) {
-                    if (d.attributes) {
-                        return d.attributes;
-                    } else {
-                        return [];
-                    }
-                }, function (d) {
-                    return d.id;
-                })
-                .enter()
-                .append("option")
-                .attr("value", function (d) {
-                    return d.value;
-                })
-                .text(function (d) {
-                    return d.name;
-                });
+            .append("select")
+            .attr("id", function (d) {
+                return "constraintAttribute-" + d.id;
+            })
+            .selectAll("option")
+            .data(function (d) {
+                if (d.attributes) {
+                    return d.attributes;
+                } else {
+                    return [];
+                }
+            }, function (d) {
+                return d.id;
+            })
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.value;
+            })
+            .text(function (d) {
+                return d.name;
+            });
 
         //========================================== Preview
         var nodePreview = trConstraintAttr.append("td")
-                .attr("id", function (d) {
-                    return "preview-" + d.id;
-                }).attr("rowspan", 4)
-                .attr("class", "nodepreview Text").text(function (d) {
-                    if (d.attributes && d.attributes.length > 0) {
-                        return d.attributes[0];
-                    } else {
-                        return "preview";
-                    }
-                });
+            .attr("id", function (d) {
+                return "preview-" + d.id;
+            }).attr("rowspan", 4)
+            .attr("class", "nodepreview TEXT").text(function (d) {
+                if (d.attributes && d.attributes.length > 0) {
+                    return d.attributes[0];
+                } else {
+                    return "preview";
+                }
+            });
 
         //========================================== Return attributes
         var trReturnAttr = table.append("tr");
         trReturnAttr.append("td")
-                .attr("class", "colFirst")
-                .append("label")
-                .text("returnAttributes:");
+            .attr("class", "colFirst")
+            .append("label")
+            .text("returnAttributes:");
 
         trReturnAttr.append("td").append("ul")
-                .attr("id", function (d) {
-                    return "returnAttrs-" + d.id;
-                })
-                .selectAll("li")
-                .data(function (d) {
-                    if (d.attributes) {
-                        return d.attributes;
-                    } else {
-                        return [];
-                    }
-                }, function (d) {
-                    return d.id;
-                })
-                .enter()
-                .append("li")
-                .attr("class", "ui-state-default attrli")
-                .attr("id", function (d) {
-                    return "returnAttrs-" + d3.select(this.parentNode).datum().id + "-" + d.id;
-                })
-                .text(function (d) {
-                    return d.name;
-                });
+            .attr("id", function (d) {
+                return "returnAttrs-" + d.id;
+            })
+            .selectAll("li")
+            .data(function (d) {
+                if (d.attributes) {
+                    return d.attributes;
+                } else {
+                    return [];
+                }
+            }, function (d) {
+                return d.id;
+            })
+            .enter()
+            .append("li")
+            .attr("class", "ui-state-default attrli")
+            .attr("id", function (d) {
+                return "returnAttrs-" + d3.select(this.parentNode).datum().id + "-" + d.id;
+            })
+            .text(function (d) {
+                return d.name;
+            });
 
         //========================================== Attribute displayed in nodes
         var trAttrInGraph = table.append("tr");
         trAttrInGraph.append("td")
-                .attr("class", "colFirst")
-                .append("label")
-                .attr("for", function (d) {
-                    return "attrInGraph-" + d.id;
-                }).text("displayAttribute:");
+            .attr("class", "colFirst")
+            .append("label")
+            .attr("for", function (d) {
+                return "attrInGraph-" + d.id;
+            }).text("displayAttribute:");
 
         // ComboBox
         trAttrInGraph.append("td")
-                .append("select")
-                .attr("id", function (d) {
-                    return "attrInGraph-" + d.id;
-                })
-                .selectAll("option")
-                .data(function (d) {
-                    if (d.attributes) {
-                        return d.attributes;
-                    } else {
-                        return [];
-                    }
-                }, function (d) {
-                    return d.id;
-                })
-                .enter()
-                .append("option")
-                .attr("value", function (d) {
-                    return d.name;
-                })
-                .text(function (d) {
-                    return d.name;
-                });
+            .append("select")
+            .attr("id", function (d) {
+                return "attrInGraph-" + d.id;
+            })
+            .selectAll("option")
+            .data(function (d) {
+                if (d.attributes) {
+                    return d.attributes;
+                } else {
+                    return [];
+                }
+            }, function (d) {
+                return d.id;
+            })
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.name;
+            })
+            .text(function (d) {
+                return d.name;
+            });
 
         //========================================== Display type
         var trDisplayType = table.append("tr");
         trDisplayType.append("td")
-                .attr("class", "colFirst")
-                .append("label")
-                .attr("for", function (d) {
-                    return "displayType-" + d.id;
-                }).text("displayType:");
+            .attr("class", "colFirst")
+            .append("label")
+            .attr("for", function (d) {
+                return "displayType-" + d.id;
+            }).text("displayType:");
 
         trDisplayType.append("td")
-                .append("select")
-                .attr("id", function (d) {
-                    return "displayType-" + d.id;
-                })
-                .selectAll("option")
-                .data(["Text", "Image", "SVG"])
-                .enter()
-                .append("option")
-                .attr("value", function (d) {
-                    return d;
-                })
-                .text(function (d) {
-                    return d;
-                });
+            .append("select")
+            .attr("id", function (d) {
+                return "displayType-" + d.id;
+            })
+            .selectAll("option")
+            .data(["TEXT", "IMAGE", "SVG"])
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d;
+            })
+            .text(function (d) {
+                return d;
+            });
 
 
         //========================================== Update components
@@ -1379,75 +1412,75 @@
 
     function generatePage() {
         var page =
-                "<!DOCTYPE html>\n" +
-                "<!-- Generated with Popoto.js Configurator " + version + " -->\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"UTF-8\">\n" +
-                "    <title>Popoto Search</title>\n" +
-                "    <link rel=\"stylesheet\" href=\"css/popoto.min.css\">\n" +
-                "</head>\n" +
-                "<body class=\"ppt-body\">\n";
+            "<!DOCTYPE html>\n" +
+            "<!-- Generated with Popoto.js Configurator " + version + " -->\n" +
+            "<html>\n" +
+            "<head>\n" +
+            "    <meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"UTF-8\">\n" +
+            "    <title>Popoto Search</title>\n" +
+            "    <link rel=\"stylesheet\" href=\"css/popoto.min.css\">\n" +
+            "</head>\n" +
+            "<body class=\"ppt-body\">\n";
 
         if (config.layout.header) {
             page +=
-                    "<header class=\"ppt-header\">\n" +
-                    "</header>\n";
+                "<header class=\"ppt-header\">\n" +
+                "</header>\n";
         }
 
         page +=
-                "<section class=\"ppt-section-main\">\n" +
-                "    <div class=\"ppt-section-header\">\n" +
-                "        <span class=\"ppt-header-span\">Graph</span> search\n" +
-                "    </div>\n" +
-                "    <div class=\"ppt-container-graph\">\n";
+            "<section class=\"ppt-section-main\">\n" +
+            "    <div class=\"ppt-section-header\">\n" +
+            "        <span class=\"ppt-header-span\">Graph</span> search\n" +
+            "    </div>\n" +
+            "    <div class=\"ppt-container-graph\">\n";
 
         if (config.layout.taxonomies) {
             page +=
-                    "        <nav id=\"popoto-taxonomy\" class=\"ppt-taxo-nav\">\n" +
-                    "            <!-- Label/taxonomy filter will be generated here -->\n" +
-                    "        </nav>\n";
+                "        <nav id=\"popoto-taxonomy\" class=\"ppt-taxo-nav\">\n" +
+                "            <!-- Label/taxonomy filter will be generated here -->\n" +
+                "        </nav>\n";
         }
 
         page +=
-                "        <div id=\"popoto-graph\" class=\"ppt-div-graph\">\n" +
-                "            <!-- Graph will be generated here -->\n" +
-                "        </div>\n" +
-                "    </div>\n";
+            "        <div id=\"popoto-graph\" class=\"ppt-div-graph\">\n" +
+            "            <!-- Graph will be generated here -->\n" +
+            "        </div>\n" +
+            "    </div>\n";
 
         if (config.layout.query) {
             page +=
-                    "    <div id=\"popoto-query\" class=\"ppt-container-query\">\n" +
-                    "        <!-- Query viewer will be generated here -->\n" +
-                    "    </div>\n";
+                "    <div id=\"popoto-query\" class=\"ppt-container-query\">\n" +
+                "        <!-- Query viewer will be generated here -->\n" +
+                "    </div>\n";
         }
 
         if (config.layout.cypher) {
             page +=
-                    "    <div id=\"popoto-cypher\" class=\"ppt-container-cypher\">\n" +
-                    "        <!-- Cypher query viewer will be generated here -->\n" +
-                    "    </div>\n";
+                "    <div id=\"popoto-cypher\" class=\"ppt-container-cypher\">\n" +
+                "        <!-- Cypher query viewer will be generated here -->\n" +
+                "    </div>\n";
         }
 
         if (config.layout.results) {
             page +=
-                    "    <div class=\"ppt-section-header\">\n" +
-                    "        <!-- The total results count is updated with a listener defined in script -->\n" +
-                    "        RESULTS <span id=\"result-total-count\" class=\"ppt-count\"></span>\n" +
-                    "    </div>\n" +
-                    "    <div id=\"popoto-results\" class=\"ppt-container-results\">\n" +
-                    "        <!-- Results will be generated here -->\n" +
-                    "    </div>\n";
+                "    <div class=\"ppt-section-header\">\n" +
+                "        <!-- The total results count is updated with a listener defined in script -->\n" +
+                "        RESULTS <span id=\"result-total-count\" class=\"ppt-count\"></span>\n" +
+                "    </div>\n" +
+                "    <div id=\"popoto-results\" class=\"ppt-container-results\">\n" +
+                "        <!-- Results will be generated here -->\n" +
+                "    </div>\n";
         }
 
         page +=
-                "</section>\n" +
-                "<script src=\"js/jquery-2.1.0.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
-                "<script src=\"js/d3.v3.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
-                "<script src=\"js/popoto.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
-                "<script>\n" +
-                "// URL used to access Neo4j REST API to execute queries.\n" +
-                "popoto.rest.CYPHER_URL = \"" + buildURL() + "/db/data/transaction/commit" + "\";\n";
+            "</section>\n" +
+            "<script src=\"js/jquery-2.1.0.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
+            "<script src=\"js/d3.v3.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
+            "<script src=\"js/popoto.min.js\" charset=\"utf-8\"></scr" + "ipt>\n" +
+            "<script>\n" +
+            "// URL used to access Neo4j REST API to execute queries.\n" +
+            "popoto.rest.CYPHER_URL = \"" + buildURL() + "/db/data/transaction/commit" + "\";\n";
 
         if (config.server.credentials.use) {
             page += "popoto.rest.AUTHORIZATION = \"" + buildAuthorization() + "\";\n"
@@ -1455,7 +1488,7 @@
 
         if (config.labels.length > 0) {
             page +=
-                    "popoto.provider.nodeProviders = {\n";
+                "popoto.provider.node.Provider = {\n";
 
             for (var i = 0; i < config.labels.length; i++) {
                 var labelConfig = config.labels[i];
@@ -1463,141 +1496,534 @@
                 if (labelConfig.use) {
 
                     page +=
-                            "    \"" + labelConfig.name + "\":{\n";
+                        "    \"" + labelConfig.name + "\":{\n";
 
+                    page += "            /**********************************************************************\n" +
+                        "             * Label specific parameters:\n" +
+                        "             *\n" +
+                        "             * These attributes are specific to a node label and will be used for\n" +
+                        "             * every node having this label.\n" +
+                        "             **********************************************************************/\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines whether this label can be used as root element of the graph\n" +
+                        "             * query builder.\n" +
+                        "             * This property is also used to determine whether the label can be\n" +
+                        "             * displayed in the taxonomy filter.\n" +
+                        "             *\n" +
+                        "             * The default value is true.\n" +
+                        "             */\n" +
+                        "            \"isSearchable\": true,\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines whether this label will automatically expend its relations\n" +
+                        "             * when displayed on graph.\n" +
+                        "             * If set to true, once displayed additional request will be sent on\n" +
+                        "             * the database to retrieve its relations.\n" +
+                        "             *\n" +
+                        "             * The default value is false.\n" +
+                        "             */\n" +
+                        "            \"autoExpandRelations\": false,\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines whether this label will automatically load its available\n" +
+                        "             * data displayed on graph.\n" +
+                        "             * If set to true, once displayed additional request will be sent on\n" +
+                        "             * the database to retrieve its possible values.\n" +
+                        "             *\n" +
+                        "             * The default value is false.\n" +
+                        "             */\n" +
+                        "            \"isAutoLoadValue\": false,\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines the list of attribute to return for node of this label.\n" +
+                        "             * All the attributes listed here will be added in generated cypher\n" +
+                        "             * queries and available in result list and in node provider's\n" +
+                        "             * functions.\n" +
+                        "             *\n" +
+                        "             * The default value contains only the Neo4j internal id.\n" +
+                        "             * This id is used by default because it is a convenient way to identify\n" +
+                        "             * a node when nothing is known about its attributes.\n" +
+                        "             * But you should really consider using your application attributes\n" +
+                        "             * instead, it is a bad practice to rely on this attribute.\n" +
+                        "             */\n";
                     if (labelConfig.attributes.length > 0) {
-                        //============== returnAttributes:
-                        page +=
-                                "        returnAttributes:[\"" + labelConfig.attributes.join("\", \"") + "\"]" + ",\n";
-
-                        //============== constraintAttribute:
-                        page +=
-                                "        constraintAttribute:\"" + labelConfig.constraint + "\",\n";
-
-                        //============== node value:
-                        if (labelConfig.node != labelConfig.constraint) {
-
-                            page +=
-                                    "        \"getTextValue\": function (node) {\n" +
-                                    "            var text;\n" +
-                                    "            if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
-                                    "                text = \"\" + node.attributes[\"" + labelConfig.node + "\"];\n" +
-                                    "            } else {\n" +
-                                    "                if (node.value === undefined) {\n" +
-                                    "                    text = node.label;\n" +
-                                    "                } else {\n" +
-                                    "                    text = \"\" + node.value.attributes[\"" + labelConfig.node + "\"];\n" +
-                                    "                }\n" +
-                                    "            }\n" +
-                                    "            // Text is truncated to avoid node overflow\n" +
-                                    "            return text.substring(0, 12);\n" +
-                                    "        },\n";
-                        }
-
-                        //============== node type:
-                        if (labelConfig.type == "Text") {
-                            // Nothing to do as it is default value
-                        } else if (labelConfig.type == "Image") {
-                            page +=
-                                    "        \"getDisplayType\": function (node) {\n" +
-                                    "            return popoto.provider.NodeDisplayTypes.IMAGE;\n" +
-                                    "        },\n" +
-                                    "        \"getImagePath\": function (node) {\n" +
-                                    "            if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
-                                    "                return \"css/image/node-yellow.png\";\n" +
-                                    "            } else {\n" +
-                                    "                if (node.value === undefined) {\n" +
-                                    "                    if (node.count == 0) {\n" +
-                                    "                        return \"css/image/node-black.png\";\n" +
-                                    "                    } else {\n" +
-                                    "                       if (node.type === popoto.graph.node.NodeTypes.ROOT) {\n" +
-                                    "                           return \"css/image/node-blue.png\";\n" +
-                                    "                       }\n" +
-                                    "                       if (node.type === popoto.graph.node.NodeTypes.CHOOSE) {\n" +
-                                    "                           return \"css/image/node-green.png\";\n" +
-                                    "                       }\n" +
-                                    "                       if (node.type === popoto.graph.node.NodeTypes.GROUP) {\n" +
-                                    "                           return \"css/image/node-gray.png\";\n" +
-                                    "                       }\n" +
-                                    "                    }\n" +
-                                    "                } else {\n" +
-                                    "                    return \"css/image/node-orange.png\";\n" +
-                                    "                }\n" +
-                                    "            }\n" +
-                                    "        },\n" +
-                                    "        \"getImageWidth\": function (node) {\n" +
-                                    "            return 125;\n" +
-                                    "        },\n" +
-                                    "        \"getImageHeight\": function (node) {\n" +
-                                    "            return 125;\n" +
-                                    "        },\n";
-                        } else if (labelConfig.type == "SVG") {
-                            page +=
-                                    "        \"getDisplayType\": function (node) {\n" +
-                                    "            return popoto.provider.NodeDisplayTypes.SVG;\n" +
-                                    "        },\n" +
-                                    "        \"getSVGPaths\": function (node) {\n" +
-                                    "            if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
-                                    "                return [{\n" +
-                                    "                    \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
-                                    "                    \"class\": \"ppt-svg-yellow\"\n" +
-                                    "                }];\n" +
-                                    "            } else {\n" +
-                                    "                if (node.value === undefined) {\n" +
-                                    "                    if (node.count == 0) {\n" +
-                                    "                        return [{\n" +
-                                    "                            \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
-                                    "                            \"class\": \"ppt-svg-black\"\n" +
-                                    "                        }];\n" +
-                                    "                    } else {\n" +
-                                    "                       if (node.type === popoto.graph.node.NodeTypes.ROOT) {\n" +
-                                    "                           return [{\n" +
-                                    "                               \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
-                                    "                               \"class\": \"ppt-svg-blue\"\n" +
-                                    "                            }];\n" +
-                                    "                       }\n" +
-                                    "                       if (node.type === popoto.graph.node.NodeTypes.CHOOSE) {\n" +
-                                    "                           return [{\n" +
-                                    "                               \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
-                                    "                               \"class\": \"ppt-svg-green\"\n" +
-                                    "                           }];\n" +
-                                    "                       }\n" +
-                                    "                    }\n" +
-                                    "                } else {\n" +
-                                    "                    return [{\n" +
-                                    "                        \"d\": \"m 17.100768,-62.702529 c -21.6536481,-5.964141 -45.011689,4.090952 -59.367921,20.505271 -13.844002,15.102573 -22.758518,36.7081826 -17.435592,57.215436 3.425145,13.80233 10.994474,26.596402 21.26808,36.393906 10.453777,8.732883 24.695231,9.397186 37.65923852,9.994798 C 6.6172696,62.584568 14.461726,64.975326 21.597809,61.32282 36.21163,54.567637 44.539337,39.734507 51.210011,25.796523 58.721634,10.031115 61.30632,-8.5866497 55.206399,-25.272628 49.307236,-42.75679 35.353953,-58.087232 17.100768,-62.702529 Z M 53.664552,9.6480808 C 49.406771,27.071245 40.397758,43.987212 26.050191,55.109898 19.771303,59.531451 11.300778,61.80825 3.949273,58.775538 -4.2948043,58.349388 -12.575959,57.570923 -20.70831,56.175333 -39.157125,51.913479 -51.58498,34.661184 -55.897103,17.047585 c -5.196245,-20.0389964 0.165519,-42.760263 15.170199,-57.332641 16.56484,-16.976402 43.170373,-25.325392 65.883317,-16.863554 17.171618,7.348427 26.676156,25.840036 29.022014,43.611717 1.076966,7.6866527 0.997749,15.5612845 -0.513875,23.1849738 z\",\n" +
-                                    "                        \"class\": \"ppt-svg-purple\"\n" +
-                                    "                    }];\n" +
-                                    "                }\n" +
-                                    "            }\n" +
-                                    "        }\n";
-                        }
+                        page += "            \"returnAttributes\":[\"" + labelConfig.attributes.join("\", \"") + "\"]" + ",\n";
                     } else {
-                        page += "        // This label doesn't have any attribute, internal id is used by default\n";
+                        page += "            \"returnAttributes\": [popoto.query.NEO4J_INTERNAL_ID],\n";
                     }
-                    page +=
-                            "    },\n";
+                    page += "\n" +
+                        "            /**\n" +
+                        "             * Defines the attribute used to order the value displayed on node.\n" +
+                        "             *\n" +
+                        "             * Default value is \"count\" attribute.\n" +
+                        "             */\n" +
+                        "            \"valueOrderByAttribute\": \"count\",\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines whether the value query order by is ascending, if false order\n" +
+                        "             * by will be descending.\n" +
+                        "             *\n" +
+                        "             * Default value is false (descending)\n" +
+                        "             */\n" +
+                        "            \"isValueOrderAscending\": false,\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines the attribute used to order the results.\n" +
+                        "             *\n" +
+                        "             * Default value is \"null\" to disable order by.\n" +
+                        "             */\n" +
+                        "            \"resultOrderByAttribute\": null,\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines whether the result query order by is ascending, if false\n" +
+                        "             * order by will be descending.\n" +
+                        "             *\n" +
+                        "             * Default value is true (ascending)\n" +
+                        "             */\n" +
+                        "            \"isResultOrderAscending\": true,\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines the attribute of the node to use in query constraint for\n" +
+                        "             * nodes of this label.\n" +
+                        "             * This attribute is used in the generated cypher query to build the\n" +
+                        "             * constraints with selected values.\n" +
+                        "             *\n" +
+                        "             * The default value is the Neo4j internal id.\n" +
+                        "             * This id is used by default because it is a convenient way to\n" +
+                        "             * identify a node when nothing is known about its attributes.\n" +
+                        "             * But you should really consider using your application attributes\n" +
+                        "             * instead, it is a bad practice to rely on this attribute.\n" +
+                        "             */\n" +
+                        "            \"constraintAttribute\": \"" + labelConfig.constraint + "\",\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Defines the attribute of the node to use by default to display the node.\n" +
+                        "             * This attribute must be present in returnAttributes list.\n" +
+                        "             *\n" +
+                        "             * The default value is undefined.\n" +
+                        "             * If undefined the first attribute of the returnAttributes will be used or\n" +
+                        "             * constraintAttribute if the list is empty.\n" +
+                        "             */\n" +
+                        "            \"displayAttribute\": \"" + labelConfig.node + "\",\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Return the list of predefined constraints to add for the given label.\n" +
+                        "             * These constraints will be added in every generated Cypher query.\n" +
+                        "             *\n" +
+                        "             * For example if the returned list contain [\"$identifier.born > 1976\"]\n" +
+                        "             * for \"Person\" nodes everywhere in popoto.js the generated Cypher\n" +
+                        "             * query will add the constraint \"WHERE person.born > 1976\"\n" +
+                        "             *\n" +
+                        "             * @returns {Array}\n" +
+                        "             */\n" +
+                        "            \"getPredefinedConstraints\": function () {\n" +
+                        "                return [];\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Filters the query generated to retrieve the queries.\n" +
+                        "             *\n" +
+                        "             * @param initialQuery contains the query as an object structure.\n" +
+                        "             * @returns {*}\n" +
+                        "             */\n" +
+                        "            \"filterResultQuery\": function (initialQuery) {\n" +
+                        "                return initialQuery;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**********************************************************************\n" +
+                        "             * Node specific parameters:\n" +
+                        "             *\n" +
+                        "             * These attributes are specific to nodes (in graph or query viewer)\n" +
+                        "             * for a given label.\n" +
+                        "             * But they can be customized for nodes of the same label.\n" +
+                        "             * The parameters are defined by a function that will be called with\n" +
+                        "             * the node as parameter.\n" +
+                        "             * In this function the node internal attributes can be used to\n" +
+                        "             * customize the value to return.\n" +
+                        "             **********************************************************************/\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function returning the display type of a node.\n" +
+                        "             * This type defines how the node will be drawn in the graph.\n" +
+                        "             *\n" +
+                        "             * The result must be one of the following values:\n" +
+                        "             *\n" +
+                        "             * popoto.provider.node.DisplayTypes.IMAGE\n" +
+                        "             *  In this case the node will be drawn as an image and \"getImagePath\"\n" +
+                        "             *  function is required to return the node image path.\n" +
+                        "             *\n" +
+                        "             * popoto.provider.node.DisplayTypes.SVG\n" +
+                        "             *  In this case the node will be drawn as SVG paths and \"getSVGPaths\"\n" +
+                        "             *\n" +
+                        "             * popoto.provider.node.DisplayTypes.TEXT\n" +
+                        "             *  In this case the node will be drawn as a simple circle.\n" +
+                        "             *\n" +
+                        "             * Default value is TEXT.\n" +
+                        "             *\n" +
+                        "             * @param node the node to extract its type.\n" +
+                        "             * @returns {number} one value from popoto.provider.node.DisplayTypes\n" +
+                        "             */\n" +
+                        "            \"getDisplayType\": function (node) {\n" +
+                        "                return popoto.provider.node.DisplayTypes." + labelConfig.type + ";\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function defining the size of the node in graph.\n" +
+                        "             *\n" +
+                        "             * The size define the radius of the circle defining the node.\n" +
+                        "             * other elements (menu, counts...) will scale on this size.\n" +
+                        "             *\n" +
+                        "             * Default value is 50.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             */\n" +
+                        "            \"getSize\": function (node) {\n" +
+                        "                return 50;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Return a color for the node.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @returns {*}\n" +
+                        "             */\n" +
+                        "            \"getColor\": function (node) {\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                        "                    return popoto.provider.node.getColor(node.parent);\n" +
+                        "                } else {\n" +
+                        "                    var parentLabel = \"\";\n" +
+                        "                    if (node.hasOwnProperty(\"parent\")) {\n" +
+                        "                        parentLabel = node.parent.label\n" +
+                        "                    }\n" +
+                        "\n" +
+                        "                    var incomingRelation = node.parentRel || \"\";\n" +
+                        "\n" +
+                        "                    var colorId = parentLabel + incomingRelation + node.label;\n" +
+                        "                    return popoto.provider.colorScale(colorId);\n" +
+                        "                }\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Generate a CSS class for the node depending on its type.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @param element\n" +
+                        "             * @return {string}\n" +
+                        "             */\n" +
+                        "            \"getCSSClass\": function (node, element) {\n" +
+                        "                var labelAsCSSName = node.label.replace(/[^0-9a-z\\-_]/gi, '');\n" +
+                        "\n" +
+                        "                var cssClass = \"ppt-node__\" + element;\n" +
+                        "\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.ROOT) {\n" +
+                        "                    cssClass = cssClass + \"--root\";\n" +
+                        "                }\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.CHOOSE) {\n" +
+                        "                    cssClass = cssClass + \"--choose\";\n" +
+                        "                }\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.GROUP) {\n" +
+                        "                    cssClass = cssClass + \"--group\";\n" +
+                        "                }\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                        "                    cssClass = cssClass + \"--value\";\n" +
+                        "                }\n" +
+                        "                if (node.value !== undefined && node.value.length > 0) {\n" +
+                        "                    cssClass = cssClass + \"--value-selected\";\n" +
+                        "                }\n" +
+                        "                if (node.count === 0) {\n" +
+                        "                    cssClass = cssClass + \"--disabled\";\n" +
+                        "                }\n" +
+                        "\n" +
+                        "                return cssClass + \" \" + labelAsCSSName;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function defining whether the node is a group node.\n" +
+                        "             * In this case no count are displayed and no value can be selected on\n" +
+                        "             * the node.\n" +
+                        "             *\n" +
+                        "             * Default value is false.\n" +
+                        "             */\n" +
+                        "            \"getIsGroup\": function (node) {\n" +
+                        "                return false;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function defining whether the node text representation must be\n" +
+                        "             * displayed on graph.\n" +
+                        "             * If true the value returned for getTextValue on node will be displayed\n" +
+                        "             * on graph.\n" +
+                        "             *\n" +
+                        "             * This text will be added in addition to the getDisplayType\n" +
+                        "             * representation.\n" +
+                        "             * It can be displayed on all type of node display, images, SVG or text.\n" +
+                        "             *\n" +
+                        "             * Default value is true\n" +
+                        "             *\n" +
+                        "             * @param node the node to display on graph.\n" +
+                        "             * @returns {boolean} true if text must be displayed on graph for the\n" +
+                        "             * node.\n" +
+                        "             */\n" +
+                        "            \"getIsTextDisplayed\": function (node) {\n" +
+                        "                return true;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function used to return the text representation of a node.\n" +
+                        "             *\n" +
+                        "             * The default behavior is to return the label of the node\n" +
+                        "             * or the value of constraint attribute of the node if it contains\n" +
+                        "             * value.\n" +
+                        "             *\n" +
+                        "             * The returned value is truncated using\n" +
+                        "             * popoto.graph.node.NODE_MAX_CHARS property.\n" +
+                        "             *\n" +
+                        "             * @param node the node to represent as text.\n" +
+                        "             * @param maxLength used to truncate the text.\n" +
+                        "             * @returns {string} the text representation of the node.\n" +
+                        "             */\n" +
+                        "            \"getTextValue\": function (node, maxLength) {\n" +
+                        "                var text = \"\";\n" +
+                        "                var displayAttr = popoto.provider.node.getDisplayAttribute(node.label);\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                        "                    if (displayAttr === popoto.query.NEO4J_INTERNAL_ID) {\n" +
+                        "                        text = \"\" + node.internalID;\n" +
+                        "                    } else {\n" +
+                        "                        text = \"\" + node.attributes[displayAttr];\n" +
+                        "                    }\n" +
+                        "                } else {\n" +
+                        "                    if (node.value !== undefined && node.value.length > 0) {\n" +
+                        "                        if (displayAttr === popoto.query.NEO4J_INTERNAL_ID) {\n" +
+                        "                            var separator = \"\";\n" +
+                        "                            node.value.forEach(function (value) {\n" +
+                        "                                text += separator + value.internalID;\n" +
+                        "                                separator = \" or \";\n" +
+                        "                            });\n" +
+                        "                        } else {\n" +
+                        "                            var separator = \"\";\n" +
+                        "                            node.value.forEach(function (value) {\n" +
+                        "                                text += separator + value.attributes[displayAttr];\n" +
+                        "                                separator = \" or \";\n" +
+                        "                            });\n" +
+                        "                        }\n" +
+                        "                    } else {\n" +
+                        "                        text = node.label;\n" +
+                        "                    }\n" +
+                        "                }\n" +
+                        "\n" +
+                        "                return text;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function used to return a descriptive text representation of a link.\n" +
+                        "             * This representation should be more complete than getTextValue and can\n" +
+                        "             * contain semantic data.\n" +
+                        "             * This function is used for example to generate the label in the query\n" +
+                        "             * viewer.\n" +
+                        "             *\n" +
+                        "             * The default behavior is to return the getTextValue not truncated.\n" +
+                        "             *\n" +
+                        "             * @param node the node to represent as text.\n" +
+                        "             * @returns {string} the text semantic representation of the node.\n" +
+                        "             */\n" +
+                        "            \"getSemanticValue\": function (node) {\n" +
+                        "                var text = \"\";\n" +
+                        "                var displayAttr = popoto.provider.node.getDisplayAttribute(node.label);\n" +
+                        "                if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                        "                    if (displayAttr === popoto.query.NEO4J_INTERNAL_ID) {\n" +
+                        "                        text = \"\" + node.internalID;\n" +
+                        "                    } else {\n" +
+                        "                        text = \"\" + node.attributes[displayAttr];\n" +
+                        "                    }\n" +
+                        "                } else {\n" +
+                        "                    if (node.value !== undefined && node.value.length > 0) {\n" +
+                        "                        if (displayAttr === popoto.query.NEO4J_INTERNAL_ID) {\n" +
+                        "                            var separator = \"\";\n" +
+                        "                            node.value.forEach(function (value) {\n" +
+                        "                                text += separator + value.internalID;\n" +
+                        "                                separator = \" or \";\n" +
+                        "                            });\n" +
+                        "                        } else {\n" +
+                        "                            var separator = \"\";\n" +
+                        "                            node.value.forEach(function (value) {\n" +
+                        "                                text += separator + value.attributes[displayAttr];\n" +
+                        "                                separator = \" or \";\n" +
+                        "                            });\n" +
+                        "                        }\n" +
+                        "                    } else {\n" +
+                        "                        text = node.label;\n" +
+                        "                    }\n" +
+                        "                }\n" +
+                        "                return text;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function returning the image file path to use for a node.\n" +
+                        "             * This function is only used for popoto.provider.node.DisplayTypes.IMAGE\n" +
+                        "             * type nodes.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @returns {string}\n" +
+                        "             */\n" +
+                        "            \"getImagePath\": function (node) {\n" +
+                        "                  if (node.type === popoto.graph.node.NodeTypes.VALUE) {\n" +
+                        "                      return \"css/image/node-yellow.png\";\n" +
+                        "                  } else {\n" +
+                        "                      if (node.value === undefined || node.value.length === 0) {\n" +
+                        "                          if (node.type === popoto.graph.node.NodeTypes.ROOT) {\n" +
+                        "                              return \"css/image/node-blue.png\";\n" +
+                        "                          }\n" +
+                        "                          if (node.type === popoto.graph.node.NodeTypes.CHOOSE) {\n" +
+                        "                              return \"css/image/node-green.png\";\n" +
+                        "                          }\n" +
+                        "                          if (node.type === popoto.graph.node.NodeTypes.GROUP) {\n" +
+                        "                              return \"css/image/node-gray.png\";\n" +
+                        "                          }\n" +
+                        "                      } else {\n" +
+                        "                          return \"css/image/node-orange.png\";\n" +
+                        "                      }\n" +
+                        "                  }\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function returning a array of path objects to display in the node.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @returns {*[]}\n" +
+                        "             */\n" +
+                        "            \"getSVGPaths\": function (node) {\n" +
+                        "                var size = popoto.provider.node.getSize(node);\n" +
+                        "                return [\n" +
+                        "                    {\n" +
+                        "                        \"d\": \"M 0, 0 m -\" + size + \", 0 a \" + size + \",\" + size + \" 0 1,0 \" + 2 * size + \",0 a \" + size + \",\" + size + \" 0 1,0 -\" + 2 * size + \",0\",\n" +
+                        "                        \"fill\": \"transparent\",\n" +
+                        "                        \"stroke\": popoto.provider.node.getColor(node),\n" +
+                        "                        \"stroke-width\": \"2px\"\n" +
+                        "                    }\n" +
+                        "                ];\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function returning the image width of the node.\n" +
+                        "             * This function is only used for popoto.provider.node.DisplayTypes.IMAGE\n" +
+                        "             * type nodes.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @returns {number}\n" +
+                        "             */\n" +
+                        "            \"getImageWidth\": function (node) {\n" +
+                        "                return popoto.provider.node.getSize(node) * 2;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Function returning the image height of the node.\n" +
+                        "             * This function is only used for popoto.provider.node.DisplayTypes.IMAGE\n" +
+                        "             * type nodes.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @returns {number}\n" +
+                        "             */\n" +
+                        "            \"getImageHeight\": function (node) {\n" +
+                        "                return popoto.provider.node.getSize(node) * 2;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Filters the query generated to retrieve the values on a node.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @param initialQuery contains the query as an object structure.\n" +
+                        "             * @returns {*}\n" +
+                        "             */\n" +
+                        "            \"filterNodeValueQuery\": function (node, initialQuery) {\n" +
+                        "                return initialQuery;\n" +
+                        "            },\n" +
+                        "            /**\n" +
+                        "             * Filters the query generated to retrieve the values on a node.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @param initialQuery contains the query as an object structure.\n" +
+                        "             * @returns {*}\n" +
+                        "             */\n" +
+                        "            \"filterNodeCountQuery\": function (node, initialQuery) {\n" +
+                        "                return initialQuery;\n" +
+                        "            },\n" +
+                        "            /**\n" +
+                        "             * Filters the query used to retrieve the values on a node.\n" +
+                        "             *\n" +
+                        "             * @param node\n" +
+                        "             * @param initialQuery contains the query as an object structure.\n" +
+                        "             * @returns {*}\n" +
+                        "             */\n" +
+                        "            \"filterNodeRelationQuery\": function (node, initialQuery) {\n" +
+                        "                return initialQuery;\n" +
+                        "            },\n" +
+                        "\n" +
+                        "            /**********************************************************************\n" +
+                        "             * Results specific parameters:\n" +
+                        "             *\n" +
+                        "             * These attributes are specific to result display.\n" +
+                        "             **********************************************************************/\n" +
+                        "\n" +
+                        "            /**\n" +
+                        "             * Generate the result entry content using d3.js mechanisms.\n" +
+                        "             *\n" +
+                        "             * The parameter of the function is the &lt;p&gt; selected with d3.js\n" +
+                        "             *\n" +
+                        "             * The default behavior is to generate a &lt;table&gt; containing all\n" +
+                        "             * the return attributes in a &lt;th&gt; and their value in a &lt;td&gt;.\n" +
+                        "             *\n" +
+                        "             * @param pElmt the &lt;p&gt; element generated in the result list.\n" +
+                        "             */\n" +
+                        "            \"displayResults\": function (pElmt) {\n" +
+                        "                var result = pElmt.data()[0];\n" +
+                        "\n" +
+                        "                var returnAttributes = popoto.provider.node.getReturnAttributes(result.label);\n" +
+                        "\n" +
+                        "                var table = pElmt.append(\"table\").attr(\"class\", \"ppt-result-table\");\n" +
+                        "\n" +
+                        "                returnAttributes.forEach(function (attribute) {\n" +
+                        "                    var attributeName = attribute;\n" +
+                        "\n" +
+                        "                    if (popoto.query.NEO4J_INTERNAL_ID === attribute) {\n" +
+                        "                        attributeName = popoto.query.NEO4J_INTERNAL_ID.queryInternalName;\n" +
+                        "                    }\n" +
+                        "\n" +
+                        "                    var tr = table.append(\"tr\");\n" +
+                        "                    tr.append(\"th\").text(function () {\n" +
+                        "                        if (attribute === popoto.query.NEO4J_INTERNAL_ID) {\n" +
+                        "                            return \"internal ID:\"\n" +
+                        "                        } else {\n" +
+                        "                            return attribute + \":\";\n" +
+                        "                        }\n" +
+                        "                    });\n" +
+                        "                    if (result.attributes[attributeName] !== undefined) {\n" +
+                        "                        tr.append(\"td\").text(function (result) {\n" +
+                        "                            return result.attributes[attributeName];\n" +
+                        "                        });\n" +
+                        "                    }\n" +
+                        "                });\n" +
+                        "            }\n" +
+                        "},\n";
                 }
             }
-
-
             page +=
-                    "};\n"
+                "};\n"
         }
 
         if (config.layout.results) {
             page +=
-                    "popoto.result.onTotalResultCount(function (count) {\n" +
-                    "    document.getElementById(\"result-total-count\").innerHTML = \"(\" + count + \")\";\n" +
-                    "});\n";
+                "popoto.result.onTotalResultCount(function (count) {\n" +
+                "    document.getElementById(\"result-total-count\").innerHTML = \"(\" + count + \")\";\n" +
+                "});\n";
         }
 
         page +=
-                "popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;\n" +
-                "popoto.start(\"" + ((config.labels.length > 0) ? config.labels[0].name : "Person") + "\");\n" +
-                "</scr" + "ipt>\n" +
-                "</body>\n" +
-                "</html>";
+            "//popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;\n" +
+            "popoto.start(\"" + ((config.labels.length > 0) ? config.labels[0].name : "Person") + "\");\n" +
+            "</scr" + "ipt>\n" +
+            "</body>\n" +
+            "</html>";
 
 
         return page;

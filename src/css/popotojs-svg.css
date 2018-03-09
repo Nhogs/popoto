@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2014 Frederic Ciminera
+* Copyright (C) 2014-2018 Frederic Ciminera
 *
 * Popoto.js is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,361 @@
     pointer-events: all;
 }
 
+/******************************************************/
+/******************Link Styles*************************/
+.ppt-glink {
+    /*NA*/
+}
+
+.ppt-link {
+    /*NA*/
+}
+
+/***********************************************/
+/* generated with getCSSClass in link provider */
+
+/* Text on relation links */
+
+.ppt-link__text--relation {
+    cursor: pointer;
+}
+
+.ppt-link__text--hover--relation {
+    cursor: pointer;
+    fill: #ee4e10;
+}
+
+.ppt-link__text--relation--disabled {
+    cursor: pointer;
+    fill: #525863;
+}
+
+.ppt-link__text--hover--relation--disabled {
+    cursor: pointer;
+    fill: #ee4e10;
+}
+
+/* Text on value links */
+
+.ppt-link__text--value {
+    /*use base color*/
+}
+
+.ppt-link__text--hover--value {
+    fill: #f0b017;
+}
+
+/* Path for relation between nodes */
+
+.ppt-link__path--relation {
+    cursor: pointer;
+}
+
+.ppt-link__path--hover--relation {
+    cursor: pointer;
+    stroke: #ee4e10;
+    stroke-width: 2px;
+    marker-mid: url("#cross");
+}
+
+.ppt-link__path--relation--disabled {
+    cursor: pointer;
+    stroke-dasharray: 9, 5;
+    stroke-width: 2px;
+    stroke: #c9cacb;
+    opacity: 0.5;
+}
+
+.ppt-link__path--hover--relation--disabled {
+    cursor: pointer;
+    stroke: #ee4e10;
+    stroke-width: 2px;
+    marker-mid: url("#cross");
+}
+
+/* Path for relation with value nodes */
+
+.ppt-link__path--value {
+    fill: #f0b017;
+}
+
+.ppt-link__path--hover--value {
+    stroke: #f0b017;
+}
+
+/***********************************************/
+/* Markers styles */
+
+.ppt-marker-cross {
+    fill: transparent;
+    stroke: #ee4e10;
+    stroke-dasharray: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.ppt-marker-arrow {
+    fill: #ee4e10;
+}
+
+.ppt-marker-reverse-arrow {
+    fill: #ee4e10;
+}
+
+/******************************************************/
+/******************Node Styles*************************/
+
+/* tooltip set as title attribute */
+.ppt-node__title {
+
+}
+
+/* text displayed on nodes */
+.ppt-node__text--root {
+    fill: #ffffff;
+}
+
+.ppt-node__text--choose {
+    fill: #ffffff;
+}
+
+.ppt-node__text--group {
+    fill: #ffffff;
+}
+
+.ppt-node__text--value {
+    fill: #ffffff;
+}
+
+.ppt-node__text--root--disabled {
+    fill: #ffffff;
+}
+
+.ppt-node__text--root--value-selected {
+    fill: #ffffff;
+}
+
+.ppt-node__text--root--value-selected--disabled {
+    fill: #ffffff;
+}
+
+.ppt-node__text--choose--disabled {
+    fill: #ffffff;
+}
+
+.ppt-node__text--choose--value-selected {
+    fill: #ffffff;
+}
+
+.ppt-node__text--choose--value-selected--disabled {
+    fill: #ffffff;
+}
+
+.ppt-node__back-text--root {
+    fill-opacity: 0.8;
+}
+
+.ppt-node__back-text--choose {
+    fill-opacity: 0.8;
+}
+
+.ppt-node__back-text--value {
+    fill-opacity: 0.8;
+}
+
+.ppt-node__back-text--group {
+    fill-opacity: 0.8;
+}
+
+.ppt-node__back-text--choose--value-selected {
+    fill-opacity: 0.8;
+}
+
+.ppt-node__back-text--root--value-selected {
+    fill-opacity: 0.8;
+}
+
+.ppt-node__back-text--root--disabled {
+    fill: none;
+}
+
+.ppt-node__back-text--choose--disabled {
+    fill: none;
+}
+
+.ppt-node__back-text--value--disabled {
+    fill: none;
+}
+
+.ppt-node__back-text--choose--value-selected--disabled {
+    fill: none;
+}
+
+/* TEXT nodes*/
+.ppt-node__circle--root {
+    /*NA*/
+    /*fill: #2aa1d3;*/
+    /*stroke: #233E7E;*/
+    stroke: none;
+    /*stroke-width: 2px;*/
+}
+
+.ppt-node__circle--choose {
+    /*NA*/
+    /*fill: #8bb71a;*/
+    /*stroke: #628b1a;*/
+    stroke: none;
+    /*stroke-width: 2px;*/
+}
+
+.ppt-node__circle--group {
+    /*NA*/
+}
+
+.ppt-node__circle--value {
+    /*NA*/
+    /*fill: #f0b017;*/
+    /*stroke: #c28a17;*/
+    stroke: none;
+    /*stroke-width: 2px;*/
+}
+
+.ppt-node__circle--choose--disabled {
+    fill: #2e3138;
+    /*stroke: #525863;*/
+    stroke: none;
+    opacity: 0.5;
+}
+
+.ppt-node__circle--root--disabled {
+    fill: #2e3138;
+    /*stroke: #525863;*/
+    stroke: none;
+    opacity: 0.5;
+}
+
+/* IMAGE nodes*/
+.ppt-node__image--root {
+    /*NA*/
+}
+
+.ppt-node__image--choose {
+    /*NA*/
+}
+
+.ppt-node__image--group {
+    /*NA*/
+}
+
+.ppt-node__image--value {
+    /*NA*/
+}
+
+.ppt-node__image-background-circle--root {
+    fill: transparent;
+}
+
+.ppt-node__image-background-circle--choose {
+    fill: transparent;
+}
+
+.ppt-node__image-background-circle--value {
+    fill: transparent;
+}
+
+.ppt-node__image-background-circle--root--value-selected {
+    fill: transparent;
+}
+
+.ppt-node__image-background-circle--choose--value-selected {
+    fill: transparent;
+}
+
+.ppt-node__image--root--disabled {
+    filter: url(#grayscale);
+    opacity: 0.5;
+}
+
+.ppt-node__image--choose--disabled {
+    filter: url(#grayscale);
+    opacity: 0.5;
+}
+
+.ppt-node__image--choose--value-selected--disabled {
+    filter: url(#grayscale);
+    opacity: 0.5;
+}
+
+/* Symbol nodes*/
+.ppt-node__symbol--root {
+    stroke: none;
+}
+
+.ppt-node__symbol--choose {
+    stroke: none;
+}
+
+.ppt-node__symbol--group {
+    stroke: none;
+}
+
+.ppt-node__symbol--value {
+    stroke: none;
+}
+
+.ppt-node__symbol--root--disabled {
+    fill: #adaeaf;
+}
+
+.ppt-node__symbol--choose--disabled {
+    fill: #adaeaf;
+}
+
+.ppt-node__symbol--choose--value-selected--disabled {
+    fill: #adaeaf;
+}
+
+.ppt-node__symbol-background-circle--value {
+    fill: transparent;
+    stroke: none;
+}
+
 /******************Node Styles*************************/
 .ppt-node-ellipse {
-    stroke: #ffffff;
-    stroke-width: 4px;
+    stroke: #22252a;
+    stroke-width: 2px;
+}
+
+.ppt-segment {
+    stroke: #22252a;
+    stroke-width: 2px;
+}
+
+.ppt-segment.disabled {
+    /*fill: #2e3138;*/
+    /*stroke: #525863;*/
+    fill: #adaeaf;
+    stroke: #a5a5a6;
+}
+
+.ppt-text-arc {
+    display: none;
+}
+
+.ppt-text-arc.hover {
+    display: block;
+}
+
+.ppt-text-arc.disabled {
+    fill: none;
+}
+
+.ppt-text-arc.disabled.hover {
+    fill: #525863;
 }
 
 .ppt-node-ellipse.root {
-    fill: #2aa1d3;
+    /*fill: #2aa1d3;*/
 }
 
 .ppt-node-ellipse.root.disabled {
@@ -41,7 +388,7 @@
 }
 
 .ppt-node-ellipse.choose {
-    fill: #8bb71a;
+    /*fill: #8bb71a;*/
 }
 
 .ppt-node-ellipse.choose.disabled {
@@ -50,19 +397,19 @@
 }
 
 .ppt-node-ellipse.value {
-    fill: #f0b017;
+    /*fill: #f0b017;*/
 }
 
 .ppt-node-ellipse.selected-value {
-    fill: #f0b017;
+    /*fill: #f0b017;*/
 }
 
 .ppt-node-ellipse.selected-root-value {
-    fill: #8F5BCC;
+    /*fill: #8F5BCC;*/
 }
 
 .ppt-node-ellipse.group {
-    fill: #525863;
+    /*fill: #525863;*/
 }
 
 .ppt-node-ellipse.disabled {
@@ -71,8 +418,22 @@
 }
 
 /* Node background*/
+.ppt-svg-node-background {
+    fill: transparent;
+}
+
+.ppt-svg-node-symbol-background {
+    fill: transparent;
+    /*stroke: none;*/
+
+}
+
 .ppt-g-node-background {
     cursor: pointer;
+}
+
+.ppt-g-node-background.hide {
+    display: none;
 }
 
 .ppt-node-background-circle {
@@ -119,24 +480,28 @@
 
 .ppt-count-box.value {
     fill: #8bb71a;
+    fill-opacity: 0.8;
     stroke: #ffffff;
     stroke-width: 2px;
 }
 
 .ppt-count-box.root {
     fill: #ee4e10;
+    fill-opacity: 0.8;
     stroke: #ffffff;
     stroke-width: 2px;
 }
 
 .ppt-count-box.root.disabled {
-    fill: #2e3138;
-    stroke: #525863;
+    fill: #adaeaf;
+    fill-opacity: 0.8;
+    stroke: #8b8b8c;
 }
 
 .ppt-count-box.value.disabled {
-    fill: #2e3138;
-    stroke: #525863;
+    fill: #adaeaf;
+    fill-opacity: 0.8;
+    stroke: #8b8b8c;
 }
 
 .ppt-count-text {
@@ -212,55 +577,6 @@
     fill: #2aa1d3;
 }
 
-/******************Link Styles*************************/
-
-/* Links */
-.ppt-link-relation {
-    stroke: #2aa1d3;
-    stroke-width: 2px;
-    stroke-dasharray: 9, 5;
-}
-
-.ppt-link-relation.value {
-    stroke: #f0b017;
-}
-
-.ppt-link-relation.value.ppt-link-hover {
-    stroke: #ee4e10;
-}
-
-.ppt-link-relation.disabled {
-    stroke: #2e3138;
-    stroke-width: 2px;
-    stroke-dasharray: 9, 5;
-}
-
-.ppt-link-value {
-    stroke: #525863;
-    stroke-width: 2px;
-    stroke-dasharray: 9, 5;
-}
-
-.ppt-link-hover {
-    stroke: #ee4e10;
-}
-
-.ppt-link-text-relation {
-    fill: #ffffff;
-}
-
-.ppt-link-text-relation.value {
-    fill: #ffffff;
-}
-
-.ppt-link-text-relation.disabled {
-    fill: #525863;
-}
-
-.ppt-link-text-value {
-    fill: #525863;
-}
-
 /* text in nodes*/
 .ppt-node-text-root {
     fill: #ffffff;
@@ -284,6 +600,16 @@
 
 .ppt-node-text-group {
     fill: #ffffff;
+}
+
+.ppt-g-node-ban {
+    fill: #ee4e10;
+    stroke: #ffffff;
+    display: none;
+}
+
+.ppt-g-node-ban.active {
+    display: block;
 }
 
 .ppt-svg-black {

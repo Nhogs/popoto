@@ -27,6 +27,7 @@
     "url": "https://github.com/Popotojs/popotojs.git"
   },
   "scripts": {
+    "eslint": "eslint src/js/popoto.js",
     "pretest": "rm -rf dist && mkdir dist"
   },
   "dependencies": {

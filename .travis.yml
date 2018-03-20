@@ -6,4 +6,4 @@ services:
   - neo4j
 
 script:
-  - npm run eslint
+#  - npm run eslint

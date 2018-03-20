@@ -27,6 +27,7 @@
     "url": "https://github.com/Popotojs/popotojs.git"
   },
   "scripts": {
+    "pretest": "rm -rf dist && mkdir dist"
   },
   "dependencies": {
     "d3": "3.5.17",

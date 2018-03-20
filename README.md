@@ -1,5 +1,5 @@
 # Popoto.js
-
+[![Build Status](https://travis-ci.org/Popotojs/popotojs.svg?branch=master)](https://travis-ci.org/Popotojs/popotojs)
 ### This project contains:
  - An HTML template page "index.html" with default configuration to generate a graph search on Neo4j movie graph example.
  - An HTML page "configurator.html" that can be use to generate a custom configuration for your data.

@@ -2,5 +2,8 @@ language: node_js
 node_js:
   - "8"
 
+services:
+  - neo4j
+
 script:
   - npm run eslint

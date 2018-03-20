@@ -1,0 +1,38 @@
+{
+  "name": "popoto",
+  "version": "1.2.0-rc.2",
+  "description": "Neo4j graph based search interface.",
+  "keywords": [
+    "popoto",
+    "d3",
+    "neo4j",
+    "cypher",
+    "graph",
+    "search"
+  ],
+  "homepage": "https://popotojs.com/",
+  "bugs": {
+    "url": "https://github.com/Popotojs/popotojs/issues",
+    "email": "contact@popotojs.com"
+  },
+  "license": "GPL-3.0",
+  "author": {
+    "name": "Frederic Ciminera",
+    "email": "contact@popotojs.com"
+  },
+  "contributors": [],
+  "main": "src/js/popoto.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Popotojs/popotojs.git"
+  },
+  "scripts": {
+  },
+  "dependencies": {
+    "d3": "3.5.17",
+    "jquery": "^3.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.0"
+  }
+}

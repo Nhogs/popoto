@@ -21,7 +21,7 @@
  */
 popoto = function () {
     var popoto = {
-        version: "1.2.rc2"
+        version: "1.2.rc4"
     };
 
     /**
@@ -174,10 +174,11 @@ popoto = function () {
     /**
      * Create JQuery ajax POST request to access Neo4j REST API.
      *
-     * @param data data object containing Cypher query
+     * @param data data object containing Cypher query.
+     * @param url url where to post the data, default to popoto.rest.CYPHER_URL property.
      * @returns {*} the JQuery ajax request object.
      */
-    popoto.rest.post = function (data) {
+    popoto.rest.post = function (data, url) {
         var strData = JSON.stringify(data);
         popoto.logger.info("REST POST:" + strData);
 
@@ -188,9 +189,12 @@ popoto = function () {
                     request.setRequestHeader("Authorization", popoto.rest.AUTHORIZATION);
                 }
             },
-            contentType: "application/json",
-            data: strData
+            contentType: "application/json"
         };
+
+        if (data !== undefined) {
+            settings.data = strData;
+        }
 
         if (popoto.rest.WITH_CREDENTIALS === true) {
             settings.xhrFields = {
@@ -198,7 +202,13 @@ popoto = function () {
             }
         }
 
-        return $.ajax(popoto.rest.CYPHER_URL, settings);
+        var postURL = popoto.rest.CYPHER_URL;
+
+        if (url !== undefined) {
+            postURL = url;
+        }
+
+        return $.ajax(postURL, settings);
     };
 
     popoto.rest.response = {
@@ -1774,6 +1784,11 @@ popoto = function () {
      */
     popoto.graph.node.updateCount = function () {
 
+        // Abort any old running request before starting a new one
+        if (popoto.graph.node.updateCountXhr !== undefined) {
+            popoto.graph.node.updateCountXhr.abort();
+        }
+
         var statements = [];
 
         var countedNodes = popoto.graph.force.nodes()
@@ -1792,7 +1807,7 @@ popoto = function () {
         });
 
         popoto.logger.info("Count nodes ==>");
-        popoto.rest.post(
+        popoto.graph.node.updateCountXhr = popoto.rest.post(
             {
                 "statements": statements
             })
@@ -1821,12 +1836,16 @@ popoto = function () {
                 popoto.graph.link.updateElements();
             })
             .fail(function (xhr, textStatus, errorThrown) {
-                popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
-                countedNodes.forEach(function (node) {
-                    node.count = 0;
-                });
-                popoto.graph.node.updateElements();
-                popoto.graph.link.updateElements();
+                if (textStatus !== "abort") {
+                    popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
+                    countedNodes.forEach(function (node) {
+                        node.count = 0;
+                    });
+                    popoto.graph.node.updateElements();
+                    popoto.graph.link.updateElements();
+                } else {
+                    popoto.logger.info("<=X= Count nodes - Aborted!");
+                }
             });
     };
 
@@ -3120,7 +3139,7 @@ popoto = function () {
     };
 
     /**
-     * Add a list of related value if not found.
+     * Add a list of related value if not already found in node.
      * A value is defined with the following structure
      * {
      *   id,
@@ -3130,6 +3149,7 @@ popoto = function () {
      *
      * @param node
      * @param values
+     * @param isNegative
      */
     popoto.graph.node.addRelatedValues = function (node, values, isNegative) {
         var valuesToAdd = popoto.graph.node.filterExistingValues(node, values);
@@ -3137,22 +3157,36 @@ popoto = function () {
         if (valuesToAdd.length <= 0) {
             return;
         }
-        var parameters = {};
-        var count = 0;
-        var constraints = valuesToAdd.map(function (v) {
-            var constraintAttr = popoto.provider.node.getConstraintAttribute(v.label);
-            var param = "p" + count++;
-            parameters[param] = v.id;
-            return "( type(r) = \"" + v.rel + "\" AND v." + constraintAttr + " = $" + param + " AND \"" + v.label + "\" IN labels(v) )";
-        });
 
-        var statements = [
-            {
-                "statement": "MATCH (n:`" + node.label + "`)-[r]-(v) WHERE " + constraints.join(" OR ") + " RETURN DISTINCT {rel:type(r), value:v, label:labels(v)} AS val",
-                "parameters": parameters,
-                "resultDataContents": ["row"]
+        var statements = [];
+
+        valuesToAdd.forEach(function (v) {
+            var constraintAttr = popoto.provider.node.getConstraintAttribute(v.label);
+
+            var statement = "MATCH ";
+            if (constraintAttr === popoto.query.NEO4J_INTERNAL_ID) {
+                statement += "(v:`" + v.label + "`) WHERE (ID(v) = $p)";
+            } else {
+                statement += "(v:`" + v.label + "`) WHERE (v." + constraintAttr + " = $p)";
             }
-        ];
+
+            var resultAttributes = popoto.provider.node.getReturnAttributes(v.label);
+            var sep = "";
+
+            statement += " RETURN DISTINCT \"" + v.rel + "\" AS rel, \"" + v.label + "\" AS label, {" + resultAttributes.reduce(function (a, attr) {
+                a += sep + attr + ":v." + attr;
+                sep = ", ";
+                return a
+            }, "") + "} AS value LIMIT 1";
+
+            statements.push(
+                {
+                    "statement": statement,
+                    "parameters": {p: v.id},
+                    "resultDataContents": ["row"]
+                }
+            )
+        });
 
         popoto.logger.info("addRelatedValues ==>");
         popoto.rest.post(
@@ -3164,37 +3198,42 @@ popoto = function () {
 
                 var parsedData = popoto.rest.response.parse(response);
                 var count = 0;
-                parsedData[0].forEach(function (d) {
-                    var value = {
-                        "id": popoto.graph.generateId(),
-                        "parent": node,
-                        "attributes": d.val.value,
-                        "type": popoto.graph.node.NodeTypes.VALUE,
-                        "label": d.val.label[0]
-                    };
+                parsedData.forEach(function (data) {
+                    if (data.length > 0) {
+                        var dataLabel = data[0].label;
+                        var dataValue = data[0].value;
+                        var dataRel = data[0].rel;
 
-                    popoto.graph.ignoreCount = true;
+                        var value = {
+                            "id": popoto.graph.generateId(),
+                            "parent": node,
+                            "attributes": dataValue,
+                            "type": popoto.graph.node.NodeTypes.VALUE,
+                            "label": dataLabel
+                        };
+                        popoto.graph.ignoreCount = true;
 
-                    var nodeRelationships = node.relationships;
-                    var nodeRels = nodeRelationships.filter(function (r) {
-                        return r.label === d.val.rel && r.target === d.val.label[0]
-                    });
+                        var nodeRelationships = node.relationships;
+                        var nodeRels = nodeRelationships.filter(function (r) {
+                            return r.label === dataRel && r.target === dataLabel
+                        });
 
-                    var nodeRel = {label: d.val.rel, target: d.val.label[0]};
-                    if (nodeRels.length > 0) {
-                        nodeRel = nodeRels[0];
-                    }
-
-                    popoto.graph.addRelationshipData(node, nodeRel, function () {
-                        count++;
-
-                        if (count === parsedData.length) {
-                            popoto.graph.ignoreCount = false;
-                            popoto.graph.hasGraphChanged = true;
-                            popoto.result.hasChanged = true;
-                            popoto.update();
+                        var nodeRel = {label: dataRel, target: dataLabel};
+                        if (nodeRels.length > 0) {
+                            nodeRel = nodeRels[0];
                         }
-                    }, [value], isNegative);
+
+                        popoto.graph.addRelationshipData(node, nodeRel, function () {
+                            count++;
+
+                            if (count === parsedData.length) {
+                                popoto.graph.ignoreCount = false;
+                                popoto.graph.hasGraphChanged = true;
+                                popoto.result.hasChanged = true;
+                                popoto.update();
+                            }
+                        }, [value], isNegative);
+                    }
                 });
             })
             .fail(function (xhr, textStatus, errorThrown) {
@@ -5037,6 +5076,12 @@ popoto = function () {
 
     popoto.result.updateResults = function () {
         if (popoto.result.hasChanged) {
+
+            // Abort any old running request before starting a new one
+            if (popoto.result.resultsXhr !== undefined) {
+                popoto.result.resultsXhr.abort();
+            }
+
             var query = popoto.query.generateResultQuery();
             popoto.result.lastGeneratedQuery = query;
 
@@ -5065,7 +5110,7 @@ popoto = function () {
 
             popoto.logger.info("Results ==>");
 
-            popoto.rest.post(postData)
+            popoto.result.resultsXhr = popoto.rest.post(postData)
                 .done(function (response) {
                     popoto.logger.info("<== Results");
 
@@ -5120,13 +5165,16 @@ popoto = function () {
                     popoto.result.hasChanged = false;
                 })
                 .fail(function (xhr, textStatus, errorThrown) {
-                    popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
+                    if (textStatus !== "abort") {
+                        popoto.logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + popoto.rest.CYPHER_URL + "\" defined in \"popoto.rest.CYPHER_URL\" property: " + errorThrown);
 
-                    // Notify listeners
-                    popoto.result.resultListeners.forEach(function (listener) {
-                        listener([]);
-                    });
-
+                        // Notify listeners
+                        popoto.result.resultListeners.forEach(function (listener) {
+                            listener([]);
+                        });
+                    } else {
+                        popoto.logger.info("<=X= Results - Aborted!");
+                    }
                 });
         }
     };

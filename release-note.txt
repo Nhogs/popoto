@@ -44,6 +44,8 @@ popoto-1.2
     - Changed results and page size properties, popoto.result.RESULTS_PAGE_SIZE define the number of results displayed in result component, and popoto.query.MAX_RESULTS_COUNT
      define the number of results returned in cypher query.
 
+    - Added ajax execution optimization to avoid inconsistent data.
+
 popoto-1.1.2
  2017-05-02
 

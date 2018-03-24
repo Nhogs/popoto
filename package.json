@@ -1,7 +1,7 @@
 {
   "name": "popotojs",
-  "version": "1.2.0-rc.4",
-  "description": "Neo4j graph based search interface.",
+  "version": "1.2.0-rc.4.1",
+  "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
     "d3",
@@ -31,9 +31,9 @@
     "url": "https://github.com/Popotojs/popotojs.git"
   },
   "scripts": {
-    "pretest": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node",
+    "pretest": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c ",
     "test": "tape 'test/**/*-test.js'",
-    "prepublishOnly": "npm run test && rollup -c && uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js"
+    "prepublishOnly": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js"
   },
   "dependencies": {
     "d3": "3.5.17",

@@ -33,7 +33,7 @@
   "scripts": {
     "pretest": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c ",
     "test": "tape 'test/**/*-test.js'",
-    "prepublishOnly": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js"
+    "prepublishOnly": "npm run test && uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js"
   },
   "dependencies": {
     "d3": "3.5.17",

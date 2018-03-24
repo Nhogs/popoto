@@ -1,6 +1,6 @@
 {
-  "name": "popoto",
-  "version": "1.2.0-rc.2",
+  "name": "popotojs",
+  "version": "1.2.0-rc.4",
   "description": "Neo4j graph based search interface.",
   "keywords": [
     "popoto",
@@ -21,20 +21,30 @@
     "email": "contact@popotojs.com"
   },
   "contributors": [],
-  "main": "src/js/popoto.js",
+  "main": "dist/popoto.node.js",
+  "unpkg": "dist/popoto.min.js",
+  "jsdelivr": "dist/popoto.min.js",
+  "module": "index",
+  "jsnext:main": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/Popotojs/popotojs.git"
   },
   "scripts": {
-    "eslint": "eslint src/js/popoto.js",
-    "pretest": "rm -rf dist && mkdir dist"
+    "pretest": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node",
+    "test": "tape 'test/**/*-test.js'",
+    "prepublishOnly": "npm run test && rollup -c && uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js"
   },
   "dependencies": {
     "d3": "3.5.17",
     "jquery": "^3.3.1"
   },
   "devDependencies": {
-    "eslint": "^4.19.0"
+    "json2module": "^0.0.3",
+    "rollup": "^0.57.1",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rimraf": "^2.6.2",
+    "tape": "^4.9.0",
+    "uglify-js": "^3.3.16"
   }
 }

@@ -1,5 +1,6 @@
-# IntelliJ project files
 .idea
+.DS_Store
 dist
 node_modules
 package-lock.json
+npm-debug.log

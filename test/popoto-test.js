@@ -1,7 +1,5 @@
-const tape = require("tape"),
-    popoto = require("../index");
+const tape = require("tape");
 
-tape("test say hello", function (test) {
-    test.equal(popoto.sayHello(), "hello");
+tape("test", function (test) {
     test.end();
 });

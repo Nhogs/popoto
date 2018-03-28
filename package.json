@@ -31,8 +31,9 @@
     "url": "https://github.com/Popotojs/popotojs.git"
   },
   "scripts": {
+    "build": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c && npm run uglify",
     "pretest": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c",
-    "test": "tape 'test/**/*-test.js'",
+    "test": "jest --ci --coverage",
     "uglify": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js",
     "prepublishOnly": "npm run test && npm run uglify"
   },
@@ -45,7 +46,8 @@
     "rollup": "^0.57.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rimraf": "^2.6.2",
-    "tape": "^4.9.0",
-    "uglify-js": "^3.3.16"
+    "jest": "^22.4.3",
+    "uglify-js": "^3.3.16",
+    "uglifycss": "^0.0.29"
   }
 }

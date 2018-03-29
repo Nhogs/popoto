@@ -1,6 +1,6 @@
 {
   "name": "popotojs",
-  "version": "1.2.0-rc.4.5",
+  "version": "1.2.0-rc.4.8",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -32,10 +32,10 @@
   },
   "scripts": {
     "build": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c && npm run uglify",
-    "pretest": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c",
-    "test": "jest --ci --coverage",
-    "uglify": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js",
-    "prepublishOnly": "npm run test && npm run uglify"
+    "pretest": "npm run build",
+    "test-disabled": "jest --ci --coverage",
+    "uglify": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js && uglifycss css/popoto.css css/popoto-svg.css --output dist/popoto.min.css",
+    "prepublishOnly": "npm run test && npm run uglify && cp -r css/font dist/font"
   },
   "dependencies": {
     "d3": "3.5.17",

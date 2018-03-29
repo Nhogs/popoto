@@ -1,4 +1,4 @@
-import {$,jQuery} from 'jquery';
+import jQuery from 'jquery';
 import logger from "../logger/logger";
 
 /**
@@ -52,7 +52,7 @@ rest.post = function (data, url) {
         postURL = url;
     }
 
-    return $.ajax(postURL, settings);
+    return jQuery.ajax(postURL, settings);
 };
 
 rest.response = {

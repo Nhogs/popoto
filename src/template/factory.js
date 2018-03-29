@@ -1,6 +1,6 @@
 import {default as d3} from "d3";
 
-var factory = (function (d3) {
+var factory = (function () {
     'use strict';
 
     var self = {};
@@ -40,6 +40,6 @@ var factory = (function (d3) {
     };
 
     return self;
-})(d3);
+})();
 
 export default factory;

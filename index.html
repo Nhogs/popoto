@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>Popoto Search</title>
-    <link rel="stylesheet" href="css/popoto.min.css">
+    <link rel="stylesheet" href="dist/popoto.min.css">
     <style>
         #popoto-graph:fullscreen {
             width: 100%;
@@ -70,10 +70,10 @@
 
 <!-- Jquery is only used in popoto.js to send ajax POST request on Neo4j REST API -->
 <!-- This dependency will probably be removed in future releases -->
-<script src="js/jquery-2.1.0.min.js" charset="utf-8"></script>
+<script src="https://unpkg.com/jquery" charset="utf-8"></script>
 
-<script src="js/d3.v3.min.js" charset="utf-8"></script>
-<script src="js/popoto.min.js" charset="utf-8"></script>
+<script src="https://unpkg.com/d3@3" charset="utf-8"></script>
+<script src="dist/popoto.js" charset="utf-8"></script>
 
 <script>
     /**
@@ -105,25 +105,25 @@
      * These label provider configuration can be used to customize the node display in the graph.
      * See www.popotojs.com or example for more details on available configuration options.
      */
-    popoto.provider.node.Provider = {
-        "Person": {
-            "returnAttributes": ["name", "born"],
-            "constraintAttribute": "name",
-            "autoExpandRelations": true // if set to true Person nodes will be automatically expanded in graph
-        },
-        "Movie": {
-            "returnAttributes": ["title", "released", "tagline"],
-            "constraintAttribute": "title"
-        }
-    };
+    // popoto.provider.node.Provider = {
+    //     "Person": {
+    //         "returnAttributes": ["name", "born"],
+    //         "constraintAttribute": "name",
+    //         "autoExpandRelations": true // if set to true Person nodes will be automatically expanded in graph
+    //     },
+    //     "Movie": {
+    //         "returnAttributes": ["title", "released", "tagline"],
+    //         "constraintAttribute": "title"
+    //     }
+    // };
 
     /**
      * Here a listener is used to retrieve the total results count and update the page accordingly.
      * This listener will be called on every graph modification.
      */
-    popoto.result.onTotalResultCount(function (count) {
-        document.getElementById("result-total-count").innerHTML = "(" + count + ")";
-    });
+    // popoto.result.onTotalResultCount(function (count) {
+    //     document.getElementById("result-total-count").innerHTML = "(" + count + ")";
+    // });
 
     /**
      * The number of results returned can be changed with the following parameter.
@@ -141,7 +141,7 @@
      * With INFO level all the executed cypher query can be seen in the navigator console.
      * Default is NONE
      */
-    //popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;
+    popoto.logger.LEVEL = popoto.logger.LogLevels.DEBUG;
 
     /**
      * Start popoto.js generation.

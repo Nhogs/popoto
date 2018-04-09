@@ -1191,20 +1191,18 @@ provider.node.DEFAULT_PROVIDER = (
          */
         "displayResults": function (pElmt) {
             var result = pElmt.data()[0];
-
             var returnAttributes = provider.node.getReturnAttributes(result.label);
 
-            var table = pElmt.append("table").attr("class", "ppt-result-table");
-
             returnAttributes.forEach(function (attribute) {
+                var div = pElmt.append("div").attr("class", "ppt-result-attribute-div");
                 var attributeName = attribute;
 
                 if (query.NEO4J_INTERNAL_ID === attribute) {
                     attributeName = query.NEO4J_INTERNAL_ID.queryInternalName;
                 }
 
-                var tr = table.append("tr");
-                tr.append("th").text(function () {
+                var span = div.append("span");
+                span.text(function () {
                     if (attribute === query.NEO4J_INTERNAL_ID) {
                         return "internal ID:"
                     } else {
@@ -1212,7 +1210,7 @@ provider.node.DEFAULT_PROVIDER = (
                     }
                 });
                 if (result.attributes[attributeName] !== undefined) {
-                    tr.append("td").text(function (result) {
+                    div.append("span").text(function (result) {
                         return result.attributes[attributeName];
                     });
                 }

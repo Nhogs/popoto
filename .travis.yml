@@ -1,29 +1,18 @@
 language: node_js
 node_js:
-  - "8"
-
-jdk:
-  # Needed for local Neo4j
-  - oraclejdk8
-
-services:
-#  - neo4j
-
-env:
-  - NEO4J_VERSION="3.3.4"
-
+ - stable
+install:
+ - npm install
 cache:
   directories:
     - node_modules
-
-before_install:
-  # Install Neo4j locally:
-  - wget dist.neo4j.org/neo4j-community-$NEO4J_VERSION-unix.tar.gz
-  - tar -xzf neo4j-community-$NEO4J_VERSION-unix.tar.gz
-  - neo4j-community-$NEO4J_VERSION/bin/neo4j start
-  # change password
-  - sleep 10  # give Neo4J some time to start
-  - curl -v POST http://neo4j:neo4j@localhost:7474/user/neo4j/password -d"password=password"
-
-script:
-#  - npm run eslint
+after_success:
+# - npm run coverage
+# - npm run docs
+deploy:
+ - provider: npm
+   email: "contact@popotojs.com"
+   api_key: $NPM_TOKEN
+notifications:
+ slack: pipot:9bOymKdaSOJyFzqBStPiLo6l
+ on_success: always

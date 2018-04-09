@@ -1,1 +1,13 @@
-export {default as popoto} from "./src/js/popoto";
+export {version} from "./dist/package";
+export {default as cypherviewer} from "./src/cypherviewer/cypherviewer";
+export {default as graph} from "./src/graph/graph";
+export {default as logger} from "./src/logger/logger";
+export {default as provider} from "./src/provider/provider";
+export {default as query} from "./src/query/query";
+export {default as queryviewer} from "./src/queryviewer/queryviewer";
+export {default as rest} from "./src/rest/rest";
+export {default as result} from "./src/result/result";
+export {default as taxonomy} from "./src/taxonomy/taxonomy";
+export {default as factory} from "./src/template/factory";
+export {default as tools} from "./src/tools/tools";
+export {start, update, updateGraph} from "./src/popoto";

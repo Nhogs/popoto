@@ -1,5 +1,7 @@
-popoto-1.2
+popoto-2.0
  TBD
+
+    - Updated to D3 V5
 
     - Added donut representation of node relations around the node in graph.
 

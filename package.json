@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "1.2.0-rc.2",
+  "version": "2.0.0-alpha.0",
   "description": "Neo4j graph based search interface.",
   "keywords": [
     "popoto",
@@ -26,15 +26,8 @@
     "type": "git",
     "url": "https://github.com/Popotojs/popotojs.git"
   },
-  "scripts": {
-    "eslint": "eslint src/js/popoto.js",
-    "pretest": "rm -rf dist && mkdir dist"
-  },
   "dependencies": {
-    "d3": "3.5.17",
+    "d3": "^5.0.0",
     "jquery": "^3.3.1"
-  },
-  "devDependencies": {
-    "eslint": "^4.19.0"
   }
 }

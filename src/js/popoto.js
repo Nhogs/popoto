@@ -21,7 +21,7 @@
  */
 popoto = function () {
     var popoto = {
-        version: "1.2.rc4"
+        version: "2.0.0-alpha.0"
     };
 
     /**
@@ -69,6 +69,13 @@ popoto = function () {
 
             if (popoto.cypherviewer.isActive) {
                 popoto.cypherviewer.createQueryArea();
+            }
+
+            // TODO ZZZ Define/check voronoi extent initialisation
+            if (popoto.graph.USE_VORONOI_LAYOUT === true) {
+                // Put a correct extent,
+                // The extent define the box where voronoi is diplayed
+                popoto.graph.voronoi.extent([[-popoto.graph.getSVGWidth(), -popoto.graph.getSVGWidth()], [popoto.graph.getSVGWidth() * 2, popoto.graph.getSVGHeight() * 2]]);
             }
 
             popoto.update();
@@ -129,6 +136,7 @@ popoto = function () {
 
         // Do not update if rootNode is not valid.
         var root = popoto.graph.getRootNode();
+
         if (!root || root.label === undefined) {
             return;
         }
@@ -155,9 +163,13 @@ popoto = function () {
             // Starts the D3.js force simulation.
             // This method must be called when the layout is first created, after assigning the nodes and links.
             // In addition, it should be called again whenever the nodes or links change.
-            popoto.graph.force.start();
             popoto.graph.link.updateLinks();
             popoto.graph.node.updateNodes();
+
+            // Force simulation restart
+            popoto.graph.force.nodes(popoto.graph.nodes);
+            popoto.graph.force.force("link").links(popoto.graph.links);
+            popoto.graph.force.alpha(1).restart();
         }
     };
 
@@ -472,12 +484,12 @@ popoto = function () {
 
         var label = this.attributes.value.value;
 
-        while (popoto.graph.force.nodes().length > 0) {
-            popoto.graph.force.nodes().pop();
+        while (popoto.graph.nodes.length > 0) {
+            popoto.graph.nodes.pop();
         }
 
-        while (popoto.graph.force.links().length > 0) {
-            popoto.graph.force.links().pop();
+        while (popoto.graph.links.length > 0) {
+            popoto.graph.links.pop();
         }
 
         // Reinitialize internal label generator
@@ -570,18 +582,17 @@ popoto = function () {
      * Reset the graph to display the root node only.
      */
     popoto.tools.reset = function () {
-        while (popoto.graph.force.nodes().length > 0) {
-            popoto.graph.force.nodes().pop();
+        while (popoto.graph.nodes.length > 0) {
+            popoto.graph.nodes.pop();
         }
-
-        while (popoto.graph.force.links().length > 0) {
-            popoto.graph.force.links().pop();
+        while (popoto.graph.links.length > 0) {
+            popoto.graph.links.pop();
         }
 
         // Reinitialize internal label generator
         popoto.graph.node.internalLabels = {};
 
-        popoto.update();
+        // TODO ZZZ check we can remove update here
         if (typeof popoto.graph.mainLabel === 'string' || popoto.graph.mainLabel instanceof String) {
             if (popoto.provider.node.getSchema(popoto.graph.mainLabel) !== undefined) {
                 popoto.graph.addSchema(popoto.provider.node.getSchema(popoto.graph.mainLabel));
@@ -602,8 +613,7 @@ popoto = function () {
      * Reset zoom and center the view on svg center.
      */
     popoto.tools.center = function () {
-        popoto.graph.zoom.translate([0, 0]).scale(1);
-        popoto.graph.svg.transition().attr("transform", "translate(" + popoto.graph.zoom.translate() + ")" + " scale(" + popoto.graph.zoom.scale() + ")");
+        popoto.graph.svgTag.transition().call(popoto.graph.zoom.transform, d3.zoomIdentity);
     };
 
     /**
@@ -662,6 +672,10 @@ popoto = function () {
     // Counter used internally to generate unique id in graph elements (like nodes and links)
     popoto.graph.idGen = 0;
 
+    // TODO ZZZ extrat in datamodel module
+    popoto.graph.nodes = [];
+    popoto.graph.links = [];
+
     /**
      * ID of the HTML component where the graph query builder elements will be generated in.
      * @type {string}
@@ -669,7 +683,7 @@ popoto = function () {
     popoto.graph.containerId = "popoto-graph";
     popoto.graph.hasGraphChanged = true;
     // Defines the min and max level of zoom available in graph query builder.
-    popoto.graph.zoom = d3.behavior.zoom().scaleExtent([0.1, 10]);
+    popoto.graph.zoom = d3.zoom().scaleExtent([0.1, 10]);
     popoto.graph.WHEEL_ZOOM_ENABLED = true;
     popoto.graph.TOOL_TAXONOMY = "Show/hide taxonomy panel";
     popoto.graph.TOOL_RELATION = "Show/hide relation";
@@ -818,63 +832,57 @@ popoto = function () {
                 });
         }
 
-        var svgTag = htmlContainer.append("svg")
-        // .attr("viewBox", "0 0 800 600") TODO to avoid need of windows resize event
+        popoto.graph.svgTag = htmlContainer.append("svg")
+            .attr("class", "ppt-svg-graph")
+            // .attr("viewBox", "0 0 800 600") TODO to avoid need of windows resize event
             .call(popoto.graph.zoom.on("zoom", popoto.graph.rescale));
 
-        svgTag.on("dblclick.zoom", null)
-            .attr("class", "ppt-svg-graph");
+        popoto.graph.svgTag.on("dblclick.zoom", null);
 
         if (!popoto.graph.WHEEL_ZOOM_ENABLED) {
             // Disable mouse wheel events.
-            svgTag.on("wheel.zoom", null)
+            popoto.graph.svgTag.on("wheel.zoom", null)
                 .on("mousewheel.zoom", null);
         }
 
         // Objects created inside a <defs> element are not rendered immediately; instead, think of them as templates or macros created for future use.
-        popoto.graph.svgdefs = svgTag.append("defs");
+        popoto.graph.svgdefs = popoto.graph.svgTag.append("defs");
 
         // Cross marker for path with id #cross -X-
         popoto.graph.svgdefs.append("marker")
-            .attr({
-                "id": "cross",
-                "refX": 10,
-                "refY": 10,
-                "markerWidth": 20,
-                "markerHeight": 20,
-                "markerUnits": "strokeWidth",
-                "orient": "auto"
-            })
+            .attr("id", "cross")
+            .attr("refX", 10)
+            .attr("refY", 10)
+            .attr("markerWidth", 20)
+            .attr("markerHeight", 20)
+            .attr("markerUnits", "strokeWidth")
+            .attr("orient", "auto")
             .append("path")
             .attr("class", "ppt-marker-cross")
             .attr("d", "M5,5 L15,15 M15,5 L5,15");
 
         // Triangle marker for paths with id #arrow --|>
         popoto.graph.svgdefs.append("marker")
-            .attr({
-                "id": "arrow",
-                "refX": 9,
-                "refY": 3,
-                "markerWidth": 10,
-                "markerHeight": 10,
-                "markerUnits": "strokeWidth",
-                "orient": "auto"
-            })
+            .attr("id", "arrow")
+            .attr("refX", 9)
+            .attr("refY", 3)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
+            .attr("markerUnits", "strokeWidth")
+            .attr("orient", "auto")
             .append("path")
             .attr("class", "ppt-marker-arrow")
             .attr("d", "M0,0 L0,6 L9,3 z");
 
         // Reversed triangle marker for paths with id #reverse-arrow <|--
         popoto.graph.svgdefs.append("marker")
-            .attr({
-                "id": "reverse-arrow",
-                "refX": 0,
-                "refY": 3,
-                "markerWidth": 10,
-                "markerHeight": 10,
-                "markerUnits": "strokeWidth",
-                "orient": "auto"
-            })
+            .attr("id", "reverse-arrow")
+            .attr("refX", 0)
+            .attr("refY", 3)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
+            .attr("markerUnits", "strokeWidth")
+            .attr("orient", "auto")
             .append("path")
             .attr("class", "ppt-marker-reverse-arrow")
             .attr("d", "M0,3 L9,6 L9,0 z");
@@ -926,7 +934,7 @@ popoto = function () {
         popoto.graph.svgdefs.append("g")
             .attr("id", "voronoi-clip-path");
 
-        popoto.graph.svg = svgTag.append("svg:g");
+        popoto.graph.svg = popoto.graph.svgTag.append("svg:g");
 
         // Create two separated area for links and nodes
         // Links and nodes are separated in a dedicated "g" element
@@ -940,8 +948,8 @@ popoto = function () {
     };
 
     popoto.graph.centerRootNode = function () {
-        popoto.graph.getRootNode().px = popoto.graph.getSVGWidth() / 2;
-        popoto.graph.getRootNode().py = popoto.graph.getSVGHeight() / 2;
+        popoto.graph.getRootNode().fx = popoto.graph.getSVGWidth() / 2;
+        popoto.graph.getRootNode().fy = popoto.graph.getSVGHeight() / 2;
         popoto.update();
     };
 
@@ -975,59 +983,42 @@ popoto = function () {
      * Function to call on SVG zoom event to update the svg transform attribute.
      */
     popoto.graph.rescale = function () {
-        var trans = d3.event.translate,
-            scale = d3.event.scale;
-
-        popoto.graph.svg.attr("transform",
-            "translate(" + trans + ")"
-            + " scale(" + scale + ")");
+        popoto.graph.svg.attr("transform", d3.event.transform);
     };
 
-    /******************************
-     * Default parameters used to configure D3.js force layout.
-     * These parameter can be modified to change graph behavior.
-     ******************************/
-    popoto.graph.LINK_STRENGTH = 1;
-    popoto.graph.FRICTION = 0.8;
-    popoto.graph.CHARGE = -1400;
-    popoto.graph.THETA = 0.8;
-    popoto.graph.GRAVITY = 0.0;
+    popoto.graph.CHARGE = -500;
 
     /**
-     *  Create the D3.js force layout for the graph query builder.
+     *  Create the D3.js force simultation for the graph query builder.
      */
+    // TODO ZZZ rename to create createForceSimulation
     popoto.graph.createForceLayout = function () {
 
-        popoto.graph.force = d3.layout.force()
-            .size([popoto.graph.getSVGWidth(), popoto.graph.getSVGHeight()])
-            .linkDistance(popoto.provider.link.getDistance)
-            .linkStrength(function (d) {
-                if (d.linkStrength) {
-                    return d.linkStrength;
-                } else {
-                    return popoto.graph.LINK_STRENGTH;
-                }
-            })
-            .friction(popoto.graph.FRICTION)
-            .charge(function (d) {
-                if (d.charge) {
-                    return d.charge;
-                } else {
-                    return popoto.graph.CHARGE;
-                }
-            })
-            .theta(popoto.graph.THETA)
-            .gravity(popoto.graph.GRAVITY)
-            .on("tick", popoto.graph.tick); // Function called on every position update done by D3.js
+        popoto.graph.force = d3.forceSimulation()
+            .force("charge", d3.forceManyBody()
+                .strength(function (d) {
+                        if (d.charge) {
+                            return d.charge;
+                        } else {
+                            return popoto.graph.CHARGE;
+                        }
+                    }
+                )
+            )
+            .force(
+                "link",
+                d3.forceLink().id(
+                    function (d) {
+                        return d.id;
+                    }
+                ).distance(popoto.provider.link.getDistance)
+            );
 
-        // Disable event propagation on drag to avoid zoom and pan issues
-        popoto.graph.force.drag()
-            .on("dragstart", function (d) {
-                d3.event.sourceEvent.stopPropagation();
-            })
-            .on("dragend", function (d) {
-                d3.event.sourceEvent.stopPropagation();
-            });
+
+        popoto.graph.force.nodes(popoto.graph.nodes);
+        popoto.graph.force.force("link").links(popoto.graph.links);
+
+        popoto.graph.force.on("tick", popoto.graph.tick);
     };
 
     /**
@@ -1037,7 +1028,7 @@ popoto = function () {
      * @param label label of the node to add as root.
      */
     popoto.graph.addRootNode = function (label) {
-        if (popoto.graph.force.nodes().length > 0) {
+        if (popoto.graph.nodes.length > 0) {
             popoto.logger.warn("popoto.graph.addRootNode is called but the graph is not empty.");
         }
         if (popoto.provider.node.getSchema(label) !== undefined) {
@@ -1051,6 +1042,8 @@ popoto = function () {
                 // These coordinate will never change at runtime except if the window is resized.
                 "x": popoto.graph.getSVGWidth() / 2,
                 "y": popoto.graph.getSVGHeight() / 2,
+                "fx": popoto.graph.getSVGWidth() / 2,
+                "fy": popoto.graph.getSVGHeight() / 2,
                 "tx": popoto.graph.getSVGWidth() / 2,
                 "ty": popoto.graph.getSVGHeight() / 2,
                 "label": label,
@@ -1065,7 +1058,7 @@ popoto = function () {
                 "isAutoLoadValue": popoto.provider.node.getIsAutoLoadValue(label) === true
             };
 
-            popoto.graph.force.nodes().push(node);
+            popoto.graph.nodes.push(node);
             popoto.graph.notifyListeners(popoto.graph.Events.NODE_ROOT_ADD, [node]);
 
             popoto.graph.node.loadRelationshipData(node, function (relationships) {
@@ -1095,7 +1088,7 @@ popoto = function () {
      * @param graphSchema schema of the graph to add.
      */
     popoto.graph.addSchema = function (graphSchema) {
-        if (popoto.graph.force.nodes().length > 0) {
+        if (popoto.graph.nodes.length > 0) {
             popoto.logger.warn("popoto.graph.addSchema is called but the graph is not empty.");
         }
 
@@ -1108,6 +1101,8 @@ popoto = function () {
             // These coordinate will never change at runtime except if the window is resized.
             "x": popoto.graph.getSVGWidth() / 2,
             "y": popoto.graph.getSVGHeight() / 2,
+            "fx": popoto.graph.getSVGWidth() / 2,
+            "fy": popoto.graph.getSVGHeight() / 2,
             "tx": popoto.graph.getSVGWidth() / 2,
             "ty": popoto.graph.getSVGHeight() / 2,
             "label": rootNodeSchema.label,
@@ -1121,8 +1116,7 @@ popoto = function () {
             "relationships": [],
             "isAutoLoadValue": popoto.provider.node.getIsAutoLoadValue(rootNodeSchema.label) === true
         };
-
-        popoto.graph.force.nodes().push(rootNode);
+        popoto.graph.nodes.push(rootNode);
         popoto.graph.notifyListeners(popoto.graph.Events.NODE_ROOT_ADD, [rootNode]);
 
         if (rootNodeSchema.hasOwnProperty("rel") && rootNodeSchema.rel.length > 0) {
@@ -1161,9 +1155,7 @@ popoto = function () {
             schema: relationSchema
         };
 
-        popoto.graph.force.links().push(
-            newLink
-        );
+        popoto.graph.links.push(newLink);
     };
 
     popoto.graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCount, parentRel) {
@@ -1246,7 +1238,7 @@ popoto = function () {
             });
         }
 
-        popoto.graph.force.nodes().push(node);
+        popoto.graph.nodes.push(node);
 
         if (!isCollapsed && nodeSchema.hasOwnProperty("rel")) {
             for (var linkIndex = 0; linkIndex < nodeSchema.rel.length; linkIndex++) {
@@ -1263,7 +1255,7 @@ popoto = function () {
      */
     popoto.graph.getRootNode = function () {
         if (popoto.graph.force !== undefined) {
-            return popoto.graph.force.nodes()[0];
+            return popoto.graph.nodes[0];
         }
     };
 
@@ -1274,7 +1266,7 @@ popoto = function () {
     popoto.graph.getSchema = function () {
 
         function isLeaf(node) {
-            var links = popoto.graph.force.links();
+            var links = popoto.graph.links;
             if (links.length > 0) {
                 links.forEach(function (link) {
                     if (link.source === node) {
@@ -1300,7 +1292,7 @@ popoto = function () {
             });
         }
 
-        var links = popoto.graph.force.links();
+        var links = popoto.graph.links;
         if (links.length > 0) {
             links.forEach(function (link) {
                 if (link.type === popoto.graph.link.LinkTypes.RELATION) {
@@ -1366,35 +1358,37 @@ popoto = function () {
      * Function to call on D3.js force layout tick event.
      * This function will update the position of all links and nodes elements in the graph with the force layout computed coordinate.
      */
-    popoto.graph.tick = function (e) {
+    popoto.graph.tick = function () {
         var paths = popoto.graph.svg.selectAll("#" + popoto.graph.link.gID + " > g");
 
         // Update link paths
         paths.selectAll(".ppt-link")
             .attr("d", function (d) {
-                var parentAngle = popoto.graph.computeParentAngle(d.target);
-                var sourceMargin = popoto.provider.node.getSize(d.source);
-                var targetMargin = popoto.provider.node.getSize(d.target);
+                var linkSource = d.source;
+                var linkTarget = d.target;
+                var parentAngle = popoto.graph.computeParentAngle(linkTarget);
+                var sourceMargin = popoto.provider.node.getSize(linkSource);
+                var targetMargin = popoto.provider.node.getSize(linkTarget);
 
-                if (!popoto.graph.DISABLE_RELATION && d.source.hasOwnProperty("relationships") && d.source.relationships.length > 0) {
-                    sourceMargin = popoto.graph.node.getDonutOuterRadius(d.source);
+                if (!popoto.graph.DISABLE_RELATION && linkSource.hasOwnProperty("relationships") && linkSource.relationships.length > 0) {
+                    sourceMargin = popoto.graph.node.getDonutOuterRadius(linkSource);
                 }
 
-                if (!popoto.graph.DISABLE_RELATION && d.target.hasOwnProperty("relationships") && d.target.relationships.length > 0) {
-                    targetMargin = popoto.graph.node.getDonutOuterRadius(d.target);
+                if (!popoto.graph.DISABLE_RELATION && linkTarget.hasOwnProperty("relationships") && linkTarget.relationships.length > 0) {
+                    targetMargin = popoto.graph.node.getDonutOuterRadius(linkTarget);
                 }
 
-                var targetX = d.target.x + ((targetMargin) * Math.cos(parentAngle)),
-                    targetY = d.target.y - ((targetMargin) * Math.sin(parentAngle));
+                var targetX = linkTarget.x + ((targetMargin) * Math.cos(parentAngle)),
+                    targetY = linkTarget.y - ((targetMargin) * Math.sin(parentAngle));
 
-                var sourceX = d.source.x - ((sourceMargin) * Math.cos(parentAngle)),
-                    sourceY = d.source.y + ((sourceMargin) * Math.sin(parentAngle));
+                var sourceX = linkSource.x - ((sourceMargin) * Math.cos(parentAngle)),
+                    sourceY = linkSource.y + ((sourceMargin) * Math.sin(parentAngle));
 
                 // Add an intermediate point in path center
                 var middleX = (targetX + sourceX) / 2,
                     middleY = (targetY + sourceY) / 2;
 
-                if (d.source.x <= d.target.x || popoto.graph.ignoreMirroLinkLabels === true) {
+                if (linkSource.x <= linkTarget.x || popoto.graph.ignoreMirroLinkLabels === true) {
                     return "M" + sourceX + " " + sourceY + "L" + middleX + " " + middleY + "L" + targetX + " " + targetY;
                 } else {
                     return "M" + targetX + " " + targetY + "L" + middleX + " " + middleY + "L" + sourceX + " " + sourceY;
@@ -1424,19 +1418,6 @@ popoto = function () {
                 return "#ppt-path_" + d.id;
             });
 
-        if (popoto.graph.USE_DONUT_FORCE === true) {
-
-            var k = .1 * e.alpha;
-
-            // Push nodes toward their designated focus.
-            popoto.graph.force.nodes().forEach(function (n) {
-                if (n.tx !== undefined && n.ty !== undefined) {
-                    n.y += (n.ty - n.y) * k;
-                    n.x += (n.tx - n.x) * k;
-                }
-            });
-        }
-
         popoto.graph.svg.selectAll("#" + popoto.graph.node.gID + " > g")
             .attr("transform", function (d) {
                 return "translate(" + (d.x) + "," + (d.y) + ")";
@@ -1445,7 +1426,7 @@ popoto = function () {
         if (popoto.graph.USE_VORONOI_LAYOUT === true) {
 
             var clip = d3.select("#voronoi-clip-path").selectAll('.voroclip')
-                .data(popoto.graph.recenterVoronoi(popoto.graph.force.nodes()), function (d) {
+                .data(popoto.graph.recenterVoronoi(popoto.graph.nodes), function (d) {
                     return d.point.id;
                 });
 
@@ -1454,9 +1435,11 @@ popoto = function () {
                     return 'voroclip-' + d.point.id;
                 })
                 .attr('class', 'voroclip');
+
             clip.exit().remove();
 
             clip.selectAll('path').remove();
+
             clip.append('path')
                 .attr('id', function (d) {
                     return 'pvoroclip-' + d.point.id;
@@ -1491,18 +1474,17 @@ popoto = function () {
      * This function will update the graph with all removed, modified or added links using d3.js mechanisms.
      */
     popoto.graph.link.updateLinks = function () {
-        popoto.graph.link.svgLinkElements = popoto.graph.svg.select("#" + popoto.graph.link.gID).selectAll("g");
-        popoto.graph.link.updateData();
-        popoto.graph.link.removeElements();
-        popoto.graph.link.addNewElements();
+        var data = popoto.graph.link.updateData();
+        popoto.graph.link.removeElements(data.exit());
+        popoto.graph.link.addNewElements(data.enter());
         popoto.graph.link.updateElements();
     };
 
     /**
-     * Update the links element with data coming from popoto.graph.force.links().
+     * Update the links element with data coming from popoto.graph.links.
      */
     popoto.graph.link.updateData = function () {
-        popoto.graph.link.svgLinkElements = popoto.graph.link.svgLinkElements.data(popoto.graph.force.links(), function (d) {
+        return popoto.graph.svg.select("#" + popoto.graph.link.gID).selectAll(".ppt-glink").data(popoto.graph.links, function (d) {
             return d.id;
         });
     };
@@ -1510,16 +1492,16 @@ popoto = function () {
     /**
      * Clean links elements removed from the list.
      */
-    popoto.graph.link.removeElements = function () {
-        popoto.graph.link.svgLinkElements.exit().remove();
+    popoto.graph.link.removeElements = function (exitingData) {
+        exitingData.remove();
     };
 
     /**
      * Create new elements.
      */
-    popoto.graph.link.addNewElements = function () {
+    popoto.graph.link.addNewElements = function (enteringData) {
 
-        var newLinkElements = popoto.graph.link.svgLinkElements.enter().append("g")
+        var newLinkElements = enteringData.append("g")
             .attr("class", "ppt-glink")
             .on("click", popoto.graph.link.clickLink)
             .on("mouseover", popoto.graph.link.mouseOverLink)
@@ -1540,12 +1522,14 @@ popoto = function () {
      * Update all the elements (new + modified)
      */
     popoto.graph.link.updateElements = function () {
-        popoto.graph.link.svgLinkElements
+        var toUpdateElem = popoto.graph.svg.select("#" + popoto.graph.link.gID).selectAll(".ppt-glink");
+
+        toUpdateElem
             .attr("id", function (d) {
                 return "ppt-glink_" + d.id;
             });
 
-        popoto.graph.link.svgLinkElements.selectAll(".ppt-link")
+        toUpdateElem.selectAll(".ppt-link")
             .attr("id", function (d) {
                 return "ppt-path_" + d.id
             })
@@ -1558,7 +1542,7 @@ popoto = function () {
 
         // Due to a bug on webkit browsers (as of 30/01/2014) textPath cannot be selected
         // To workaround this issue the selection is done with its associated css class
-        popoto.graph.link.svgLinkElements.selectAll("text")
+        toUpdateElem.selectAll("text")
             .attr("id", function (d) {
                 return "ppt-text_" + d.id
             })
@@ -1710,7 +1694,7 @@ popoto = function () {
         return popoto.provider.node.getSize(node) + popoto.graph.node.DONUTS_MARGIN + popoto.graph.node.DONUT_WIDTH;
     };
 
-    popoto.graph.node.pie = d3.layout.pie()
+    popoto.graph.node.pie = d3.pie()
         .sort(null)
         .value(function (d) {
             return 1;
@@ -1752,20 +1736,17 @@ popoto = function () {
      * Update Nodes SVG elements using D3.js update mechanisms.
      */
     popoto.graph.node.updateNodes = function () {
-        if (!popoto.graph.node.svgNodeElements) {
-            popoto.graph.node.svgNodeElements = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll("g");
-        }
-        popoto.graph.node.updateData();
-        popoto.graph.node.removeElements();
-        popoto.graph.node.addNewElements();
+        var data = popoto.graph.node.updateData();
+        popoto.graph.node.removeElements(data.exit());
+        popoto.graph.node.addNewElements(data.enter());
         popoto.graph.node.updateElements();
     };
 
     /**
-     * Update node data with changes done in popoto.graph.force.nodes() model.
+     * Update node data with changes done in popoto.graph.nodes model.
      */
     popoto.graph.node.updateData = function () {
-        popoto.graph.node.svgNodeElements = popoto.graph.node.svgNodeElements.data(popoto.graph.force.nodes(), function (d) {
+        var data = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").data(popoto.graph.nodes, function (d) {
             return d.id;
         });
 
@@ -1777,6 +1758,8 @@ popoto = function () {
             }
         }
         popoto.graph.hasGraphChanged = false;
+
+        return data;
     };
 
     /**
@@ -1791,7 +1774,7 @@ popoto = function () {
 
         var statements = [];
 
-        var countedNodes = popoto.graph.force.nodes()
+        var countedNodes = popoto.graph.nodes
             .filter(function (d) {
                 return d.type !== popoto.graph.node.NodeTypes.VALUE && d.type !== popoto.graph.node.NodeTypes.GROUP && (!d.hasOwnProperty("isNegative") || !d.isNegative);
             });
@@ -1910,16 +1893,14 @@ popoto = function () {
      * Remove old elements.
      * Should be called after updateData.
      */
-    popoto.graph.node.removeElements = function () {
-        var toRemove = popoto.graph.node.svgNodeElements.exit();
-
+    popoto.graph.node.removeElements = function (exitingData) {
         // Nodes without parent are simply removed.
-        toRemove.filter(function (d) {
+        exitingData.filter(function (d) {
             return !d.parent;
         }).remove();
 
         // Nodes with a parent are removed with an animation (nodes are collapsed to their parents before being removed)
-        toRemove.filter(function (d) {
+        exitingData.filter(function (d) {
             return d.parent;
         }).transition().duration(300).attr("transform", function (d) {
             return "translate(" + d.parent.x + "," + d.parent.y + ")";
@@ -1931,11 +1912,13 @@ popoto = function () {
      * Only the skeleton of new nodes are added custom data will be added during the element update phase.
      * Should be called after updateData and before updateElements.
      */
-    popoto.graph.node.addNewElements = function () {
-        var gNewNodeElements = popoto.graph.node.svgNodeElements.enter()
+    popoto.graph.node.addNewElements = function (enteringData) {
+
+        var gNewNodeElements = enteringData
             .append("g")
             .attr("class", "ppt-gnode")
-            .on("click", popoto.graph.node.nodeClick)
+
+        gNewNodeElements.on("click", popoto.graph.node.nodeClick)
             .on("mouseover", popoto.graph.node.mouseOverNode)
             // .on("mousemove", popoto.graph.node.mouseMoveNode)
             .on("mouseout", popoto.graph.node.mouseOutNode);
@@ -2100,17 +2083,19 @@ popoto = function () {
      * Updates all elements.
      */
     popoto.graph.node.updateElements = function () {
-        popoto.graph.node.svgNodeElements.attr("id", function (d) {
+        var toUpdateElem = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode");
+
+        toUpdateElem.attr("id", function (d) {
             return "popoto-gnode_" + d.id;
         });
 
         if (popoto.graph.USE_VORONOI_LAYOUT) {
-            popoto.graph.node.svgNodeElements.attr("clip-path", function (d) {
+            toUpdateElem.attr("clip-path", function (d) {
                 return "url(#voroclip-" + d.id + ")";
             });
         }
 
-        popoto.graph.node.svgNodeElements.select("defs")
+        toUpdateElem.select("defs")
             .select("clipPath")
             .attr("id", function (node) {
                 return "node-view" + node.id;
@@ -2120,15 +2105,40 @@ popoto = function () {
             });
 
         // Display voronoi paths
-        // popoto.graph.node.svgNodeElements.selectAll(".gra").data(["unique"]).enter().append("g").attr("class", "gra").append("use");
-        // popoto.graph.node.svgNodeElements.selectAll("use").attr("xlink:href",function(d){
+        // TODO ZZZ re|move
+        // popoto.graph.node.selectAllData.selectAll(".gra").data(["unique"]).enter().append("g").attr("class", "gra").append("use");
+        // popoto.graph.node.selectAllData.selectAll("use").attr("xlink:href",function(d){
         //     console.log("#pvoroclip-"+d3.select(this.parentNode.parentNode).datum().id);
         //     return "#pvoroclip-"+d3.select(this.parentNode.parentNode).datum().id;
         // }).attr("fill","none").attr("stroke","red").attr("stroke-width","1px");
 
-        popoto.graph.node.svgNodeElements.filter(function (n) {
+        // TODO ZZZ move functions?
+        toUpdateElem.filter(function (n) {
             return n.type !== popoto.graph.node.NodeTypes.ROOT
-        }).call(popoto.graph.force.drag);
+        }).call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+        function dragstarted(d) {
+            if (!d3.event.active) popoto.graph.force.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) popoto.graph.force.alphaTarget(0);
+            if (d.fixed === false) {
+                d.fx = null;
+                d.fy = null;
+            }
+
+        }
 
         popoto.graph.node.updateBackgroundElements();
         popoto.graph.node.updateMiddlegroundElements();
@@ -2136,11 +2146,12 @@ popoto = function () {
     };
 
     popoto.graph.node.updateBackgroundElements = function () {
-        // RELATIONSHIPS
-        popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-background").select(".ppt-donut-labels").selectAll("*").remove();
-        popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-background").select(".ppt-donut-segments").selectAll("*").remove();
+        var nodeBackgroundElements = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-background");
 
-        var gSegment = popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-background").select(".ppt-donut-segments").selectAll(".ppt-segment-container")
+        nodeBackgroundElements.select(".ppt-donut-labels").selectAll("*").remove();
+        nodeBackgroundElements.select(".ppt-donut-segments").selectAll("*").remove();
+
+        var gSegment = nodeBackgroundElements.select(".ppt-donut-segments").selectAll(".ppt-segment-container")
             .data(function (d) {
                 var relationships = [];
                 if (d.hasOwnProperty("relationships")) {
@@ -2166,7 +2177,7 @@ popoto = function () {
                 return d.label + " " + d.target;
             });
 
-        var gLabel = popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-background").select(".ppt-donut-labels").selectAll(".ppt-segment-container")
+        var gLabel = nodeBackgroundElements.select(".ppt-donut-labels").selectAll(".ppt-segment-container")
             .data(function (node) {
                 var relationships = [];
                 if (node.hasOwnProperty("relationships")) {
@@ -2206,7 +2217,7 @@ popoto = function () {
                     endAngle: relationship.directionAngle + (Math.PI - 0.1)
                 };
 
-                var arcPath = d3.svg.arc()
+                var arcPath = d3.arc()
                     .innerRadius(popoto.graph.node.getDonutInnerRadius(node))
                     .outerRadius(popoto.graph.node.getDonutOuterRadius(node))(intermediateArc);
 
@@ -2278,7 +2289,7 @@ popoto = function () {
             })
             .attr("d", function (d) {
                 var node = d3.select(this.parentNode.parentNode).datum();
-                return d3.svg.arc()
+                return d3.arc()
                     .innerRadius(popoto.graph.node.getDonutInnerRadius(node))
                     .outerRadius(popoto.graph.node.getDonutOuterRadius(node))(d)
             })
@@ -2310,7 +2321,7 @@ popoto = function () {
      * TODO refactor node generation to allow future extensions (for example add plugin with new node types...)
      */
     popoto.graph.node.updateMiddlegroundElements = function () {
-        var middleG = popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-middleground");
+        var middleG = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-middleground");
 
         middleG.attr("clip-path", function (node) {
             return "url(#node-view" + node.id + ")";
@@ -2490,6 +2501,7 @@ popoto = function () {
             .attr('x', 0)
             .attr('y', popoto.graph.node.TEXT_Y)
             .attr('text-anchor', 'middle');
+
         textMiddle
             .attr('y', popoto.graph.node.TEXT_Y)
             .attr("class", function (node) {
@@ -2539,7 +2551,8 @@ popoto = function () {
     popoto.graph.node.updateForegroundElements = function () {
 
         // Updates browse arrows status
-        var gArrows = popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-foreground")
+        // TODO ZZZ extract variable?
+        var gArrows = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground")
             .selectAll(".ppt-node-foreground-g-arrows");
         gArrows.classed("active", function (d) {
             return d.valueExpanded && d.data && d.data.length > popoto.graph.node.PAGE_SIZE;
@@ -2559,7 +2572,7 @@ popoto = function () {
         });
 
         // Update count box class depending on node type
-        var gForegrounds = popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-foreground");
+        var gForegrounds = popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground");
 
         gForegrounds.selectAll(".ppt-count-box").filter(function (d) {
             return d.type !== popoto.graph.node.NodeTypes.CHOOSE;
@@ -2587,7 +2600,7 @@ popoto = function () {
                 });
         }
 
-        popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-foreground").filter(function (node) {
+        popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground").filter(function (node) {
             return node.isNegative === true;
         }).selectAll(".ppt-g-node-ban")
             .attr("transform", function (d) {
@@ -2599,7 +2612,7 @@ popoto = function () {
             });
 
 
-        popoto.graph.node.svgNodeElements.selectAll(".ppt-g-node-foreground").selectAll(".ppt-g-node-ban")
+        popoto.graph.svg.select("#" + popoto.graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground").selectAll(".ppt-g-node-ban")
             .classed("active", function (node) {
                 return node.isNegative === true;
             });
@@ -2615,7 +2628,7 @@ popoto = function () {
         popoto.graph.addRelationshipData(node, d, function () {
             popoto.graph.ignoreCount = false;
             popoto.graph.hasGraphChanged = true;
-            popoto.updateGraph();
+            popoto.update();
         });
     };
 
@@ -2710,9 +2723,9 @@ popoto = function () {
 
                             if (clickedNode.isNegative) {
                                 // Remove all related nodes
-                                for (var i = popoto.graph.force.links().length - 1; i >= 0; i--) {
-                                    if (popoto.graph.force.links()[i].source === clickedNode) {
-                                        popoto.graph.node.removeNode(popoto.graph.force.links()[i].target);
+                                for (var i = popoto.graph.links.length - 1; i >= 0; i--) {
+                                    if (popoto.graph.links[i].source === clickedNode) {
+                                        popoto.graph.node.removeNode(popoto.graph.links[i].target);
                                     }
                                 }
 
@@ -2746,33 +2759,39 @@ popoto = function () {
 
             popoto.graph.notifyListeners(popoto.graph.Events.GRAPH_NODE_VALUE_COLLAPSE, [clickedNode]);
 
-            var linksToRemove = popoto.graph.force.links().filter(function (l) {
+            var linksToRemove = popoto.graph.links.filter(function (l) {
                 return l.source === clickedNode && l.type === popoto.graph.link.LinkTypes.VALUE;
             });
 
             // Remove children nodes from model
             linksToRemove.forEach(function (l) {
-                popoto.graph.force.nodes().splice(popoto.graph.force.nodes().indexOf(l.target), 1);
+                popoto.graph.nodes.splice(popoto.graph.nodes.indexOf(l.target), 1);
             });
 
             // Remove links from model
-            for (var i = popoto.graph.force.links().length - 1; i >= 0; i--) {
-                if (linksToRemove.indexOf(popoto.graph.force.links()[i]) >= 0) {
-                    popoto.graph.force.links().splice(i, 1);
+            for (var i = popoto.graph.links.length - 1; i >= 0; i--) {
+                if (linksToRemove.indexOf(popoto.graph.links[i]) >= 0) {
+                    popoto.graph.links.splice(i, 1);
                 }
             }
 
             // Node has been fixed when expanded so we unfix it back here.
             if (clickedNode.type !== popoto.graph.node.NodeTypes.ROOT) {
                 clickedNode.fixed = false;
+                clickedNode.fx = null;
+                clickedNode.fy = null;
             }
 
             // Parent node too if not root
             if (clickedNode.parent && clickedNode.parent.type !== popoto.graph.node.NodeTypes.ROOT) {
                 clickedNode.parent.fixed = false;
+                clickedNode.parent.fx = null;
+                clickedNode.parent.fy = null;
             }
 
             clickedNode.valueExpanded = false;
+            clickedNode.valueExpanded.fx = null;
+            clickedNode.valueExpanded.fy = null;
             popoto.update();
 
         } else {
@@ -2785,7 +2804,7 @@ popoto = function () {
      *
      */
     popoto.graph.node.collapseAllNode = function () {
-        popoto.graph.force.nodes().forEach(function (n) {
+        popoto.graph.nodes.forEach(function (n) {
             if ((n.type === popoto.graph.node.NodeTypes.CHOOSE || n.type === popoto.graph.node.NodeTypes.ROOT) && n.valueExpanded) {
                 popoto.graph.node.collapseNode(n);
             }
@@ -2886,32 +2905,32 @@ popoto = function () {
         var isAnyChangeDone = false;
 
         // For each expanded nodes
-        for (var i = popoto.graph.force.nodes().length - 1; i >= 0; i--) {
-            if (popoto.graph.force.nodes()[i].valueExpanded) {
+        for (var i = popoto.graph.nodes.length - 1; i >= 0; i--) {
+            if (popoto.graph.nodes[i].valueExpanded) {
 
                 // Look in node data if value can be found in reverse order to be able to remove value without effect on iteration index
-                for (var j = popoto.graph.force.nodes()[i].data.length - 1; j >= 0; j--) {
-                    if (popoto.graph.force.nodes()[i].data[j][attribute] === value) {
+                for (var j = popoto.graph.nodes[i].data.length - 1; j >= 0; j--) {
+                    if (popoto.graph.nodes[i].data[j][attribute] === value) {
                         isAnyChangeDone = true;
 
                         // Create field value if needed
-                        if (!popoto.graph.force.nodes()[i].hasOwnProperty("value")) {
-                            popoto.graph.force.nodes()[i].value = [];
+                        if (!popoto.graph.nodes[i].hasOwnProperty("value")) {
+                            popoto.graph.nodes[i].value = [];
                         }
 
                         // Add value
-                        popoto.graph.force.nodes()[i].value.push({
-                            attributes: popoto.graph.force.nodes()[i].data[j]
+                        popoto.graph.nodes[i].value.push({
+                            attributes: popoto.graph.nodes[i].data[j]
                         });
 
                         // Remove data added in value
-                        popoto.graph.force.nodes()[i].data.splice(j, 1);
+                        popoto.graph.nodes[i].data.splice(j, 1);
                     }
                 }
 
                 // Refresh node
-                popoto.graph.node.collapseNode(popoto.graph.force.nodes()[i]);
-                popoto.graph.node.expandNode(popoto.graph.force.nodes()[i]);
+                popoto.graph.node.collapseNode(popoto.graph.nodes[i]);
+                popoto.graph.node.expandNode(popoto.graph.nodes[i]);
             }
         }
 
@@ -2930,7 +2949,7 @@ popoto = function () {
      */
     popoto.graph.node.getContainingValue = function (label) {
         var nodesWithValue = [];
-        var links = popoto.graph.force.links(), nodes = popoto.graph.force.nodes();
+        var links = popoto.graph.links, nodes = popoto.graph.nodes;
 
         if (nodes.length > 0) {
 
@@ -2964,22 +2983,21 @@ popoto = function () {
      * @param value
      */
     popoto.graph.node.addValueForLabel = function (label, value) {
-
         var isAnyChangeDone = false;
 
         // Find choose node with label
-        for (var i = popoto.graph.force.nodes().length - 1; i >= 0; i--) {
-            if (popoto.graph.force.nodes()[i].type === popoto.graph.node.NodeTypes.CHOOSE && popoto.graph.force.nodes()[i].label === label) {
+        for (var i = popoto.graph.nodes.length - 1; i >= 0; i--) {
+            if (popoto.graph.nodes[i].type === popoto.graph.node.NodeTypes.CHOOSE && popoto.graph.nodes[i].label === label) {
 
                 // Create field value if needed
-                if (!popoto.graph.force.nodes()[i].hasOwnProperty("value")) {
-                    popoto.graph.force.nodes()[i].value = [];
+                if (!popoto.graph.nodes[i].hasOwnProperty("value")) {
+                    popoto.graph.nodes[i].value = [];
                 }
 
                 // check if value already exists
                 var isValueFound = false;
                 var constraintAttr = popoto.provider.node.getConstraintAttribute(label);
-                popoto.graph.force.nodes()[i].value.forEach(function (val) {
+                popoto.graph.nodes[i].value.forEach(function (val) {
                     if (val.attributes.hasOwnProperty(constraintAttr) && val.attributes[constraintAttr] === value.attributes[constraintAttr]) {
                         isValueFound = true;
                     }
@@ -2987,7 +3005,7 @@ popoto = function () {
 
                 if (!isValueFound) {
                     // Add value
-                    popoto.graph.force.nodes()[i].value.push(value);
+                    popoto.graph.nodes[i].value.push(value);
                     isAnyChangeDone = true;
                 }
             }
@@ -3003,12 +3021,11 @@ popoto = function () {
      * @param displayAttributeValue the value to find in data and to add if found
      */
     popoto.graph.node.addValue = function (nodeIds, displayAttributeValue) {
-
         var isAnyChangeDone = false;
 
         // Find choose node with label
-        for (var i = 0; i < popoto.graph.force.nodes().length; i++) {
-            var node = popoto.graph.force.nodes()[i];
+        for (var i = 0; i < popoto.graph.nodes.length; i++) {
+            var node = popoto.graph.nodes[i];
             if (nodeIds.indexOf(node.id) >= 0) {
 
                 // Create field value in node if needed
@@ -3069,8 +3086,8 @@ popoto = function () {
      * @param constraintAttributeValue
      */
     popoto.graph.node.getValue = function (nodeId, constraintAttributeValue) {
-        for (var i = 0; i < popoto.graph.force.nodes().length; i++) {
-            var node = popoto.graph.force.nodes()[i];
+        for (var i = 0; i < popoto.graph.nodes.length; i++) {
+            var node = popoto.graph.nodes[i];
 
             if (node.id === nodeId) {
                 var constraintAttribute = popoto.provider.node.getConstraintAttribute(node.label);
@@ -3092,32 +3109,31 @@ popoto = function () {
      * @param value
      */
     popoto.graph.node.removeExpandedValue = function (attribute, value) {
-
         var isAnyChangeDone = false;
 
         // For each expanded nodes in reverse order as some values can be removed
-        for (var i = popoto.graph.force.nodes().length - 1; i >= 0; i--) {
-            if (popoto.graph.force.nodes()[i].valueExpanded) {
+        for (var i = popoto.graph.nodes.length - 1; i >= 0; i--) {
+            if (popoto.graph.nodes[i].valueExpanded) {
 
                 var removedValues = [];
 
                 // Remove values
-                for (var j = popoto.graph.force.nodes()[i].value.length - 1; j >= 0; j--) {
-                    if (popoto.graph.force.nodes()[i].value[j].attributes[attribute] === value) {
+                for (var j = popoto.graph.nodes[i].value.length - 1; j >= 0; j--) {
+                    if (popoto.graph.nodes[i].value[j].attributes[attribute] === value) {
                         isAnyChangeDone = true;
 
-                        removedValues = removedValues.concat(popoto.graph.force.nodes()[i].value.splice(j, 1));
+                        removedValues = removedValues.concat(popoto.graph.nodes[i].value.splice(j, 1));
                     }
                 }
 
                 //And add them back in data
                 for (var k = 0; k < removedValues.length; k++) {
-                    popoto.graph.force.nodes()[i].data.push(removedValues[k].attributes);
+                    popoto.graph.nodes[i].data.push(removedValues[k].attributes);
                 }
 
                 // Refresh node
-                popoto.graph.node.collapseNode(popoto.graph.force.nodes()[i]);
-                popoto.graph.node.expandNode(popoto.graph.force.nodes()[i]);
+                popoto.graph.node.collapseNode(popoto.graph.nodes[i]);
+                popoto.graph.node.expandNode(popoto.graph.nodes[i]);
             }
         }
 
@@ -3132,7 +3148,7 @@ popoto = function () {
      * Return all nodes with isAutoLoadValue property set to true.
      */
     popoto.graph.node.getAutoLoadValueNodes = function () {
-        return popoto.graph.force.nodes()
+        return popoto.graph.nodes
             .filter(function (d) {
                 return d.hasOwnProperty("isAutoLoadValue") && d.isAutoLoadValue === true && !(d.isNegative === true);
             });
@@ -3287,7 +3303,7 @@ popoto = function () {
      */
     popoto.graph.node.filterExistingValues = function (node, values) {
         var notFoundValues = [];
-        var possibleValueNodes = popoto.graph.force.nodes().filter(function (n) {
+        var possibleValueNodes = popoto.graph.nodes.filter(function (n) {
             return n.parent === node && n.hasOwnProperty("value") && n.value.length > 0;
         });
 
@@ -3393,9 +3409,8 @@ popoto = function () {
                 "internalID": d[popoto.query.NEO4J_INTERNAL_ID.queryInternalName]
             };
 
-            popoto.graph.force.nodes().push(node);
-
-            popoto.graph.force.links().push(
+            popoto.graph.nodes.push(node);
+            popoto.graph.links.push(
                 {
                     id: "l" + popoto.graph.generateId(),
                     source: clickedNode,
@@ -3409,8 +3424,12 @@ popoto = function () {
 
         // Pin clicked node and its parent to avoid the graph to move for selection, only new value nodes will blossom around the clicked node.
         clickedNode.fixed = true;
+        clickedNode.fx = clickedNode.x;
+        clickedNode.fy = clickedNode.y;
         if (clickedNode.parent && clickedNode.parent.type !== popoto.graph.node.NodeTypes.ROOT) {
             clickedNode.parent.fixed = true;
+            clickedNode.parent.fx = clickedNode.parent.x;
+            clickedNode.parent.fy = clickedNode.parent.y;
         }
         // Change node state
         clickedNode.valueExpanded = true;
@@ -3561,8 +3580,8 @@ popoto = function () {
         targetNode.tx = node.tx + ((popoto.provider.link.getDistance(newLink)) * Math.cos(link.directionAngle - Math.PI / 2));
         targetNode.ty = node.ty + ((popoto.provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
 
-        popoto.graph.force.nodes().push(targetNode);
-        popoto.graph.force.links().push(newLink);
+        popoto.graph.nodes.push(targetNode);
+        popoto.graph.links.push(newLink);
 
         popoto.graph.hasGraphChanged = true;
         popoto.updateGraph();
@@ -3595,7 +3614,7 @@ popoto = function () {
     popoto.graph.node.removeNode = function (node) {
         var willChangeResults = node.hasOwnProperty("value") && node.value.length > 0;
 
-        var linksToRemove = popoto.graph.force.links().filter(function (l) {
+        var linksToRemove = popoto.graph.links.filter(function (l) {
             return l.source === node;
         });
 
@@ -3606,13 +3625,13 @@ popoto = function () {
         });
 
         // Remove links from model
-        for (var i = popoto.graph.force.links().length - 1; i >= 0; i--) {
-            if (popoto.graph.force.links()[i].target === node) {
-                popoto.graph.force.links().splice(i, 1);
+        for (var i = popoto.graph.links.length - 1; i >= 0; i--) {
+            if (popoto.graph.links[i].target === node) {
+                popoto.graph.links.splice(i, 1);
             }
         }
 
-        popoto.graph.force.nodes().splice(popoto.graph.force.nodes().indexOf(node), 1);
+        popoto.graph.nodes.splice(popoto.graph.nodes.indexOf(node), 1);
 
         return willChangeResults;
     };
@@ -3638,10 +3657,9 @@ popoto = function () {
             if (clickedNode.isNegative === true) {
                 if (clickedNode.value.length === 0) {
                     // Remove all related nodes
-
-                    for (var i = popoto.graph.force.links().length - 1; i >= 0; i--) {
-                        if (popoto.graph.force.links()[i].source === clickedNode) {
-                            popoto.graph.node.removeNode(popoto.graph.force.links()[i].target);
+                    for (var i = popoto.graph.links.length - 1; i >= 0; i--) {
+                        if (popoto.graph.links[i].source === clickedNode) {
+                            popoto.graph.node.removeNode(popoto.graph.links[i].target);
                         }
                     }
 
@@ -3685,24 +3703,26 @@ popoto = function () {
         popoto.queryviewer.querySpanElements.exit().remove();
 
         // Update data
-        popoto.queryviewer.queryConstraintSpanElements = popoto.queryviewer.queryConstraintSpanElements.data(popoto.queryviewer.generateConstraintData(popoto.graph.force.links(), popoto.graph.force.nodes()));
-        popoto.queryviewer.querySpanElements = popoto.queryviewer.querySpanElements.data(popoto.queryviewer.generateData(popoto.graph.force.links(), popoto.graph.force.nodes()));
+        popoto.queryviewer.queryConstraintSpanElements = popoto.queryviewer.queryConstraintSpanElements.data(popoto.queryviewer.generateConstraintData(popoto.graph.links, popoto.graph.nodes));
+        popoto.queryviewer.querySpanElements = popoto.queryviewer.querySpanElements.data(popoto.queryviewer.generateData(popoto.graph.links, popoto.graph.nodes));
 
         // Remove old span (not needed as all have been cleaned before)
         // popoto.queryviewer.querySpanElements.exit().remove();
 
         // Add new span
-        popoto.queryviewer.queryConstraintSpanElements.enter().append("span")
+        popoto.queryviewer.queryConstraintSpanElements = popoto.queryviewer.queryConstraintSpanElements.enter().append("span")
             .on("contextmenu", popoto.queryviewer.rightClickSpan)
             .on("click", popoto.queryviewer.clickSpan)
             .on("mouseover", popoto.queryviewer.mouseOverSpan)
-            .on("mouseout", popoto.queryviewer.mouseOutSpan);
+            .on("mouseout", popoto.queryviewer.mouseOutSpan)
+            .merge(popoto.queryviewer.queryConstraintSpanElements);
 
-        popoto.queryviewer.querySpanElements.enter().append("span")
+        popoto.queryviewer.querySpanElements = popoto.queryviewer.querySpanElements.enter().append("span")
             .on("contextmenu", popoto.queryviewer.rightClickSpan)
             .on("click", popoto.queryviewer.clickSpan)
             .on("mouseover", popoto.queryviewer.mouseOverSpan)
-            .on("mouseout", popoto.queryviewer.mouseOutSpan);
+            .on("mouseout", popoto.queryviewer.mouseOutSpan)
+            .merge(popoto.queryviewer.querySpanElements);
 
         // Update all span
         popoto.queryviewer.queryConstraintSpanElements
@@ -3998,20 +4018,21 @@ popoto = function () {
         popoto.cypherviewer.querySpanElements.exit().remove();
 
         // Update data
-        popoto.cypherviewer.querySpanElements = popoto.cypherviewer.querySpanElements.data(popoto.cypherviewer.generateData(popoto.graph.force.links(), popoto.graph.force.nodes()));
+        popoto.cypherviewer.querySpanElements = popoto.cypherviewer.querySpanElements.data(popoto.cypherviewer.generateData(popoto.graph.links, popoto.graph.nodes));
 
         // Remove old span (not needed as all have been cleaned before)
         // popoto.queryviewer.querySpanElements.exit().remove();
 
         // Add new span
-        popoto.cypherviewer.querySpanElements.enter().append("span")
+        popoto.cypherviewer.querySpanElements = popoto.cypherviewer.querySpanElements.enter().append("span")
             .attr("id", function (d) {
                 return "cypher-" + d.id;
             })
             .on("mouseover", popoto.cypherviewer.mouseOverSpan)
             .on("mouseout", popoto.cypherviewer.mouseOutSpan)
             .on("contextmenu", popoto.cypherviewer.rightClickSpan)
-            .on("click", popoto.cypherviewer.clickSpan);
+            .on("click", popoto.cypherviewer.clickSpan)
+            .merge(popoto.cypherviewer.querySpanElements);
 
         // Update all spans:
         popoto.cypherviewer.querySpanElements.filter(function (d) {
@@ -4793,7 +4814,7 @@ popoto = function () {
      */
     popoto.query.generateResultQuery = function (isGraph) {
         var rootNode = popoto.graph.getRootNode();
-        var queryElements = popoto.query.generateQueryElements(rootNode, rootNode, popoto.query.getRelevantLinks(rootNode, rootNode, popoto.graph.force.links()), true);
+        var queryElements = popoto.query.generateQueryElements(rootNode, rootNode, popoto.query.getRelevantLinks(rootNode, rootNode, popoto.graph.links), true);
         var queryMatchElements = queryElements.matchElements,
             queryWhereElements = queryElements.whereElements,
             queryRelationElements = queryElements.relationElements,
@@ -4856,8 +4877,7 @@ popoto = function () {
      * @returns {string} the node count cypher query
      */
     popoto.query.generateNodeCountQuery = function (countedNode) {
-
-        var queryElements = popoto.query.generateQueryElements(popoto.graph.getRootNode(), countedNode, popoto.query.getRelevantLinks(popoto.graph.getRootNode(), countedNode, popoto.graph.force.links()), true);
+        var queryElements = popoto.query.generateQueryElements(popoto.graph.getRootNode(), countedNode, popoto.query.getRelevantLinks(popoto.graph.getRootNode(), countedNode, popoto.graph.links), true);
         var queryMatchElements = queryElements.matchElements,
             queryWhereElements = queryElements.whereElements,
             queryReturnElements = [],
@@ -4899,7 +4919,7 @@ popoto = function () {
     popoto.query.generateNodeValueQuery = function (targetNode) {
 
         var rootNode = popoto.graph.getRootNode();
-        var queryElements = popoto.query.generateQueryElements(rootNode, targetNode, popoto.query.getRelevantLinks(rootNode, targetNode, popoto.graph.force.links()), true);
+        var queryElements = popoto.query.generateQueryElements(rootNode, targetNode, popoto.query.getRelevantLinks(rootNode, targetNode, popoto.graph.links), true);
         var queryMatchElements = queryElements.matchElements,
             queryWhereElements = queryElements.whereElements,
             queryReturnElements = [],
@@ -4968,7 +4988,8 @@ popoto = function () {
      */
     popoto.query.generateNodeRelationQuery = function (targetNode) {
 
-        var linksToRoot = popoto.query.getLinksToRoot(targetNode, popoto.graph.force.links());
+        var linksToRoot = popoto.query.getLinksToRoot(targetNode, popoto.graph.links);
+
         var queryElements = popoto.query.generateQueryElements(popoto.graph.getRootNode(), targetNode, linksToRoot, false);
         var queryMatchElements = queryElements.matchElements,
             queryWhereElements = queryElements.whereElements,
@@ -5205,7 +5226,7 @@ popoto = function () {
     ///////////////////////////////////////////////////////////////////
     // VORONOI
 
-    popoto.graph.voronoi = d3.geom.voronoi()
+    popoto.graph.voronoi = d3.voronoi()
         .x(function (d) {
             return d.x;
         })
@@ -5216,7 +5237,7 @@ popoto = function () {
     popoto.graph.recenterVoronoi = function (nodes) {
         var shapes = [];
 
-        var voronois = popoto.graph.voronoi(nodes.map(function (d) {
+        var voronois = popoto.graph.voronoi.polygons(nodes.map(function (d) {
             d.x = d.x || 0;
             d.y = d.y || 0;
             return d
@@ -5229,9 +5250,10 @@ popoto = function () {
 
             var n = [];
             d.forEach(function (c) {
-                n.push([c[0] - d.point.x, c[1] - d.point.y]);
+                n.push([c[0] - d.data.x, c[1] - d.data.y]);
             });
-            n.point = d.point;
+
+            n.point = d.data;
             shapes.push(n);
         });
         return shapes;
@@ -5245,7 +5267,7 @@ popoto = function () {
      * Default color scale generator.
      * Used in getColor link and node providers.
      */
-    popoto.provider.colorScale = d3.scale.category20();
+    popoto.provider.colorScale = d3.scaleOrdinal(d3.schemeCategory10);
     popoto.provider.link = {};
     popoto.provider.link.Provider = {};
     popoto.provider.taxonomy = {};

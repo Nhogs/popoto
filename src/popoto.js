@@ -1,13 +1,13 @@
 import {default as d3} from "d3";
 import {version} from "../dist/package";
+import cypherviewer from "./cypherviewer/cypherviewer";
+import graph from "./graph/graph";
 import logger from "./logger/logger";
+import provider from "./provider/provider";
+import queryviewer from "./queryviewer/queryviewer";
 import rest from "./rest/rest";
 import result from "./result/result";
 import taxonomy from "./taxonomy/taxonomy";
-import graph from "./graph/graph";
-import provider from "./provider/provider";
-import queryviewer from "./queryviewer/queryviewer";
-import cypherviewer from "./cypherviewer/cypherviewer";
 
 /**
  * Main function to call to use Popoto.js.
@@ -53,6 +53,10 @@ export function start(startParam) {
 
         if (cypherviewer.isActive) {
             cypherviewer.createQueryArea();
+        }
+
+        if (graph.USE_VORONOI_LAYOUT === true) {
+            graph.voronoi.extent([[-popoto.graph.getSVGWidth(), -popoto.graph.getSVGWidth()], [popoto.graph.getSVGWidth() * 2, popoto.graph.getSVGHeight() * 2]]);
         }
 
         update();
@@ -113,6 +117,7 @@ export function update() {
 
     // Do not update if rootNode is not valid.
     var root = graph.getRootNode();
+
     if (!root || root.label === undefined) {
         return;
     }
@@ -139,8 +144,12 @@ export function updateGraph() {
         // Starts the D3.js force simulation.
         // This method must be called when the layout is first created, after assigning the nodes and links.
         // In addition, it should be called again whenever the nodes or links change.
-        graph.force.start();
         graph.link.updateLinks();
         graph.node.updateNodes();
+
+        // Force simulation restart
+        graph.force.nodes(graph.nodes);
+        graph.force.force("link").links(graph.links);
+        graph.force.alpha(1).restart();
     }
-};
+}

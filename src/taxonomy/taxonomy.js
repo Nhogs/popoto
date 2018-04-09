@@ -4,6 +4,7 @@ import provider from "../provider/provider";
 import logger from "../logger/logger";
 import rest from "../rest/rest";
 import result from "../result/result";
+import tools from "../tools/tools";
 import graph from "../graph/graph";
 import {update} from "../popoto";
 
@@ -173,12 +174,12 @@ taxonomy.onClick = function () {
 
     var label = this.attributes.value.value;
 
-    while (graph.force.nodes().length > 0) {
-        graph.force.nodes().pop();
+    while (graph.nodes.length > 0) {
+        graph.nodes.pop();
     }
 
-    while (graph.force.links().length > 0) {
-        graph.force.links().pop();
+    while (graph.links.length > 0) {
+        graph.links.pop();
     }
 
     // Reinitialize internal label generator
@@ -253,4 +254,4 @@ taxonomy.addChildrenData = function (parentData, id) {
 };
 
 
-export default taxonomy
+export default taxonomy;

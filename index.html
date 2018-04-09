@@ -72,7 +72,7 @@
 <!-- This dependency will probably be removed in future releases -->
 <script src="https://unpkg.com/jquery" charset="utf-8"></script>
 
-<script src="https://unpkg.com/d3@3" charset="utf-8"></script>
+<script src="https://unpkg.com/d3" charset="utf-8"></script>
 <script src="dist/popoto.js" charset="utf-8"></script>
 
 <script>
@@ -105,25 +105,25 @@
      * These label provider configuration can be used to customize the node display in the graph.
      * See www.popotojs.com or example for more details on available configuration options.
      */
-    // popoto.provider.node.Provider = {
-    //     "Person": {
-    //         "returnAttributes": ["name", "born"],
-    //         "constraintAttribute": "name",
-    //         "autoExpandRelations": true // if set to true Person nodes will be automatically expanded in graph
-    //     },
-    //     "Movie": {
-    //         "returnAttributes": ["title", "released", "tagline"],
-    //         "constraintAttribute": "title"
-    //     }
-    // };
+    popoto.provider.node.Provider = {
+        "Person": {
+            "returnAttributes": ["name", "born"],
+            "constraintAttribute": "name",
+            "autoExpandRelations": true // if set to true Person nodes will be automatically expanded in graph
+        },
+        "Movie": {
+            "returnAttributes": ["title", "released", "tagline"],
+            "constraintAttribute": "title"
+        }
+    };
 
     /**
      * Here a listener is used to retrieve the total results count and update the page accordingly.
      * This listener will be called on every graph modification.
      */
-    // popoto.result.onTotalResultCount(function (count) {
-    //     document.getElementById("result-total-count").innerHTML = "(" + count + ")";
-    // });
+    popoto.result.onTotalResultCount(function (count) {
+        document.getElementById("result-total-count").innerHTML = "(" + count + ")";
+    });
 
     /**
      * The number of results returned can be changed with the following parameter.

@@ -9,7 +9,7 @@ var provider = {};
  * Default color scale generator.
  * Used in getColor link and node providers.
  */
-provider.colorScale = d3.scale.category20();
+provider.colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 provider.link = {};
 provider.link.Provider = {};
 provider.taxonomy = {};
@@ -333,16 +333,16 @@ provider.node.getProvider = function (label) {
             // Search in all children list definitions to find the parent provider.
             for (var p in provider.node.Provider) {
                 if (provider.node.Provider.hasOwnProperty(p)) {
-                    var provider = provider.node.Provider[p];
-                    if (provider.hasOwnProperty("children")) {
-                        if (provider["children"].indexOf(label) > -1) {
+                    var nProvider = provider.node.Provider[p];
+                    if (nProvider.hasOwnProperty("children")) {
+                        if (nProvider["children"].indexOf(label) > -1) {
                             logger.debug("No provider is defined for label (" + label + "), parent (" + p + ") will be used");
                             // A provider containing the required label in its children definition has been found it will be cloned.
 
                             var newProvider = {"parent": p};
-                            for (var pr in provider) {
-                                if (provider.hasOwnProperty(pr) && pr !== "children" && pr !== "parent") {
-                                    newProvider[pr] = provider[pr];
+                            for (var pr in nProvider) {
+                                if (nProvider.hasOwnProperty(pr) && pr !== "children" && pr !== "parent") {
+                                    newProvider[pr] = nProvider[pr];
                                 }
                             }
 
@@ -378,10 +378,10 @@ provider.node.getProvider = function (label) {
  * @returns {*} node property defined in its label provider.
  */
 provider.node.getProperty = function (label, name) {
-    var provider = provider.node.getProvider(label);
+    var nProvider = provider.node.getProvider(label);
 
-    if (!provider.hasOwnProperty(name)) {
-        var providerIterator = provider;
+    if (!nProvider.hasOwnProperty(name)) {
+        var providerIterator = nProvider;
 
         // Check parents
         var isPropertyFound = false;
@@ -390,7 +390,7 @@ provider.node.getProperty = function (label, name) {
             if (providerIterator.hasOwnProperty(name)) {
 
                 // Set attribute in child to optimize next call.
-                provider[name] = providerIterator[name];
+                nProvider[name] = providerIterator[name];
                 isPropertyFound = true;
             }
         }
@@ -398,13 +398,13 @@ provider.node.getProperty = function (label, name) {
         if (!isPropertyFound) {
             logger.debug("No \"" + name + "\" property found for node label provider (" + label + "), default value will be used");
             if (provider.node.DEFAULT_PROVIDER.hasOwnProperty(name)) {
-                provider[name] = provider.node.DEFAULT_PROVIDER[name];
+                nProvider[name] = provider.node.DEFAULT_PROVIDER[name];
             } else {
                 logger.debug("No default value for \"" + name + "\" property found for label provider (" + label + ")");
             }
         }
     }
-    return provider[name];
+    return nProvider[name];
 };
 
 /**
@@ -450,28 +450,28 @@ provider.node.getSchema = function (label) {
  * @returns {Array} list of return attributes for a node.
  */
 provider.node.getReturnAttributes = function (label) {
-    var provider = provider.node.getProvider(label);
+    var nProvider = provider.node.getProvider(label);
     var attributes = {}; // Object is used as a Set to merge possible duplicate in parents
 
-    if (provider.hasOwnProperty("returnAttributes")) {
-        for (var i = 0; i < provider.returnAttributes.length; i++) {
-            if (provider.returnAttributes[i] === query.NEO4J_INTERNAL_ID) {
+    if (nProvider.hasOwnProperty("returnAttributes")) {
+        for (var i = 0; i < nProvider.returnAttributes.length; i++) {
+            if (nProvider.returnAttributes[i] === query.NEO4J_INTERNAL_ID) {
                 attributes[query.NEO4J_INTERNAL_ID.queryInternalName] = true;
             } else {
-                attributes[provider.returnAttributes[i]] = true;
+                attributes[nProvider.returnAttributes[i]] = true;
             }
         }
     }
 
     // Add parent attributes
-    while (provider.hasOwnProperty("parent")) {
-        provider = provider.node.getProvider(provider.parent);
-        if (provider.hasOwnProperty("returnAttributes")) {
-            for (var j = 0; j < provider.returnAttributes.length; j++) {
-                if (provider.returnAttributes[j] === query.NEO4J_INTERNAL_ID) {
+    while (nProvider.hasOwnProperty("parent")) {
+        nProvider = provider.node.getProvider(nProvider.parent);
+        if (nProvider.hasOwnProperty("returnAttributes")) {
+            for (var j = 0; j < nProvider.returnAttributes.length; j++) {
+                if (nProvider.returnAttributes[j] === query.NEO4J_INTERNAL_ID) {
                     attributes[query.NEO4J_INTERNAL_ID.queryInternalName] = true;
                 } else {
-                    attributes[provider.returnAttributes[j]] = true;
+                    attributes[nProvider.returnAttributes[j]] = true;
                 }
             }
         }

@@ -37,7 +37,7 @@ tools.reset = function () {
             graph.addRootNode(graph.mainLabel);
         }
     } else {
-        graph.addSchema(graph.mainLabel);
+        graph.loadSchema(graph.mainLabel);
     }
 
     graph.hasGraphChanged = true;

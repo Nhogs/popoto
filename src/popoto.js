@@ -43,7 +43,7 @@ export function start(startParam) {
                     graph.addRootNode(startParam);
                 }
             } else {
-                graph.addSchema(startParam);
+                graph.loadSchema(startParam);
             }
         }
 

@@ -424,6 +424,186 @@ graph.addRootNode = function (label) {
     }
 };
 
+graph.loadSchema = function (graphToLoad) {
+    if (graph.nodes.length > 0) {
+        logger.warn("graph.loadSchema is called but the graph is not empty.");
+    }
+
+    var rootNodeSchema = graphToLoad;
+    var rootNode = {
+        "id": graph.generateId(),
+        "type": graph.node.NodeTypes.ROOT,
+        // x and y coordinates are set to the center of the SVG area.
+        // These coordinate will never change at runtime except if the window is resized.
+        "x": graph.getSVGWidth() / 2,
+        "y": graph.getSVGHeight() / 2,
+        "fx": graph.getSVGWidth() / 2,
+        "fy": graph.getSVGHeight() / 2,
+        "tx": graph.getSVGWidth() / 2,
+        "ty": graph.getSVGHeight() / 2,
+        "label": rootNodeSchema.label,
+        // The node is fixed to always remain in the center of the svg area.
+        // This property should not be changed at runtime to avoid issues with the zoom and pan.
+        "fixed": true,
+        // Label used internally to identify the node.
+        // This label is used for example as cypher query identifier.
+        "internalLabel": graph.node.generateInternalLabel(rootNodeSchema.label),
+        // List of relationships
+        "relationships": [],
+        "isAutoLoadValue": provider.node.getIsAutoLoadValue(rootNodeSchema.label) === true
+    };
+    graph.nodes.push(rootNode);
+    graph.notifyListeners(graph.Events.NODE_ROOT_ADD, [rootNode]);
+
+    var labelSchema = provider.node.getSchema(graphToLoad.label);
+
+    // Add relationship from schema if defined
+    if (labelSchema !== undefined && labelSchema.hasOwnProperty("rel") && labelSchema.rel.length > 0) {
+        var directionAngle = (Math.PI / 2);
+
+        rootNode.relationships = graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(labelSchema.rel).map(function (d) {
+            return {
+                id: d.data.label + d.data.target.label,
+                label: d.data.label,
+                target: d.data.target.label,
+                count: 0,
+                startAngle: d.startAngle,
+                endAngle: d.endAngle,
+                directionAngle: (d.startAngle + d.endAngle) / 2
+            }
+        });
+    } else {
+        graph.node.loadRelationshipData(rootNode, function (relationships) {
+            rootNode.relationships = relationships;
+            graph.hasGraphChanged = true;
+            updateGraph();
+        }, Math.PI / 2);
+    }
+
+    if (rootNodeSchema.hasOwnProperty("value")) {
+        var nodeSchemaValue = [].concat(rootNodeSchema.value);
+        rootNode.value = [];
+        nodeSchemaValue.forEach(function (value) {
+            rootNode.value.push(
+                {
+                    "id": graph.generateId(),
+                    "parent": rootNode,
+                    "attributes": value,
+                    "type": graph.node.NodeTypes.VALUE,
+                    "label": rootNode.label
+                }
+            );
+        });
+    }
+
+    if (rootNodeSchema.hasOwnProperty("rel")) {
+        for (var linkIndex = 0; linkIndex < rootNodeSchema.rel.length; linkIndex++) {
+            graph.loadSchemaRelation(rootNodeSchema.rel[linkIndex], rootNode, linkIndex + 1, rootNodeSchema.rel.length);
+        }
+    }
+};
+
+graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, parentLinkTotalCount) {
+    var targetNodeSchema = relationSchema.target;
+    var target = graph.loadSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label);
+
+    var newLink = {
+        id: "l" + graph.generateId(),
+        source: parentNode,
+        target: target,
+        type: graph.link.LinkTypes.RELATION,
+        label: relationSchema.label,
+        schema: relationSchema
+    };
+
+    graph.links.push(newLink);
+
+    var labelSchema = provider.node.getSchema(targetNodeSchema.label);
+
+    // Add relationship from schema if defined
+    if (labelSchema !== undefined && labelSchema.hasOwnProperty("rel") && labelSchema.rel.length > 0) {
+        var directionAngle = (Math.PI / 2);
+
+        target.relationships = graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(labelSchema.rel).map(function (d) {
+            return {
+                id: d.data.label + d.data.target.label,
+                label: d.data.label,
+                target: d.data.target.label,
+                count: 0,
+                startAngle: d.startAngle,
+                endAngle: d.endAngle,
+                directionAngle: (d.startAngle + d.endAngle) / 2
+            }
+        });
+    } else {
+        graph.node.loadRelationshipData(target, function (relationships) {
+            target.relationships = relationships;
+            graph.hasGraphChanged = true;
+            updateGraph();
+        }, Math.PI / 2);
+    }
+
+    if (targetNodeSchema.hasOwnProperty("rel")) {
+        for (var linkIndex2 = 0; linkIndex2 < targetNodeSchema.rel.length; linkIndex2++) {
+            graph.loadSchemaRelation(targetNodeSchema.rel[linkIndex2], target, linkIndex2 + 1, targetNodeSchema.rel.length);
+        }
+    }
+};
+
+graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCount, parentRel) {
+    var isGroupNode = provider.node.getIsGroup(nodeSchema);
+    var parentAngle = graph.computeParentAngle(parentNode);
+
+    var angleDeg;
+    if (parentAngle) {
+        angleDeg = (((360 / (parentLinkTotalCount + 1)) * index));
+    } else {
+        angleDeg = (((360 / (parentLinkTotalCount)) * index));
+    }
+
+    var nx = parentNode.x + (200 * Math.cos((angleDeg * (Math.PI / 180)) - parentAngle)),
+        ny = parentNode.y + (200 * Math.sin((angleDeg * (Math.PI / 180)) - parentAngle));
+
+    // TODO add force coordinate X X X
+    // var tx = nx + ((provider.link.getDistance(newLink)) * Math.cos(link.directionAngle - Math.PI / 2));
+    // var ty = ny + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
+
+    var node = {
+        "id": graph.generateId(),
+        "parent": parentNode,
+        "parentRel": parentRel,
+        "type": (isGroupNode) ? graph.node.NodeTypes.GROUP : graph.node.NodeTypes.CHOOSE,
+        "label": nodeSchema.label,
+        "fixed": false,
+        "internalLabel": graph.node.generateInternalLabel(nodeSchema.label),
+        "x": nx,
+        "y": ny,
+        "schema": nodeSchema,
+        "isAutoLoadValue": provider.node.getIsAutoLoadValue(nodeSchema.label) === true,
+        "relationships": []
+    };
+
+    graph.nodes.push(node);
+
+    if (nodeSchema.hasOwnProperty("value")) {
+        var nodeSchemaValue = [].concat(nodeSchema.value);
+        node.value = [];
+        nodeSchemaValue.forEach(function (value) {
+            node.value.push(
+                {
+                    "id": graph.generateId(),
+                    "parent": node,
+                    "attributes": value,
+                    "type": graph.node.NodeTypes.VALUE,
+                    "label": node.label
+                }
+            );
+        });
+    }
+
+    return node;
+};
+
 /**
  * Adds a complete graph from schema.
  * All the other nodes should have been removed first to avoid inconsistent data.
@@ -607,19 +787,6 @@ graph.getRootNode = function () {
  * @returns {{}}
  */
 graph.getSchema = function () {
-
-    function isLeaf(node) {
-        var links = graph.links;
-        if (links.length > 0) {
-            links.forEach(function (link) {
-                if (link.source === node) {
-                    return false;
-                }
-            });
-        }
-        return true;
-    }
-
     var nodesMap = {};
 
     var rootNode = graph.getRootNode();
@@ -662,19 +829,6 @@ graph.getSchema = function () {
                         nodesMap[targetNode.id].value = [];
                         targetNode.value.forEach(function (value) {
                             nodesMap[targetNode.id].value.push(value.attributes);
-                        });
-                    }
-                    if (isLeaf(targetNode) && targetNode.hasOwnProperty("relationships") && targetNode.relationships.length > 0) {
-
-                        nodesMap[targetNode.id].rel = [];
-                        nodesMap[targetNode.id].collapsed = true;
-                        targetNode.relationships.forEach(function (relationship) {
-                            var rel = {
-                                label: relationship.label,
-                                target: {label: relationship.target}
-                            };
-
-                            nodesMap[targetNode.id].rel.push(rel);
                         });
                     }
                 }

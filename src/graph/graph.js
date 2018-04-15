@@ -583,6 +583,11 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
         "relationships": []
     };
 
+    if (nodeSchema.hasOwnProperty("isNegative") && nodeSchema.isNegative === true) {
+        node.isNegative = true;
+        node.count = 0;
+    }
+
     graph.nodes.push(node);
 
     if (nodeSchema.hasOwnProperty("value")) {
@@ -813,6 +818,9 @@ graph.getSchema = function () {
                     nodesMap[sourceNode.id] = {
                         label: sourceNode.label
                     };
+                    if (sourceNode.hasOwnProperty("isNegative") && sourceNode.isNegative === true) {
+                        nodesMap[sourceNode.id].isNegative = true;
+                    }
                     if (sourceNode.hasOwnProperty("value")) {
                         nodesMap[sourceNode.id].value = [];
                         sourceNode.value.forEach(function (value) {
@@ -825,6 +833,9 @@ graph.getSchema = function () {
                     nodesMap[targetNode.id] = {
                         label: targetNode.label
                     };
+                    if (targetNode.hasOwnProperty("isNegative") && targetNode.isNegative === true) {
+                        nodesMap[targetNode.id].isNegative = true;
+                    }
                     if (targetNode.hasOwnProperty("value")) {
                         nodesMap[targetNode.id].value = [];
                         targetNode.value.forEach(function (value) {

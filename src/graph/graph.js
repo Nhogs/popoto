@@ -505,7 +505,7 @@ graph.loadSchema = function (graphToLoad) {
 
 graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, parentLinkTotalCount) {
     var targetNodeSchema = relationSchema.target;
-    var target = graph.loadSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label);
+    var target = graph.loadSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label, (relationSchema.hasOwnProperty("isReverse") && relationSchema.isReverse === true));
 
     var newLink = {
         id: "l" + graph.generateId(),
@@ -550,7 +550,7 @@ graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, pare
     }
 };
 
-graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCount, parentRel) {
+graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCount, parentRel, isReverse) {
     var isGroupNode = provider.node.getIsGroup(nodeSchema);
     var parentAngle = graph.computeParentAngle(parentNode);
 
@@ -582,6 +582,10 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
         "isAutoLoadValue": provider.node.getIsAutoLoadValue(nodeSchema.label) === true,
         "relationships": []
     };
+
+    if (isReverse === true) {
+        node.isParentRelReverse = true;
+    }
 
     if (nodeSchema.hasOwnProperty("isNegative") && nodeSchema.isNegative === true) {
         node.isNegative = true;
@@ -852,6 +856,10 @@ graph.getSchema = function () {
                     label: link.label,
                     target: nodesMap[targetNode.id]
                 };
+
+                if (targetNode.hasOwnProperty("isParentRelReverse") && targetNode.isParentRelReverse === true) {
+                    rel.isReverse = true;
+                }
 
                 nodesMap[sourceNode.id].rel.push(rel);
             }

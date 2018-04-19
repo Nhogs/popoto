@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Icons</title>
+    <link rel="stylesheet" href="popoto.css">
+    <style>
+        .icon{
+            float: left;
+            width: 20px;
+            text-align: center;
+        }
+
+        .content{
+            float: left;
+            width: 70px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <h1>Font Name: popoto</h1>
+</div>
+<div id="fontList">
+    <div><span class="icon">Icon</span><span class="content">Code</span><span>CSS class</span></div>
+</div>
+<script>
+    var cssClassPrefix = ".ppt-icon-";
+    var cssClasses = [];
+
+    var sSheetList = document.styleSheets;
+    for (var sSheet = 0; sSheet < sSheetList.length; sSheet++) {
+        var ruleList = document.styleSheets[sSheet].cssRules;
+        for (var rule = 0; rule < ruleList.length; rule++) {
+
+            var currentRule = ruleList[rule];
+            var ruleText = currentRule.selectorText;
+            var ruleContent = currentRule.style.cssText;
+            if (ruleText && ruleText.startsWith(cssClassPrefix)) {
+                cssClasses.push({text:ruleText, content:ruleContent});
+            }
+        }
+    }
+
+    var container = document.getElementById("fontList");
+
+    cssClasses.forEach(function (cssClass) {
+        var strCSSClass = cssClass.text.substring(1, cssClass.text.indexOf(':'));
+        var charDiv = document.createElement("div");
+        var charSpan = document.createElement("span");
+        charSpan.setAttribute("class", "icon " + strCSSClass);
+
+        var classCodeSpan = document.createElement("span");
+        classCodeSpan.innerHTML = "\"\\" + cssClass.content.split('"')[1].charCodeAt(0).toString(16) + "\"";
+        classCodeSpan.setAttribute("class", "content");
+
+        var classNameSpan = document.createElement("span");
+        classNameSpan.innerHTML = strCSSClass;
+
+        charDiv.appendChild(charSpan);
+        charDiv.appendChild(classCodeSpan);
+        charDiv.appendChild(classNameSpan);
+
+        container.appendChild(charDiv);
+    })
+
+</script>
+</body>
+</html>

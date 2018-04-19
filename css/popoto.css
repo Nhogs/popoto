@@ -45,6 +45,174 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.ppt-icon-voronoi:before {
+    content: "\e901";
+}
+
+.ppt-icon-text:before {
+    content: "\e906";
+}
+
+.ppt-icon-earth:before {
+    content: "\e900";
+}
+
+.ppt-icon-book:before {
+    content: "\e91f";
+}
+
+.ppt-icon-books:before {
+    content: "\e920";
+}
+
+.ppt-icon-file-text:before {
+    content: "\e922";
+}
+
+.ppt-icon-profile:before {
+    content: "\e923";
+}
+
+.ppt-icon-file-empty:before {
+    content: "\e924";
+}
+
+.ppt-icon-files-empty:before {
+    content: "\e925";
+}
+
+.ppt-icon-file-text2:before {
+    content: "\e926";
+}
+
+.ppt-icon-paste:before {
+    content: "\e92d";
+}
+
+.ppt-icon-spinner:before {
+    content: "\e97a";
+}
+
+.ppt-icon-spinner4:before {
+    content: "\e97d";
+}
+
+.ppt-icon-spinner5:before {
+    content: "\e97e";
+}
+
+.ppt-icon-cog:before {
+    content: "\e994";
+}
+
+.ppt-icon-pie-chart:before {
+    content: "\e99a";
+}
+
+.ppt-icon-stats-bars2:before {
+    content: "\e99d";
+}
+
+.ppt-icon-menu3:before {
+    content: "\e9bf";
+}
+
+.ppt-icon-menu4:before {
+    content: "\e9c0";
+}
+
+.ppt-icon-eye:before {
+    content: "\e9ce";
+}
+
+.ppt-icon-eye-blocked:before {
+    content: "\e9d1";
+}
+
+.ppt-icon-star-empty:before {
+    content: "\e9d7";
+}
+
+.ppt-icon-star-half:before {
+    content: "\e9d8";
+}
+
+.ppt-icon-star-full:before {
+    content: "\e9d9";
+}
+
+.ppt-icon-move-up:before {
+    content: "\ea46";
+}
+
+.ppt-icon-move-down:before {
+    content: "\ea47";
+}
+
+.ppt-icon-sort-alpha-asc:before {
+    content: "\ea48";
+}
+
+.ppt-icon-sort-alpha-desc:before {
+    content: "\ea49";
+}
+
+.ppt-icon-sort-numeric-asc:before {
+    content: "\ea4a";
+}
+
+.ppt-icon-sort-numberic-desc:before {
+    content: "\ea4b";
+}
+
+.ppt-icon-sort-amount-asc:before {
+    content: "\ea4c";
+}
+
+.ppt-icon-sort-amount-desc:before {
+    content: "\ea4d";
+}
+
+.ppt-icon-scissors:before {
+    content: "\ea5a";
+}
+
+.ppt-icon-video-camera:before {
+    content: "\e914";
+}
+
+.ppt-icon-camera:before {
+    content: "\e90f";
+}
+
+.ppt-icon-play:before {
+    content: "\e912";
+}
+
+.ppt-icon-images:before {
+    content: "\e90e";
+}
+
+.ppt-icon-image:before {
+    content: "\e90d";
+}
+
+.ppt-icon-home3:before {
+    content: "\e902";
+}
+
+.ppt-icon-newspaper:before {
+    content: "\e904";
+}
+
+.ppt-icon-office:before {
+    content: "\e903";
+}
+
+.ppt-icon-chart-donut:before {
+    content: "\e905";
+}
+
 .ppt-icon-logo:before {
     content: "\ee89";
 }
@@ -61,32 +229,12 @@
     content: "\ee8c";
 }
 
-.ppt-icon-chart-donut:before {
-    content: "\e900";
+.ppt-icon-user:before {
+    content: "\f007";
 }
 
-.ppt-icon-repeat:before {
-    content: "\f01e";
-}
-
-.ppt-icon-undo:before {
-    content: "\f0e2";
-}
-
-.ppt-icon-tags:before {
-    content: "\f02c";
-}
-
-.ppt-icon-crosshairs:before {
-    content: "\f05b";
-}
-
-.ppt-icon-expand:before {
-    content: "\f065";
-}
-
-.ppt-icon-compress:before {
-    content: "\f066";
+.ppt-icon-film:before {
+    content: "\f008";
 }
 
 .ppt-icon-search-plus:before {
@@ -97,51 +245,31 @@
     content: "\f010";
 }
 
-.ppt-icon-tag:before {
-    content: "\f02b";
+.ppt-icon-power-off:before {
+    content: "\f011";
 }
 
-.ppt-icon-gear:before {
+.ppt-icon-cog2:before {
     content: "\f013";
+}
+
+.ppt-icon-repeat:before {
+    content: "\f01e";
 }
 
 .ppt-icon-refresh:before {
     content: "\f021";
 }
 
-.ppt-icon-user:before {
-    content: "\f007";
+.ppt-icon-tag:before {
+    content: "\f02b";
 }
 
-.ppt-icon-users:before {
-    content: "\f0c0";
+.ppt-icon-tags:before {
+    content: "\f02c";
 }
 
-.ppt-icon-user-circle:before {
-    content: "\f2bd";
-}
-
-.ppt-icon-user-circle-o:before {
-    content: "\f2be";
-}
-
-.ppt-icon-film:before {
-    content: "\f008";
-}
-
-.ppt-icon-user-plus:before {
-    content: "\f234";
-}
-
-.ppt-icon-user-times:before {
-    content: "\f235";
-}
-
-.ppt-icon-power-off:before {
-    content: "\f011";
-}
-
-.ppt-icon-image:before {
+.ppt-icon-image2:before {
     content: "\f03e";
 }
 
@@ -153,6 +281,34 @@
     content: "\f047";
 }
 
+.ppt-icon-plus-circle:before {
+    content: "\f055";
+}
+
+.ppt-icon-minus-circle:before {
+    content: "\f056";
+}
+
+.ppt-icon-times-circle:before {
+    content: "\f057";
+}
+
+.ppt-icon-check-circle:before {
+    content: "\f058";
+}
+
+.ppt-icon-question-circle:before {
+    content: "\f059";
+}
+
+.ppt-icon-info-circle:before {
+    content: "\f05a";
+}
+
+.ppt-icon-crosshairs:before {
+    content: "\f05b";
+}
+
 .ppt-icon-times-circle-o:before {
     content: "\f05c";
 }
@@ -161,19 +317,23 @@
     content: "\f05d";
 }
 
-.ppt-icon-arrow-circle-o-right:before {
-    content: "\f18e";
-}
-
-.ppt-icon-arrow-circle-o-left:before {
-    content: "\f190";
-}
-
 .ppt-icon-ban:before {
     content: "\f05e";
 }
 
-.ppt-icon-eye:before {
+.ppt-icon-expand:before {
+    content: "\f065";
+}
+
+.ppt-icon-compress:before {
+    content: "\f066";
+}
+
+.ppt-icon-exclamation-circle:before {
+    content: "\f06a";
+}
+
+.ppt-icon-eye2:before {
     content: "\f06e";
 }
 
@@ -181,8 +341,12 @@
     content: "\f070";
 }
 
-.ppt-icon-warning:before {
+.ppt-icon-exclamation-triangle:before {
     content: "\f071";
+}
+
+.ppt-icon-calendar:before {
+    content: "\f073";
 }
 
 .ppt-icon-folder:before {
@@ -197,7 +361,7 @@
     content: "\f084";
 }
 
-.ppt-icon-gears:before {
+.ppt-icon-cogs:before {
     content: "\f085";
 }
 
@@ -209,20 +373,12 @@
     content: "\f088";
 }
 
-.ppt-icon-thumbs-up:before {
-    content: "\f164";
-}
-
-.ppt-icon-thumbs-down:before {
-    content: "\f165";
+.ppt-icon-sign-out:before {
+    content: "\f08b";
 }
 
 .ppt-icon-thumb-tack:before {
     content: "\f08d";
-}
-
-.ppt-icon-sign-out:before {
-    content: "\f08b";
 }
 
 .ppt-icon-sign-in:before {
@@ -231,106 +387,6 @@
 
 .ppt-icon-upload:before {
     content: "\f093";
-}
-
-.ppt-icon-globe:before {
-    content: "\f0ac";
-}
-
-.ppt-icon-wrench:before {
-    content: "\f0ad";
-}
-
-.ppt-icon-filter:before {
-    content: "\f0b0";
-}
-
-.ppt-icon-flask:before {
-    content: "\f0c3";
-}
-
-.ppt-icon-ellipsis-h:before {
-    content: "\f141";
-}
-
-.ppt-icon-ellipsis-v:before {
-    content: "\f142";
-}
-
-.ppt-icon-share-alt:before {
-    content: "\f1e0";
-}
-
-.ppt-icon-plug:before {
-    content: "\f1e6";
-}
-
-.ppt-icon-calendar:before {
-    content: "\f073";
-}
-
-.ppt-icon-calendar-o:before {
-    content: "\f133";
-}
-
-.ppt-icon-calendar-plus-o:before {
-    content: "\f271";
-}
-
-.ppt-icon-calendar-minus-o:before {
-    content: "\f272";
-}
-
-.ppt-icon-calendar-times-o:before {
-    content: "\f273";
-}
-
-.ppt-icon-calendar-check-o:before {
-    content: "\f274";
-}
-
-.ppt-icon-question-circle:before {
-    content: "\f059";
-}
-
-.ppt-icon-info-circle:before {
-    content: "\f05a";
-}
-
-.ppt-icon-exclamation-circle:before {
-    content: "\f06a";
-}
-
-.ppt-icon-times-circle:before {
-    content: "\f057";
-}
-
-.ppt-icon-check-circle:before {
-    content: "\f058";
-}
-
-.ppt-icon-plus-circle:before {
-    content: "\f055";
-}
-
-.ppt-icon-minus-circle:before {
-    content: "\f056";
-}
-
-.ppt-icon-chevron-circle-left:before {
-    content: "\f137";
-}
-
-.ppt-icon-chevron-circle-right:before {
-    content: "\f138";
-}
-
-.ppt-icon-chevron-circle-up:before {
-    content: "\f139";
-}
-
-.ppt-icon-chevron-circle-down:before {
-    content: "\f13a";
 }
 
 .ppt-icon-arrow-circle-left:before {
@@ -349,6 +405,114 @@
     content: "\f0ab";
 }
 
+.ppt-icon-globe:before {
+    content: "\f0ac";
+}
+
+.ppt-icon-wrench:before {
+    content: "\f0ad";
+}
+
+.ppt-icon-filter:before {
+    content: "\f0b0";
+}
+
+.ppt-icon-group:before {
+    content: "\f0c0";
+}
+
+.ppt-icon-flask:before {
+    content: "\f0c3";
+}
+
+.ppt-icon-rotate-left:before {
+    content: "\f0e2";
+}
+
+.ppt-icon-calendar-o:before {
+    content: "\f133";
+}
+
+.ppt-icon-chevron-circle-left:before {
+    content: "\f137";
+}
+
+.ppt-icon-chevron-circle-right:before {
+    content: "\f138";
+}
+
+.ppt-icon-chevron-circle-up:before {
+    content: "\f139";
+}
+
+.ppt-icon-chevron-circle-down:before {
+    content: "\f13a";
+}
+
+.ppt-icon-ellipsis-h:before {
+    content: "\f141";
+}
+
+.ppt-icon-ellipsis-v:before {
+    content: "\f142";
+}
+
+.ppt-icon-thumbs-up:before {
+    content: "\f164";
+}
+
+.ppt-icon-thumbs-down:before {
+    content: "\f165";
+}
+
+.ppt-icon-arrow-circle-o-right:before {
+    content: "\f18e";
+}
+
+.ppt-icon-arrow-circle-o-left:before {
+    content: "\f190";
+}
+
+.ppt-icon-share-alt:before {
+    content: "\f1e0";
+}
+
+.ppt-icon-plug:before {
+    content: "\f1e6";
+}
+
+.ppt-icon-user-plus:before {
+    content: "\f234";
+}
+
+.ppt-icon-user-times:before {
+    content: "\f235";
+}
+
+.ppt-icon-calendar-plus-o:before {
+    content: "\f271";
+}
+
+.ppt-icon-calendar-minus-o:before {
+    content: "\f272";
+}
+
+.ppt-icon-calendar-times-o:before {
+    content: "\f273";
+}
+
+.ppt-icon-calendar-check-o:before {
+    content: "\f274";
+}
+
+.ppt-icon-user-circle:before {
+    content: "\f2bd";
+}
+
+.ppt-icon-user-circle-o:before {
+    content: "\f2be";
+}
+
 /**********************************************************************************/
 .ppt-body {
     background-color: #2e3138;
@@ -356,6 +520,7 @@
     font-family: sans-serif;
     color: #ffffff;
 }
+
 /* unvisited link */
 .ppt-body a:link {
     color: #8bb71a;
@@ -580,7 +745,15 @@
 }
 
 .ppt-menu.relation:before {
-    content: "\e900";
+    content: "\e905";
+}
+
+.ppt-menu.fit-text:before {
+    content: "\e906";
+}
+
+.ppt-menu.voronoi:before {
+    content: "\e901";
 }
 
 .ppt-menu.fullscreen:before {
@@ -604,6 +777,14 @@
 }
 
 .ppt-menu.relation:hover {
+    color: #f0b017;
+}
+
+.ppt-menu.fit-text:hover {
+    color: #f0b017;
+}
+
+.ppt-menu.voronoi:hover {
     color: #f0b017;
 }
 

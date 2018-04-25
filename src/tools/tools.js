@@ -72,7 +72,7 @@ tools.toggleTaxonomy = function () {
  * Enable, disable fitting text on node.
  */
 tools.toggleFitText = function () {
-    graph.FIT_TEXT = !graph.FIT_TEXT;
+    graph.USE_FIT_TEXT = !graph.USE_FIT_TEXT;
     graph.node.updateNodes();
 };
 

@@ -36,7 +36,7 @@ graph.TOOL_RESET = "Reset graph";
 graph.TOOL_SAVE = "Save graph";
 graph.USE_DONUT_FORCE = false;
 graph.USE_VORONOI_LAYOUT = false;
-graph.FIT_TEXT = false;
+graph.USE_FIT_TEXT = false;
 
 /**
  * Define the list of listenable events on graph.
@@ -180,7 +180,7 @@ graph.createGraphArea = function () {
     if (tools.TOGGLE_FIT_TEXT) {
         toolbar.append("span")
             .attr("id", "popoto-fit-text-menu")
-            .attr("class", "ppt-icon ppt-menu reset")
+            .attr("class", "ppt-icon ppt-menu fit-text")
             .on("click", tools.toggleFitText);
     }
 
@@ -2011,8 +2011,8 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
     var textDispalyed = middleG.filter(function (d) {
         return provider.node.isTextDisplayed(d);
     });
-    var backRects =
-        textDispalyed
+
+    var backRects = textDispalyed
             .append("rect")
             .attr("fill", function (node) {
                 return provider.node.getColor(node, "back-text", "fill");
@@ -2023,7 +2023,7 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
 
     var textMiddle = textDispalyed.append('text');
 
-    if (graph.FIT_TEXT) {
+    if (graph.USE_FIT_TEXT) {
 
         var measureWidth = function (text) {
             var context = document.createElement("canvas").getContext("2d");
@@ -2065,6 +2065,7 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
             }
 
             var lines2 = [];
+
             lines.map(function (d) {
                 lines2.push({"text": d.text, "textRadius": textRadius, "linesLength": lines.length})
             });
@@ -2112,7 +2113,6 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
                 } else {
                     return "";
                 }
-
             });
     }
 

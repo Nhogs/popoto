@@ -8,7 +8,9 @@ import result from "../result/result";
 import rest from "../rest/rest";
 import taxonomy from "../taxonomy/taxonomy";
 import tools from "../tools/tools";
+import textRenderer from "./node/textRenderer";
 import {update, updateGraph} from "../popoto";
+import fitTextRenderer from "./node/fitTextRenderer";
 
 var graph = {};
 
@@ -36,6 +38,8 @@ graph.TOOL_RESET = "Reset graph";
 graph.TOOL_SAVE = "Save graph";
 graph.USE_DONUT_FORCE = false;
 graph.USE_VORONOI_LAYOUT = false;
+graph.USE_FIT_TEXT = false;
+
 /**
  * Define the list of listenable events on graph.
  */
@@ -173,6 +177,13 @@ graph.createGraphArea = function () {
             .on("click", function () {
                 graph.notifyListeners(graph.Events.GRAPH_SAVE, [graph.getSchema()]);
             });
+    }
+
+    if (tools.TOGGLE_FIT_TEXT) {
+        toolbar.append("span")
+            .attr("id", "popoto-fit-text-menu")
+            .attr("class", "ppt-icon ppt-menu fit-text")
+            .on("click", tools.toggleFitText);
     }
 
     graph.svgTag = htmlContainer.append("svg")
@@ -1184,8 +1195,6 @@ graph.node.DONUT_WIDTH = 20;
 
 graph.DISABLE_RELATION = false;
 
-graph.node.TEXT_Y = 8;
-
 // Define the max number of character displayed in node.
 graph.node.NODE_MAX_CHARS = 11;
 graph.node.NODE_TITLE_MAX_CHARS = 100;
@@ -1999,66 +2008,15 @@ graph.node.updateMiddlegroundElementsSVG = function (gMiddlegroundSVGNodes) {
 };
 
 graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
-    var textDispalyed = middleG.filter(function (d) {
+    var textDisplayed = middleG.filter(function (d) {
         return provider.node.isTextDisplayed(d);
     });
 
-    var backRects =
-        textDispalyed
-            .append("rect")
-            .attr("fill", function (node) {
-                return provider.node.getColor(node, "back-text", "fill");
-            })
-            .attr("class", function (node) {
-                return provider.node.getCSSClass(node, "back-text")
-            });
-
-    var textMiddle = textDispalyed.append('text')
-        .attr('x', 0)
-        .attr('y', graph.node.TEXT_Y)
-        .attr('text-anchor', 'middle');
-
-    textMiddle
-        .attr('y', graph.node.TEXT_Y)
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "text")
-        })
-        .on("mouseover", function (d) {
-            d3.select(this.parentNode).attr("clip-path", null);
-        })
-        .on("mouseout", function (d) {
-            d3.select(this.parentNode)
-                .attr("clip-path", function (node) {
-                    return "url(#node-view" + node.id + ")";
-                });
-        })
-        .text(function (d) {
-            if (provider.node.isTextDisplayed(d)) {
-                return provider.node.getTextValue(d);
-            } else {
-                return "";
-            }
-        });
-
-    backRects
-        .attr("x", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
-            return bbox.x - 3;
-        })
-        .attr("y", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
-            return bbox.y;
-        })
-        .attr("rx", "5")
-        .attr("ry", "5")
-        .attr("width", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
-            return bbox.width + 6;
-        })
-        .attr("height", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
-            return bbox.height;
-        });
+    if (graph.USE_FIT_TEXT) {
+        fitTextRenderer.render(textDisplayed);
+    } else {
+        textRenderer.render(textDisplayed);
+    }
 };
 
 /**

@@ -36,6 +36,8 @@ graph.TOOL_RESET = "Reset graph";
 graph.TOOL_SAVE = "Save graph";
 graph.USE_DONUT_FORCE = false;
 graph.USE_VORONOI_LAYOUT = false;
+graph.FIT_TEXT = false;
+
 /**
  * Define the list of listenable events on graph.
  */
@@ -173,6 +175,13 @@ graph.createGraphArea = function () {
             .on("click", function () {
                 graph.notifyListeners(graph.Events.GRAPH_SAVE, [graph.getSchema()]);
             });
+    }
+
+    if (tools.TOGGLE_FIT_TEXT) {
+        toolbar.append("span")
+            .attr("id", "popoto-fit-text-menu")
+            .attr("class", "ppt-icon ppt-menu reset")
+            .on("click", tools.toggleFitText);
     }
 
     graph.svgTag = htmlContainer.append("svg")
@@ -2002,7 +2011,6 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
     var textDispalyed = middleG.filter(function (d) {
         return provider.node.isTextDisplayed(d);
     });
-
     var backRects =
         textDispalyed
             .append("rect")
@@ -2013,16 +2021,105 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
                 return provider.node.getCSSClass(node, "back-text")
             });
 
-    var textMiddle = textDispalyed.append('text')
-        .attr('x', 0)
-        .attr('y', graph.node.TEXT_Y)
-        .attr('text-anchor', 'middle');
+    var textMiddle = textDispalyed.append('text');
 
-    textMiddle
-        .attr('y', graph.node.TEXT_Y)
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "text")
+    if (graph.FIT_TEXT) {
+
+        var measureWidth = function (text) {
+            var context = document.createElement("canvas").getContext("2d");
+            return context.measureText(text).width
+        };
+
+        var lineHeight = 12;
+
+        var getLines = function (text) {
+            var words = text.split(/\s+/g); // To hyphenate: /\s+|(?<=-)/
+            if (!words[words.length - 1]) words.pop();
+            if (!words[0]) words.shift();
+
+            var targetWidth = Math.sqrt(measureWidth(text.trim()) * lineHeight);
+
+            var line;
+            var lineWidth0 = Infinity;
+            var lines = [];
+
+            for (var i = 0, n = words.length; i < n; ++i) {
+                var lineText1 = (line ? line.text + " " : "") + words[i];
+                var lineWidth1 = measureWidth(lineText1);
+                if ((lineWidth0 + lineWidth1) / 2 < targetWidth) {
+                    line.width = lineWidth0 = lineWidth1;
+                    line.text = lineText1;
+                } else {
+                    lineWidth0 = measureWidth(words[i]);
+                    line = {width: lineWidth0, text: words[i]};
+                    lines.push(line);
+                }
+            }
+
+            var textRadius = 0;
+
+            for (var i = 0, n = lines.length; i < n; ++i) {
+                var dy = (Math.abs(i - n / 2 + 0.5) + 0.5) * lineHeight;
+                var dx = lines[i].width / 2;
+                textRadius = Math.max(textRadius, Math.sqrt(dx * dx + dy * dy));
+            }
+
+            var lines2 = [];
+            lines.map(function (d) {
+                lines2.push({"text": d.text, "textRadius": textRadius, "linesLength": lines.length})
+            });
+
+            return {"lines":lines2, "textRadius": textRadius}
+        };
+
+        textMiddle.attr("style", "text-anchor: middle; font: 10px sans-serif")
+            .data(function (d) {
+                var text = "";
+                if (provider.node.isTextDisplayed(d)) {
+                    text = provider.node.getTextValue(d);
+                }
+                var lines = getLines(text);
+                d.lines = lines.lines;
+                d.textRadius = lines.textRadius;
+                return [d]
+            });
+
+        textMiddle.selectAll("tspan")
+            .data(function (d) {
+                return d.lines
+            })
+            .enter().append("tspan")
+            .attr("x", 0)
+            .attr("y", function (d, i, nodes) {
+                return (i - d.linesLength / 2 + 0.8) * lineHeight;
+            })
+            .text(function (d) {
+                return d.text;
+            });
+
+        textMiddle.attr("transform", function (d) {
+            var scale = provider.node.getSize(d) / d.textRadius;
+            return "translate(" + 0 + "," + 0 + ")" + " scale(" + scale + ")"
         })
+
+    } else {
+        textMiddle.attr('x', 0)
+            .attr('y', graph.node.TEXT_Y)
+            .attr('text-anchor', 'middle')
+            .text(function (d) {
+                if (provider.node.isTextDisplayed(d)) {
+                    return provider.node.getTextValue(d);
+                } else {
+                    return "";
+                }
+
+            });
+    }
+
+
+    textMiddle.attr("class", function (node) {
+        return provider.node.getCSSClass(node, "text")
+    })
         .on("mouseover", function (d) {
             d3.select(this.parentNode).attr("clip-path", null);
         })
@@ -2031,13 +2128,6 @@ graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
                 .attr("clip-path", function (node) {
                     return "url(#node-view" + node.id + ")";
                 });
-        })
-        .text(function (d) {
-            if (provider.node.isTextDisplayed(d)) {
-                return provider.node.getTextValue(d);
-            } else {
-                return "";
-            }
         });
 
     backRects

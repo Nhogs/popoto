@@ -36,6 +36,7 @@ graph.TOOL_CENTER = "Center view";
 graph.TOOL_FULL_SCREEN = "Full screen";
 graph.TOOL_RESET = "Reset graph";
 graph.TOOL_SAVE = "Save graph";
+graph.TOOL_FIT_TEXT = "Fit text in nodes";
 graph.USE_DONUT_FORCE = false;
 graph.USE_VORONOI_LAYOUT = false;
 graph.USE_FIT_TEXT = false;
@@ -183,6 +184,7 @@ graph.createGraphArea = function () {
         toolbar.append("span")
             .attr("id", "popoto-fit-text-menu")
             .attr("class", "ppt-icon ppt-menu fit-text")
+            .attr("title", graph.TOOL_FIT_TEXT)
             .on("click", tools.toggleFitText);
     }
 

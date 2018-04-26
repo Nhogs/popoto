@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.7",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -12,7 +12,7 @@
   ],
   "homepage": "https://popotojs.com/",
   "bugs": {
-    "url": "https://github.com/Popotojs/popotojs/issues",
+    "url": "https://github.com/Nhogs/popoto/issues",
     "email": "contact@popotojs.com"
   },
   "license": "GPL-3.0",
@@ -28,7 +28,7 @@
   "jsnext:main": "index",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Popotojs/popotojs.git"
+    "url": "https://github.com/Nhogs/popoto.git"
   },
   "jest": {
     "setupFiles": [

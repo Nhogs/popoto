@@ -37,7 +37,7 @@
   },
   "scripts": {
     "build": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c && npm run uglify",
-    "prepublishOnly": "npm run build",
+    "pretest": "npm run build",
     "test": "jest --ci --coverage",
     "uglify": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js && uglifycss css/popoto.css css/popoto-svg.css --output dist/popoto.min.css"
   },

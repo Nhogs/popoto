@@ -1,8 +1,15 @@
 import node from "rollup-plugin-node-resolve";
+import copy from 'rollup-plugin-copy';
 
 export default {
     input: "index",
-    plugins: [node()],
+    plugins: [
+        node(),
+        copy({
+            "css/font": "dist/font",
+            verbose: true
+        })
+    ],
     external: ["d3", "jquery"],
     output: {
         extend: true,

@@ -1,4 +1,4 @@
-import {default as d3} from "d3";
+import * as d3 from "d3";
 import query from "../query/query";
 import provider from "../provider/provider";
 import logger from "../logger/logger";

@@ -1,4 +1,4 @@
-import {default as d3} from "d3";
+import * as d3 from "d3";
 import provider from "../provider/provider";
 import result from "../result/result";
 import graph from "../graph/graph";

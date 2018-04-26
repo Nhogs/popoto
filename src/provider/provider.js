@@ -1,4 +1,4 @@
-import {default as d3} from "d3";
+import * as d3 from "d3";
 import logger from "../logger/logger";
 import query from "../query/query";
 import graph from "../graph/graph";

@@ -1,4 +1,4 @@
-import {default as d3} from "d3";
+import * as d3 from "d3";
 import queryviewer from "../queryviewer/queryviewer";
 import provider from "../provider/provider";
 import query from "../query/query";

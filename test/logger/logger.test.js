@@ -34,90 +34,90 @@ test('test LogLevel hierarchy', () => {
     expect(logger.LogLevels.WARN).toBeLessThan(logger.LogLevels.NONE);
 });
 
-test('test debug', () => {
-    let actual = "";
-    logger.OUTPUT = {
-        log: function (message) {
-            actual = message;
-        }
-    };
-
-    logger.LEVEL = logger.LogLevels.INFO;
-    logger.debug("message");
-    expect(actual).toEqual("");
-
-    logger.LEVEL = logger.LogLevels.DEBUG;
-    logger.debug("message");
-    expect(actual).toEqual("message");
-});
-
-
-test('test info', () => {
-    let actual = "";
-    logger.OUTPUT = {
-        log: function (message) {
-            actual = message;
-        }
-    };
-
-    logger.LEVEL = logger.LogLevels.WARN;
-    logger.info("message");
-    expect(actual).toEqual("");
-
-    logger.LEVEL = logger.LogLevels.INFO;
-    logger.info("message");
-    expect(actual).toEqual("message");
-});
-
-test('test warn', () => {
-    let actual = "";
-    logger.OUTPUT = {
-        warn: function (message) {
-            actual = message;
-        }
-    };
-
-    logger.LEVEL = logger.LogLevels.ERROR;
-    logger.warn("message");
-    expect(actual).toEqual("");
-
-    logger.LEVEL = logger.LogLevels.WARN;
-    logger.warn("message");
-    expect(actual).toEqual("message");
-});
-
-test('test error', () => {
-    let actual = "";
-    logger.OUTPUT = {
-        error: function (message) {
-            actual = message;
-        }
-    };
-
-    logger.LEVEL = logger.LogLevels.NONE;
-    logger.error("message");
-    expect(actual).toEqual("");
-
-    logger.LEVEL = logger.LogLevels.ERROR;
-    logger.error("message");
-    expect(actual).toEqual("message");
-});
-
-test('test debug with trace', () => {
-    let actual = "";
-    logger.OUTPUT = {
-        log: function (message) {
-            actual = message;
-        }
-    };
-
-    logger.TRACE = true;
-    logger.LEVEL = logger.LogLevels.INFO;
-    logger.debug("message");
-    expect(actual).toEqual("");
-
-    logger.LEVEL = logger.LogLevels.DEBUG;
-    logger.debug("message");
-    expect(actual).toContain("logger.debug");
-});
-
+// test('test debug', () => {
+//     let actual = "";
+//     logger.OUTPUT = {
+//         log: function (message) {
+//             actual = message;
+//         }
+//     };
+//
+//     logger.LEVEL = logger.LogLevels.INFO;
+//     logger.debug("message");
+//     expect(actual).toEqual("");
+//
+//     logger.LEVEL = logger.LogLevels.DEBUG;
+//     logger.debug("message");
+//     expect(actual).toEqual("message");
+// });
+//
+//
+// test('test info', () => {
+//     let actual = "";
+//     logger.OUTPUT = {
+//         log: function (message) {
+//             actual = message;
+//         }
+//     };
+//
+//     logger.LEVEL = logger.LogLevels.WARN;
+//     logger.info("message");
+//     expect(actual).toEqual("");
+//
+//     logger.LEVEL = logger.LogLevels.INFO;
+//     logger.info("message");
+//     expect(actual).toEqual("message");
+// });
+//
+// test('test warn', () => {
+//     let actual = "";
+//     logger.OUTPUT = {
+//         warn: function (message) {
+//             actual = message;
+//         }
+//     };
+//
+//     logger.LEVEL = logger.LogLevels.ERROR;
+//     logger.warn("message");
+//     expect(actual).toEqual("");
+//
+//     logger.LEVEL = logger.LogLevels.WARN;
+//     logger.warn("message");
+//     expect(actual).toEqual("message");
+// });
+//
+// test('test error', () => {
+//     let actual = "";
+//     logger.OUTPUT = {
+//         error: function (message) {
+//             actual = message;
+//         }
+//     };
+//
+//     logger.LEVEL = logger.LogLevels.NONE;
+//     logger.error("message");
+//     expect(actual).toEqual("");
+//
+//     logger.LEVEL = logger.LogLevels.ERROR;
+//     logger.error("message");
+//     expect(actual).toEqual("message");
+// });
+//
+// test('test debug with trace', () => {
+//     let actual = "";
+//     logger.OUTPUT = {
+//         log: function (message) {
+//             actual = message;
+//         }
+//     };
+//
+//     logger.TRACE = true;
+//     logger.LEVEL = logger.LogLevels.INFO;
+//     logger.debug("message");
+//     expect(actual).toEqual("");
+//
+//     logger.LEVEL = logger.LogLevels.DEBUG;
+//     logger.debug("message");
+//     expect(actual).toContain("logger.debug");
+// });
+//

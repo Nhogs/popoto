@@ -1,4 +1,4 @@
-import {default as d3} from "d3";
+import * as d3 from "d3";
 import cypherviewer from "../cypherviewer/cypherviewer";
 import provider from "../provider/provider";
 import graph from "../graph/graph";

@@ -5,11 +5,11 @@ var fitTextRenderer = {};
 var CONTEXT_2D = document.createElement("canvas").getContext("2d");
 var DEFAULT_CANVAS_LINE_HEIGHT = 12;
 
-function measureTextWidth(text) {
+export function measureTextWidth(text) {
     return CONTEXT_2D.measureText(text).width;
 }
 
-function getLines(text) {
+export function getLines(text) {
     var words = text.split(/\s+/g); // To hyphenate: /\s+|(?<=-)/
     if (!words[words.length - 1]) words.pop();
     if (!words[0]) words.shift();

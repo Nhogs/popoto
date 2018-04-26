@@ -14,6 +14,7 @@ var rest = {};
  * @type {string}
  */
 rest.CYPHER_URL = "http://localhost:7474/db/data/transaction/commit";
+rest.WITH_CREDENTIALS = false;
 
 /**
  * Create JQuery ajax POST request to access Neo4j REST API.

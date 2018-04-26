@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.6",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -30,23 +30,33 @@
     "type": "git",
     "url": "https://github.com/Popotojs/popotojs.git"
   },
+  "jest": {
+    "setupFiles": [
+      "jest-canvas-mock"
+    ]
+  },
   "scripts": {
     "build": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c && npm run uglify",
-    "pretest": "npm run build && cp -r css/font dist/font",
-    "test-disabled": "jest --ci --coverage",
+    "prepublishOnly": "npm run build",
+    "test": "jest --ci --coverage",
     "uglify": "uglifyjs -b beautify=false dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js && uglifycss css/popoto.css css/popoto-svg.css --output dist/popoto.min.css"
   },
   "dependencies": {
-    "d3": "^5.0.0",
+    "d3": "^5.1.0",
     "jquery": "^3.3.1"
   },
   "devDependencies": {
-    "json2module": "^0.0.3",
-    "rollup": "^0.57.1",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rimraf": "^2.6.2",
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.4.3",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "jest": "^22.4.3",
-    "uglify-js": "^3.3.16",
+    "jest-canvas-mock": "^1.0.2",
+    "json2module": "^0.0.3",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.58.2",
+    "rollup-plugin-copy": "^0.2.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "uglify-js": "^3.3.22",
     "uglifycss": "^0.0.29"
   }
 }

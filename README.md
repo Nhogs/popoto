@@ -1,6 +1,6 @@
 <p align="center"><a href="https://popotojs.com" target="_blank"><img width="301"src="http://www.popotojs.com/logo.png"></a></p>
 
-[![Build Status](https://travis-ci.org/Popotojs/popotojs.svg?branch=master)](https://travis-ci.org/Popotojs/popotojs)
+[![Build Status](https://travis-ci.org/Nhogs/popoto.svg?branch=master)](https://travis-ci.org/Nhogs/popoto)
 [![npm version](https://img.shields.io/npm/v/popoto.svg)](https://www.npmjs.com/package/popoto)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -11,7 +11,7 @@ If you use npm `npm install popoto`.
 
 [![NPM](https://nodei.co/npm/popoto.png?compact=true)](https://www.npmjs.com/package/popoto)
 
-Otherwise, download the [latest release](https://github.com/Popotojs/popotojs/releases/latest). You can load directly from [unpkg](https://unpkg.com/popoto3/):
+Otherwise, download the [latest release](https://github.com/Nhogs/popoto/releases/latest). You can load directly from [unpkg](https://unpkg.com/popoto/):
  
 ```html
 <!-- Add default CSS reference -->

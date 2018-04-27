@@ -24,7 +24,7 @@ Otherwise, download the [latest release](https://github.com/Nhogs/popoto/release
 <!-- Add javascript dependencies (jQuery and D3)-->
 <script src="https://unpkg.com/jquery" charset="utf-8"></script>
 <script src="https://unpkg.com/d3" charset="utf-8"></script>
-<!-- Add javascript -->
+<!-- Add Popoto script reference -->
 <script src="https://unpkg.com/popoto"></script>
 ```
 
@@ -36,10 +36,10 @@ A full set of live examples with sample data sets can be found in [Nhogs/popoto-
  - Edit the "index.html" file, by default this application is based on Neo4j movie graph example.
  - Change the value of "popoto.rest.CYPHER_URL" property to your running server REST API. The default value is "http://localhost:7474/db/data/transaction/commit".
  - Change the value of "popoto.rest.AUTHORIZATION" with an authorized user credentials, see comments in index.html file for details.
- - Update the list of labels defined in "popoto.provider.node.Provider" definition. All node labels that could be found in the graph should be added in this list.
+ - Update the list of labels defined in "popoto.provider.node.Provider" definition. All node labels to display in the graph should be added in this list.
  - Add any other customization you need in this file. See https://github.com/Nhogs/popoto-examples for detailed configuration examples.
  - Open index.html file in your preferred web browser to see the result.
- - Click on a node to display and select a value, click on "plus" button on a node to retrieve its relations and uses right click to remove a value.
+ - Click on a node to display and select a value, click on relationship arcs around nodes to navigate in relations and uses right click to remove a value.
  
  ## License
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0)

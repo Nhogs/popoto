@@ -475,7 +475,8 @@ graph.loadSchema = function (graphToLoad) {
         var directionAngle = (Math.PI / 2);
 
         rootNode.relationships = graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(labelSchema.rel).map(function (d) {
-            return {
+
+            var data = {
                 id: d.data.label + d.data.target.label,
                 label: d.data.label,
                 target: d.data.target.label,
@@ -483,7 +484,13 @@ graph.loadSchema = function (graphToLoad) {
                 startAngle: d.startAngle,
                 endAngle: d.endAngle,
                 directionAngle: (d.startAngle + d.endAngle) / 2
+            };
+
+            if (d.data.isReverse === true) {
+                data.isReverse = true;
             }
+
+            return data;
         });
     } else {
         graph.node.loadRelationshipData(rootNode, function (relationships) {
@@ -538,7 +545,7 @@ graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, pare
         var directionAngle = (Math.PI / 2);
 
         target.relationships = graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(labelSchema.rel).map(function (d) {
-            return {
+            var data = {
                 id: d.data.label + d.data.target.label,
                 label: d.data.label,
                 target: d.data.target.label,
@@ -546,7 +553,13 @@ graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, pare
                 startAngle: d.startAngle,
                 endAngle: d.endAngle,
                 directionAngle: (d.startAngle + d.endAngle) / 2
+            };
+
+            if (d.data.isReverse === true) {
+                data.isReverse = true;
             }
+
+            return data;
         });
     } else {
         graph.node.loadRelationshipData(target, function (relationships) {
@@ -668,7 +681,7 @@ graph.addSchema = function (graphSchema) {
         var directionAngle = (Math.PI / 2);
 
         rootNode.relationships = graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(rootNodeSchema.rel).map(function (d) {
-            return {
+            var data = {
                 id: d.data.label + d.data.target.label,
                 label: d.data.label,
                 target: d.data.target.label,
@@ -676,7 +689,13 @@ graph.addSchema = function (graphSchema) {
                 startAngle: d.startAngle,
                 endAngle: d.endAngle,
                 directionAngle: (d.startAngle + d.endAngle) / 2
+            };
+
+            if (d.data.isReverse === true) {
+                data.isReverse = true;
             }
+
+            return data;
         });
     }
 

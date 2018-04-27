@@ -4,6 +4,10 @@ import provider from "../../provider/provider";
 var textRenderer = {};
 textRenderer.TEXT_Y = 8; // TODO move this in dedicated config
 
+textRenderer.getNodeBoundingBox = function(node) {
+    return node.getBBox();
+};
+
 /**
  * Create the text representation of a node with a SVG rect element as background.
  *
@@ -43,21 +47,21 @@ textRenderer.render = function (nodeSelection) {
 
     backgroundRectSelection
         .attr("x", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
+            var bbox = textRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
             return bbox.x - 3;
         })
         .attr("y", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
+            var bbox = textRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
             return bbox.y;
         })
         .attr("rx", "5")
         .attr("ry", "5")
         .attr("width", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
+            var bbox = textRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
             return bbox.width + 6;
         })
         .attr("height", function (d) {
-            var bbox = d3.select(this.parentNode).select("text").node().getBBox();
+            var bbox = textRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
             return bbox.height;
         });
 };

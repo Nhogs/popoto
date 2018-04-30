@@ -943,18 +943,32 @@ graph.tick = function () {
             }
         })
         .attr("marker-end", function (d) {
-            if (graph.link.SHOW_MARKER && d.source.x <= d.target.x) {
-                return "url(#arrow)";
-            } else {
-                return null;
+            if (graph.link.SHOW_MARKER) {
+                if (d.target.isParentRelReverse === true) {
+                    if (d.source.x > d.target.x) {
+                        return "url(#arrow)";
+                    }
+                } else {
+                    if (d.source.x <= d.target.x) {
+                        return "url(#arrow)";
+                    }
+                }
             }
+            return null;
         })
         .attr("marker-start", function (d) {
-            if (graph.link.SHOW_MARKER && d.source.x > d.target.x) {
-                return "url(#reverse-arrow)";
-            } else {
-                return null;
+            if (graph.link.SHOW_MARKER) {
+                if (d.target.isParentRelReverse === true) {
+                    if (d.source.x <= d.target.x) {
+                        return "url(#reverse-arrow)";
+                    }
+                } else {
+                    if (d.source.x > d.target.x) {
+                        return "url(#reverse-arrow)";
+                    }
+                }
             }
+            return null;
         });
 
     // Workaround to WebKit browsers:

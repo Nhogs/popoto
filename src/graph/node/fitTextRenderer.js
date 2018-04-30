@@ -9,7 +9,18 @@ export function measureTextWidth(text) {
     return CONTEXT_2D.measureText(text).width;
 }
 
+/**
+ * Inspired by https://beta.observablehq.com/@mbostock/fit-text-to-circle
+ * @param text
+ * @returns {*}
+ */
 export function getLines(text) {
+    if (text === undefined || text === null) {
+        return {lines: []}
+    }
+
+    var text = String(text);
+
     var words = text.split(/\s+/g); // To hyphenate: /\s+|(?<=-)/
     if (!words[words.length - 1]) words.pop();
     if (!words[0]) words.shift();
@@ -41,9 +52,8 @@ export function getLines(text) {
         textRadius = Math.max(textRadius, Math.sqrt(dx * dx + dy * dy));
     }
 
-    var lines2 = [];
-    lines.map(function (d) {
-        lines2.push({"text": d.text, "textRadius": textRadius, "linesLength": lines.length})
+    var lines2 = lines.map(function (d) {
+        return {"text": d.text, "linesLength": lines.length}
     });
 
     return {"lines": lines2, "textRadius": textRadius}
@@ -87,7 +97,10 @@ fitTextRenderer.render = function (nodeSelection) {
         });
 
     textMiddle.attr("transform", function (d) {
-        var scale = provider.node.getSize(d) / d.textRadius;
+        var scale = 1;
+        if(d.textRadius !== 0 && d.textRadius){
+            scale = provider.node.getSize(d) / d.textRadius;
+        }
         return "translate(" + 0 + "," + 0 + ")" + " scale(" + scale + ")"
     })
 };

@@ -114,7 +114,7 @@ describe("render", function () {
                 "</div>"
             );
         });
-    })
+    });
 
     describe('Should works with integer text', () => {
 
@@ -125,7 +125,7 @@ describe("render", function () {
                 '</g>' +
                 '</div>';
 
-            provider.node.getTextValue = jest.fn().mockReturnValueOnce(1);
+            provider.node.getTextValue = jest.fn().mockReturnValueOnce(0);
             provider.node.getCSSClass = jest.fn().mockReturnValueOnce(cssClassMockValue).mockReturnValueOnce(cssClassMockValue2);
             textRenderer.getNodeBoundingBox = jest.fn().mockReturnValue({x: -50, y: -50, width: 0, height: 0});
             textRenderer.render(d3.selectAll('g').data([{}]));
@@ -138,7 +138,7 @@ describe("render", function () {
                 "<rect fill=\"" + colorMockValue + "\" class=\"" + cssClassMockValue + "\" x=\"-53\" y=\"-50\" rx=\"5\" ry=\"5\" width=\"6\" height=\"0\">" +
                 "</rect>" +
                 "<text x=\"0\" y=\"8\" text-anchor=\"middle\" class=\"" + cssClassMockValue2 + "\">" +
-                "1"+
+                "0"+
                 "</text>" +
                 "</g>" +
                 "</div>"

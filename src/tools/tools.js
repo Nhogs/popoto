@@ -15,7 +15,7 @@ tools.SAVE_GRAPH = false;
 tools.TOGGLE_TAXONOMY = true;
 tools.TOGGLE_FULL_SCREEN = true;
 tools.TOGGLE_VIEW_RELATION = true;
-tools.TOGGLE_FIT_TEXT = false;
+tools.TOGGLE_FIT_TEXT = true;
 
 /**
  * Reset the graph to display the root node only.

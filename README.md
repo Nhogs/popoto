@@ -6,6 +6,8 @@
 
 Popoto.js is an interactive and customizable graph query builder to search in [Neo4j](https://neo4j.com/) databases it is built in Javascript with [D3.js](https://d3js.org/).
 
+<p align="center"><img width="301"src="wiki/img/main.png"></p>
+
 ## Install
 If you use npm `npm install popoto`.
 

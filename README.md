@@ -7,9 +7,7 @@
 <p align="center">
 <a href="https://github.com/Nhogs/popoto">Popoto.js<a/> is a JavaScript library built with <a href="https://d3js.org">D3.js</a> designed to create interactive and customizable visual query builder for <a href="https://neo4j.com">Neo4j</a> graph databases.
 <br>
-The graph queries generates Cypher queries and are run on the database.
-<br>
-<a href="https://github.com/Nhogs/popoto">Popoto<a/> and also help to customize the results.
+The graph queries generates Cypher queries and are run on the database and also helps to customize the results.
 </p>
 
 <p align="center"><imgs src="https://raw.githubusercontent.com/wiki/Nhogs/popoto/img/main.png"></p>
@@ -49,7 +47,7 @@ For unminified version:
  - Change the value of "popoto.rest.CYPHER_URL" property to your running server REST API. The default value is "http://localhost:7474/db/data/transaction/commit".
  - Change the value of "popoto.rest.AUTHORIZATION" with an authorized user credentials, see comments in index.html file for details.
  - Update the list of labels defined in "popoto.provider.node.Provider" definition. All node labels to display in the graph should be added in this list.
- - Add any other customization you need in this file. See https://github.com/Nhogs/popoto-examples for detailed configuration examples.
+ - Add any other customization you need in this file. See [Nhogs/popoto-examples](https://github.com/Nhogs/popoto-examples) for detailed configuration examples.
  - Open index.html file in your preferred web browser to see the result.
  - Click on a node to display and select a value, click on relationship arcs around nodes to navigate in relations uses right click to remove a value and ctrl+click to negate a node.
  

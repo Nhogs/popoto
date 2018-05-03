@@ -10,7 +10,7 @@
 The graph queries generates Cypher queries and are run on the database and also helps to customize the results.
 </p>
 
-<p align="center"><imgs src="https://raw.githubusercontent.com/wiki/Nhogs/popoto/img/main.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/wiki/Nhogs/popoto/img/main.png"></p>
 
 ## Install
 For NPM, `npm install popoto` For Yarn, `yarn add popoto`.

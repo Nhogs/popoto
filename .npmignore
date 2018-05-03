@@ -8,3 +8,4 @@ package-lock.json
 npm-debug.log
 test/
 css/font/
+css/font-icon-list.html

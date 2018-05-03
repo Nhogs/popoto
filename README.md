@@ -4,11 +4,10 @@
 [![npm version](https://img.shields.io/npm/v/popoto.svg)](https://www.npmjs.com/package/popoto)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-<p align="center">
-<a href="https://github.com/Nhogs/popoto">Popoto.js<a/> is a JavaScript library built with <a href="https://d3js.org">D3.js</a> designed to create interactive and customizable visual query builder for <a href="https://neo4j.com">Neo4j</a> graph databases.
-<br>
+
+[Popoto.js](https://github.com/Nhogs/popoto) is a JavaScript library built with [D3.js](https://d3js.org) designed to create interactive and customizable visual query builder for [Neo4j](https://neo4j.com) graph databases.
+
 The graph queries generates Cypher queries and are run on the database and also helps to customize the results.
-</p>
 
 <p align="center"><img src="https://raw.githubusercontent.com/wiki/Nhogs/popoto/img/main.png"></p>
 

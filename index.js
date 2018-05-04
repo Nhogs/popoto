@@ -8,6 +8,5 @@ export {default as queryviewer} from "./src/queryviewer/queryviewer";
 export {default as rest} from "./src/rest/rest";
 export {default as result} from "./src/result/result";
 export {default as taxonomy} from "./src/taxonomy/taxonomy";
-export {default as factory} from "./src/template/factory";
 export {default as tools} from "./src/tools/tools";
 export {start, update, updateGraph} from "./src/popoto";

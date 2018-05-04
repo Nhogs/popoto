@@ -7,6 +7,7 @@ export default {
         node(),
         copy({
             "css/font": "dist/font",
+            "css/font-icon-list.html": "dist/font-icon-list.html",
             verbose: true
         })
     ],

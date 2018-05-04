@@ -78,6 +78,7 @@ For source version:
  - Open index.html file in your preferred web browser to see the result.
  - Click on a node to display and select a value, click on relationship arcs around nodes to navigate in relations uses right click to remove a value and ctrl+click to negate a node. See all [Basic actions](https://github.com/Nhogs/popoto/wiki/Basic-action) for details
 
-See an explained example page source in [Getting started](https://github.com/Nhogs/popoto/wiki#getting-started).
+See an explained example page source in [Getting started](https://github.com/Nhogs/popoto/wiki/Getting-started).
+
  ## License
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0)

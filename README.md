@@ -8,7 +8,7 @@
 
 [Popoto.js](https://github.com/Nhogs/popoto) is a JavaScript library built with [D3.js](https://d3js.org) designed to create interactive and customizable visual query builder for [Neo4j](https://neo4j.com) graph databases.
 
-The graph queries are translated into Cypher and run on the database Popoto also helps to display and customize the results.
+The graph queries are translated into Cypher and run on the database. Popoto also helps to display and customize the results.
 
 An application is composed of various components, each one can be included independently anywhere in a web application.
 It just need to be bound to a container ID in an HTML page and the content will be generated automatically.
@@ -63,7 +63,7 @@ Example:
 <script src="https://unpkg.com/popoto"></script>
 ```
 
-For unminified version:
+For source version:
 ```html
 <!-- Add Popoto script reference -->
 <script src="https://unpkg.com/popoto/dist/popoto.js"></script>
@@ -76,8 +76,8 @@ For unminified version:
  - Update the list of labels defined in "popoto.provider.node.Provider" definition. All node labels to display in the graph should be added in this list.
  - Add any other customization you need in this file. See [Nhogs/popoto-examples](https://github.com/Nhogs/popoto-examples) for detailed configuration examples.
  - Open index.html file in your preferred web browser to see the result.
- - Click on a node to display and select a value, click on relationship arcs around nodes to navigate in relations uses right click to remove a value and ctrl+click to negate a node.
+ - Click on a node to display and select a value, click on relationship arcs around nodes to navigate in relations uses right click to remove a value and ctrl+click to negate a node. See all [Basic actions](https://github.com/Nhogs/popoto/wiki/Basic-action) for details
 
-See an explained example page source [here](https://github.com/Nhogs/popoto/wiki#getting-started).
+See an explained example page source in [Getting started](https://github.com/Nhogs/popoto/wiki#getting-started).
  ## License
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0)

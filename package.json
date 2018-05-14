@@ -22,6 +22,7 @@
   },
   "contributors": [],
   "main": "dist/popoto.node.js",
+  "style": "dist/popoto.min.css",
   "unpkg": "dist/popoto.min.js",
   "jsdelivr": "dist/popoto.min.js",
   "module": "index",

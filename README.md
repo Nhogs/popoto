@@ -51,22 +51,29 @@ For NPM, `npm install popoto` For Yarn, `yarn add popoto`.
 
 Otherwise, download the [latest release](https://github.com/Nhogs/popoto/releases/latest).
  
-You can also load directly from [unpkg](https://unpkg.com/popoto/)
+You can also load directly from [unpkg](https://unpkg.com/popoto/) or [jsDelivr](https://www.jsdelivr.com/package/npm/popoto)
+
 Example:
 ```html
 <!-- Add default CSS reference -->
 <link rel="stylesheet" href="https://unpkg.com/popoto/dist/popoto.min.css">
+<!-- Or -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/popoto/dist/popoto.min.css">
 ```
 
 ```html
 <!-- Add Popoto script reference, will default to popoto.min.js -->
 <script src="https://unpkg.com/popoto"></script>
+<!-- Or -->
+<script src="https://cdn.jsdelivr.net/npm/popoto/dist/popoto.min.js"></script>
 ```
 
 For source version:
 ```html
 <!-- Add Popoto script reference -->
 <script src="https://unpkg.com/popoto/dist/popoto.js"></script>
+<!-- Or -->
+<script src="https://cdn.jsdelivr.net/npm/popoto/dist/popoto.js"></script>
 ```
 
 ## Quick start guide:

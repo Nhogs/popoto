@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import {version} from "../dist/package";
+import dataModel from "./datamodel/dataModel";
 import cypherviewer from "./cypherviewer/cypherviewer";
 import graph from "./graph/graph";
 import logger from "./logger/logger";
@@ -148,8 +149,8 @@ export function updateGraph() {
         graph.node.updateNodes();
 
         // Force simulation restart
-        graph.force.nodes(graph.nodes);
-        graph.force.force("link").links(graph.links);
+        graph.force.nodes(dataModel.nodes);
+        graph.force.force("link").links(dataModel.links);
         graph.force.alpha(1).restart();
     }
 }

@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import dataModel from "../datamodel/dataModel";
 import cypherviewer from "../cypherviewer/cypherviewer";
 import logger from "../logger/logger";
 import provider from "../provider/provider";
@@ -16,10 +17,6 @@ var graph = {};
 
 // Counter used internally to generate unique id in graph elements (like nodes and links)
 graph.idGen = 0;
-
-// TODO ZZZ extract in a datamodel module
-graph.nodes = [];
-graph.links = [];
 
 /**
  * ID of the HTML component where the graph query builder elements will be generated in.
@@ -371,8 +368,8 @@ graph.createForceLayout = function () {
         );
 
 
-    graph.force.nodes(graph.nodes);
-    graph.force.force("link").links(graph.links);
+    graph.force.nodes(dataModel.nodes);
+    graph.force.force("link").links(dataModel.links);
 
     graph.force.on("tick", graph.tick);
 };
@@ -384,7 +381,7 @@ graph.createForceLayout = function () {
  * @param label label of the node to add as root.
  */
 graph.addRootNode = function (label) {
-    if (graph.nodes.length > 0) {
+    if (dataModel.nodes.length > 0) {
         logger.warn("graph.addRootNode is called but the graph is not empty.");
     }
     if (provider.node.getSchema(label) !== undefined) {
@@ -414,7 +411,7 @@ graph.addRootNode = function (label) {
             "isAutoLoadValue": provider.node.getIsAutoLoadValue(label) === true
         };
 
-        graph.nodes.push(node);
+        dataModel.nodes.push(node);
         graph.notifyListeners(graph.Events.NODE_ROOT_ADD, [node]);
 
         graph.node.loadRelationshipData(node, function (relationships) {
@@ -438,7 +435,7 @@ graph.addRootNode = function (label) {
 };
 
 graph.loadSchema = function (graphToLoad) {
-    if (graph.nodes.length > 0) {
+    if (dataModel.nodes.length > 0) {
         logger.warn("graph.loadSchema is called but the graph is not empty.");
     }
 
@@ -465,7 +462,7 @@ graph.loadSchema = function (graphToLoad) {
         "relationships": [],
         "isAutoLoadValue": provider.node.getIsAutoLoadValue(rootNodeSchema.label) === true
     };
-    graph.nodes.push(rootNode);
+    dataModel.nodes.push(rootNode);
     graph.notifyListeners(graph.Events.NODE_ROOT_ADD, [rootNode]);
 
     var labelSchema = provider.node.getSchema(graphToLoad.label);
@@ -536,7 +533,7 @@ graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, pare
         schema: relationSchema
     };
 
-    graph.links.push(newLink);
+    dataModel.links.push(newLink);
 
     var labelSchema = provider.node.getSchema(targetNodeSchema.label);
 
@@ -618,7 +615,7 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
         node.count = 0;
     }
 
-    graph.nodes.push(node);
+    dataModel.nodes.push(node);
 
     if (nodeSchema.hasOwnProperty("value")) {
         var nodeSchemaValue = [].concat(nodeSchema.value);
@@ -646,7 +643,7 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
  * @param graphSchema schema of the graph to add.
  */
 graph.addSchema = function (graphSchema) {
-    if (graph.nodes.length > 0) {
+    if (dataModel.nodes.length > 0) {
         logger.warn("graph.addSchema is called but the graph is not empty.");
     }
 
@@ -674,7 +671,7 @@ graph.addSchema = function (graphSchema) {
         "relationships": [],
         "isAutoLoadValue": provider.node.getIsAutoLoadValue(rootNodeSchema.label) === true
     };
-    graph.nodes.push(rootNode);
+    dataModel.nodes.push(rootNode);
     graph.notifyListeners(graph.Events.NODE_ROOT_ADD, [rootNode]);
 
     if (rootNodeSchema.hasOwnProperty("rel") && rootNodeSchema.rel.length > 0) {
@@ -719,7 +716,7 @@ graph.addSchemaRelation = function (relationSchema, parentNode, linkIndex, paren
         schema: relationSchema
     };
 
-    graph.links.push(newLink);
+    dataModel.links.push(newLink);
 };
 
 graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCount, parentRel) {
@@ -802,7 +799,7 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
         });
     }
 
-    graph.nodes.push(node);
+    dataModel.nodes.push(node);
 
     if (!isCollapsed && nodeSchema.hasOwnProperty("rel")) {
         for (var linkIndex = 0; linkIndex < nodeSchema.rel.length; linkIndex++) {
@@ -819,7 +816,7 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
  */
 graph.getRootNode = function () {
     if (graph.force !== undefined) {
-        return graph.nodes[0];
+        return dataModel.nodes[0];
     }
 };
 
@@ -843,7 +840,7 @@ graph.getSchema = function () {
         });
     }
 
-    var links = graph.links;
+    var links = dataModel.links;
     if (links.length > 0) {
         links.forEach(function (link) {
             if (link.type === graph.link.LinkTypes.RELATION) {
@@ -988,7 +985,7 @@ graph.tick = function () {
     if (graph.USE_VORONOI_LAYOUT === true) {
 
         var clip = d3.select("#voronoi-clip-path").selectAll('.voroclip')
-            .data(graph.recenterVoronoi(graph.nodes), function (d) {
+            .data(graph.recenterVoronoi(dataModel.nodes), function (d) {
                 return d.point.id;
             });
 
@@ -1043,10 +1040,10 @@ graph.link.updateLinks = function () {
 };
 
 /**
- * Update the links element with data coming from graph.links.
+ * Update the links element with data coming from dataModel.links.
  */
 graph.link.updateData = function () {
-    return graph.svg.select("#" + graph.link.gID).selectAll(".ppt-glink").data(graph.links, function (d) {
+    return graph.svg.select("#" + graph.link.gID).selectAll(".ppt-glink").data(dataModel.links, function (d) {
         return d.id;
     });
 };
@@ -1303,10 +1300,10 @@ graph.node.updateNodes = function () {
 };
 
 /**
- * Update node data with changes done in graph.nodes model.
+ * Update node data with changes done in dataModel.nodes model.
  */
 graph.node.updateData = function () {
-    var data = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").data(graph.nodes, function (d) {
+    var data = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").data(dataModel.nodes, function (d) {
         return d.id;
     });
 
@@ -1334,7 +1331,7 @@ graph.node.updateCount = function () {
 
     var statements = [];
 
-    var countedNodes = graph.nodes
+    var countedNodes = dataModel.nodes
         .filter(function (d) {
             return d.type !== graph.node.NodeTypes.VALUE && d.type !== graph.node.NodeTypes.GROUP && (!d.hasOwnProperty("isNegative") || !d.isNegative);
         });
@@ -2232,9 +2229,9 @@ graph.node.nodeClick = function () {
 
                         if (clickedNode.isNegative) {
                             // Remove all related nodes
-                            for (var i = graph.links.length - 1; i >= 0; i--) {
-                                if (graph.links[i].source === clickedNode) {
-                                    graph.node.removeNode(graph.links[i].target);
+                            for (var i = dataModel.links.length - 1; i >= 0; i--) {
+                                if (dataModel.links[i].source === clickedNode) {
+                                    graph.node.removeNode(dataModel.links[i].target);
                                 }
                             }
 
@@ -2268,19 +2265,19 @@ graph.node.collapseNode = function (clickedNode) {
 
         graph.notifyListeners(graph.Events.GRAPH_NODE_VALUE_COLLAPSE, [clickedNode]);
 
-        var linksToRemove = graph.links.filter(function (l) {
+        var linksToRemove = dataModel.links.filter(function (l) {
             return l.source === clickedNode && l.type === graph.link.LinkTypes.VALUE;
         });
 
         // Remove children nodes from model
         linksToRemove.forEach(function (l) {
-            graph.nodes.splice(graph.nodes.indexOf(l.target), 1);
+            dataModel.nodes.splice(dataModel.nodes.indexOf(l.target), 1);
         });
 
         // Remove links from model
-        for (var i = graph.links.length - 1; i >= 0; i--) {
-            if (linksToRemove.indexOf(graph.links[i]) >= 0) {
-                graph.links.splice(i, 1);
+        for (var i = dataModel.links.length - 1; i >= 0; i--) {
+            if (linksToRemove.indexOf(dataModel.links[i]) >= 0) {
+                dataModel.links.splice(i, 1);
             }
         }
 
@@ -2311,7 +2308,7 @@ graph.node.collapseNode = function (clickedNode) {
  *
  */
 graph.node.collapseAllNode = function () {
-    graph.nodes.forEach(function (n) {
+    dataModel.nodes.forEach(function (n) {
         if ((n.type === graph.node.NodeTypes.CHOOSE || n.type === graph.node.NodeTypes.ROOT) && n.valueExpanded) {
             graph.node.collapseNode(n);
         }
@@ -2412,32 +2409,32 @@ graph.node.addExpandedValue = function (attribute, value) {
     var isAnyChangeDone = false;
 
     // For each expanded nodes
-    for (var i = graph.nodes.length - 1; i >= 0; i--) {
-        if (graph.nodes[i].valueExpanded) {
+    for (var i = dataModel.nodes.length - 1; i >= 0; i--) {
+        if (dataModel.nodes[i].valueExpanded) {
 
             // Look in node data if value can be found in reverse order to be able to remove value without effect on iteration index
-            for (var j = graph.nodes[i].data.length - 1; j >= 0; j--) {
-                if (graph.nodes[i].data[j][attribute] === value) {
+            for (var j = dataModel.nodes[i].data.length - 1; j >= 0; j--) {
+                if (dataModel.nodes[i].data[j][attribute] === value) {
                     isAnyChangeDone = true;
 
                     // Create field value if needed
-                    if (!graph.nodes[i].hasOwnProperty("value")) {
-                        graph.nodes[i].value = [];
+                    if (!dataModel.nodes[i].hasOwnProperty("value")) {
+                        dataModel.nodes[i].value = [];
                     }
 
                     // Add value
-                    graph.nodes[i].value.push({
-                        attributes: graph.nodes[i].data[j]
+                    dataModel.nodes[i].value.push({
+                        attributes: dataModel.nodes[i].data[j]
                     });
 
                     // Remove data added in value
-                    graph.nodes[i].data.splice(j, 1);
+                    dataModel.nodes[i].data.splice(j, 1);
                 }
             }
 
             // Refresh node
-            graph.node.collapseNode(graph.nodes[i]);
-            graph.node.expandNode(graph.nodes[i]);
+            graph.node.collapseNode(dataModel.nodes[i]);
+            graph.node.expandNode(dataModel.nodes[i]);
         }
     }
 
@@ -2456,7 +2453,7 @@ graph.node.addExpandedValue = function (attribute, value) {
  */
 graph.node.getContainingValue = function (label) {
     var nodesWithValue = [];
-    var links = graph.links, nodes = graph.nodes;
+    var links = dataModel.links, nodes = dataModel.nodes;
 
     if (nodes.length > 0) {
 
@@ -2493,18 +2490,18 @@ graph.node.addValueForLabel = function (label, value) {
     var isAnyChangeDone = false;
 
     // Find choose node with label
-    for (var i = graph.nodes.length - 1; i >= 0; i--) {
-        if (graph.nodes[i].type === graph.node.NodeTypes.CHOOSE && graph.nodes[i].label === label) {
+    for (var i = dataModel.nodes.length - 1; i >= 0; i--) {
+        if (dataModel.nodes[i].type === graph.node.NodeTypes.CHOOSE && dataModel.nodes[i].label === label) {
 
             // Create field value if needed
-            if (!graph.nodes[i].hasOwnProperty("value")) {
-                graph.nodes[i].value = [];
+            if (!dataModel.nodes[i].hasOwnProperty("value")) {
+                dataModel.nodes[i].value = [];
             }
 
             // check if value already exists
             var isValueFound = false;
             var constraintAttr = provider.node.getConstraintAttribute(label);
-            graph.nodes[i].value.forEach(function (val) {
+            dataModel.nodes[i].value.forEach(function (val) {
                 if (val.attributes.hasOwnProperty(constraintAttr) && val.attributes[constraintAttr] === value.attributes[constraintAttr]) {
                     isValueFound = true;
                 }
@@ -2512,7 +2509,7 @@ graph.node.addValueForLabel = function (label, value) {
 
             if (!isValueFound) {
                 // Add value
-                graph.nodes[i].value.push(value);
+                dataModel.nodes[i].value.push(value);
                 isAnyChangeDone = true;
             }
         }
@@ -2531,8 +2528,8 @@ graph.node.addValue = function (nodeIds, displayAttributeValue) {
     var isAnyChangeDone = false;
 
     // Find choose node with label
-    for (var i = 0; i < graph.nodes.length; i++) {
-        var node = graph.nodes[i];
+    for (var i = 0; i < dataModel.nodes.length; i++) {
+        var node = dataModel.nodes[i];
         if (nodeIds.indexOf(node.id) >= 0) {
 
             // Create field value in node if needed
@@ -2593,8 +2590,8 @@ graph.node.removeValue = function (node, value) {
  * @param constraintAttributeValue
  */
 graph.node.getValue = function (nodeId, constraintAttributeValue) {
-    for (var i = 0; i < graph.nodes.length; i++) {
-        var node = graph.nodes[i];
+    for (var i = 0; i < dataModel.nodes.length; i++) {
+        var node = dataModel.nodes[i];
 
         if (node.id === nodeId) {
             var constraintAttribute = provider.node.getConstraintAttribute(node.label);
@@ -2619,28 +2616,28 @@ graph.node.removeExpandedValue = function (attribute, value) {
     var isAnyChangeDone = false;
 
     // For each expanded nodes in reverse order as some values can be removed
-    for (var i = graph.nodes.length - 1; i >= 0; i--) {
-        if (graph.nodes[i].valueExpanded) {
+    for (var i = dataModel.nodes.length - 1; i >= 0; i--) {
+        if (dataModel.nodes[i].valueExpanded) {
 
             var removedValues = [];
 
             // Remove values
-            for (var j = graph.nodes[i].value.length - 1; j >= 0; j--) {
-                if (graph.nodes[i].value[j].attributes[attribute] === value) {
+            for (var j = dataModel.nodes[i].value.length - 1; j >= 0; j--) {
+                if (dataModel.nodes[i].value[j].attributes[attribute] === value) {
                     isAnyChangeDone = true;
 
-                    removedValues = removedValues.concat(graph.nodes[i].value.splice(j, 1));
+                    removedValues = removedValues.concat(dataModel.nodes[i].value.splice(j, 1));
                 }
             }
 
             //And add them back in data
             for (var k = 0; k < removedValues.length; k++) {
-                graph.nodes[i].data.push(removedValues[k].attributes);
+                dataModel.nodes[i].data.push(removedValues[k].attributes);
             }
 
             // Refresh node
-            graph.node.collapseNode(graph.nodes[i]);
-            graph.node.expandNode(graph.nodes[i]);
+            graph.node.collapseNode(dataModel.nodes[i]);
+            graph.node.expandNode(dataModel.nodes[i]);
         }
     }
 
@@ -2655,7 +2652,7 @@ graph.node.removeExpandedValue = function (attribute, value) {
  * Return all nodes with isAutoLoadValue property set to true.
  */
 graph.node.getAutoLoadValueNodes = function () {
-    return graph.nodes
+    return dataModel.nodes
         .filter(function (d) {
             return d.hasOwnProperty("isAutoLoadValue") && d.isAutoLoadValue === true && !(d.isNegative === true);
         });
@@ -2810,7 +2807,7 @@ graph.node.addRelatedBranch = function (node, relPath, values, isNegative) {
  */
 graph.node.filterExistingValues = function (node, values) {
     var notFoundValues = [];
-    var possibleValueNodes = graph.nodes.filter(function (n) {
+    var possibleValueNodes = dataModel.nodes.filter(function (n) {
         return n.parent === node && n.hasOwnProperty("value") && n.value.length > 0;
     });
 
@@ -2916,8 +2913,8 @@ graph.node.expandNode = function (clickedNode) {
             "internalID": d[query.NEO4J_INTERNAL_ID.queryInternalName]
         };
 
-        graph.nodes.push(node);
-        graph.links.push(
+        dataModel.nodes.push(node);
+        dataModel.links.push(
             {
                 id: "l" + graph.generateId(),
                 source: clickedNode,
@@ -3087,8 +3084,8 @@ graph.addRelationshipData = function (node, link, callback, values, isNegative) 
     targetNode.tx = node.tx + ((provider.link.getDistance(newLink)) * Math.cos(link.directionAngle - Math.PI / 2));
     targetNode.ty = node.ty + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
 
-    graph.nodes.push(targetNode);
-    graph.links.push(newLink);
+    dataModel.nodes.push(targetNode);
+    dataModel.links.push(newLink);
 
     graph.hasGraphChanged = true;
     updateGraph();
@@ -3121,7 +3118,7 @@ graph.addRelationshipData = function (node, link, callback, values, isNegative) 
 graph.node.removeNode = function (node) {
     var willChangeResults = node.hasOwnProperty("value") && node.value.length > 0;
 
-    var linksToRemove = graph.links.filter(function (l) {
+    var linksToRemove = dataModel.links.filter(function (l) {
         return l.source === node;
     });
 
@@ -3132,13 +3129,13 @@ graph.node.removeNode = function (node) {
     });
 
     // Remove links from model
-    for (var i = graph.links.length - 1; i >= 0; i--) {
-        if (graph.links[i].target === node) {
-            graph.links.splice(i, 1);
+    for (var i = dataModel.links.length - 1; i >= 0; i--) {
+        if (dataModel.links[i].target === node) {
+            dataModel.links.splice(i, 1);
         }
     }
 
-    graph.nodes.splice(graph.nodes.indexOf(node), 1);
+    dataModel.nodes.splice(dataModel.nodes.indexOf(node), 1);
 
     return willChangeResults;
 };
@@ -3164,9 +3161,9 @@ graph.node.clearSelection = function () {
         if (clickedNode.isNegative === true) {
             if (clickedNode.value.length === 0) {
                 // Remove all related nodes
-                for (var i = graph.links.length - 1; i >= 0; i--) {
-                    if (graph.links[i].source === clickedNode) {
-                        graph.node.removeNode(graph.links[i].target);
+                for (var i = dataModel.links.length - 1; i >= 0; i--) {
+                    if (dataModel.links[i].source === clickedNode) {
+                        graph.node.removeNode(dataModel.links[i].target);
                     }
                 }
 

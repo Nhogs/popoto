@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import dataModel from "../datamodel/dataModel";
 import query from "../query/query";
 import provider from "../provider/provider";
 import logger from "../logger/logger";
@@ -174,13 +175,8 @@ taxonomy.onClick = function () {
 
     var label = this.attributes.value.value;
 
-    while (graph.nodes.length > 0) {
-        graph.nodes.pop();
-    }
-
-    while (graph.links.length > 0) {
-        graph.links.pop();
-    }
+    dataModel.nodes.length = 0;
+    dataModel.links.length = 0;
 
     // Reinitialize internal label generator
     graph.node.internalLabels = {};

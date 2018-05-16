@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import dataModel from "../datamodel/dataModel";
 import queryviewer from "../queryviewer/queryviewer";
 import provider from "../provider/provider";
 import query from "../query/query";
@@ -41,7 +42,7 @@ cypherviewer.updateQuery = function () {
     cypherviewer.querySpanElements.exit().remove();
 
     // Update data
-    cypherviewer.querySpanElements = cypherviewer.querySpanElements.data(cypherviewer.generateData(graph.links, graph.nodes));
+    cypherviewer.querySpanElements = cypherviewer.querySpanElements.data(cypherviewer.generateData(dataModel.links, dataModel.nodes));
 
     // Remove old span (not needed as all have been cleaned before)
     // queryviewer.querySpanElements.exit().remove();

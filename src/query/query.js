@@ -1,4 +1,5 @@
 import provider from "../provider/provider";
+import dataModel from "../datamodel/dataModel";
 import graph from "../graph/graph";
 
 var query = {};
@@ -327,7 +328,7 @@ query.getLinksToRoot = function (node, links) {
  */
 query.generateResultQuery = function (isGraph) {
     var rootNode = graph.getRootNode();
-    var queryElements = query.generateQueryElements(rootNode, rootNode, query.getRelevantLinks(rootNode, rootNode, graph.links), true);
+    var queryElements = query.generateQueryElements(rootNode, rootNode, query.getRelevantLinks(rootNode, rootNode, dataModel.links), true);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryRelationElements = queryElements.relationElements,
@@ -390,7 +391,7 @@ query.generateResultQuery = function (isGraph) {
  * @returns {string} the node count cypher query
  */
 query.generateNodeCountQuery = function (countedNode) {
-    var queryElements = query.generateQueryElements(graph.getRootNode(), countedNode, query.getRelevantLinks(graph.getRootNode(), countedNode, graph.links), true);
+    var queryElements = query.generateQueryElements(graph.getRootNode(), countedNode, query.getRelevantLinks(graph.getRootNode(), countedNode, dataModel.links), true);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryReturnElements = [],
@@ -432,7 +433,7 @@ query.generateNodeCountQuery = function (countedNode) {
 query.generateNodeValueQuery = function (targetNode) {
 
     var rootNode = graph.getRootNode();
-    var queryElements = query.generateQueryElements(rootNode, targetNode, query.getRelevantLinks(rootNode, targetNode, graph.links), true);
+    var queryElements = query.generateQueryElements(rootNode, targetNode, query.getRelevantLinks(rootNode, targetNode, dataModel.links), true);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryReturnElements = [],
@@ -501,7 +502,7 @@ query.generateNodeValueQuery = function (targetNode) {
  */
 query.generateNodeRelationQuery = function (targetNode) {
 
-    var linksToRoot = query.getLinksToRoot(targetNode, graph.links);
+    var linksToRoot = query.getLinksToRoot(targetNode, dataModel.links);
 
     var queryElements = query.generateQueryElements(graph.getRootNode(), targetNode, linksToRoot, false);
     var queryMatchElements = queryElements.matchElements,

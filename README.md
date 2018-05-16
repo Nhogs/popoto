@@ -5,6 +5,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![dependencies](https://david-dm.org/Nhogs/popoto.svg)](https://david-dm.org/Nhogs/popoto)
 [![dependencies](https://david-dm.org/Nhogs/popoto/dev-status.svg)](https://david-dm.org/Nhogs/popoto?type=dev)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d00736e10d4c630c2010/maintainability)](https://codeclimate.com/github/Nhogs/popoto/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d00736e10d4c630c2010/test_coverage)](https://codeclimate.com/github/Nhogs/popoto/test_coverage)
 
 [Popoto.js](https://github.com/Nhogs/popoto) is a JavaScript library built with [D3.js](https://d3js.org) designed to create interactive and customizable visual query builder for [Neo4j](https://neo4j.com) graph databases.
 

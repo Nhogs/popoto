@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test TEXT_Y default value to center text vertically 1`] = `8`;
+
+exports[`render Should works with empty text Should render correctly 1`] = `"<div><g><rect fill=\\"mocked_color_value\\" class=\\"mocked_css_class_value\\" x=\\"-53\\" y=\\"-50\\" rx=\\"5\\" ry=\\"5\\" width=\\"6\\" height=\\"0\\"></rect><text x=\\"0\\" y=\\"8\\" text-anchor=\\"middle\\" class=\\"mocked_css_class_value2\\"></text></g></div>"`;
+
+exports[`render Should works with integer text Should render correctly 1`] = `"<div><g><rect fill=\\"mocked_color_value\\" class=\\"mocked_css_class_value\\" x=\\"-53\\" y=\\"-50\\" rx=\\"5\\" ry=\\"5\\" width=\\"6\\" height=\\"0\\"></rect><text x=\\"0\\" y=\\"8\\" text-anchor=\\"middle\\" class=\\"mocked_css_class_value2\\">0</text></g></div>"`;
+
+exports[`render Should works with normal simple text MouseOver should remove correctly the parent clip path 1`] = `"url(#node-viewmocked_id_clip_path_value)"`;
+
+exports[`render Should works with normal simple text MouseOver should remove correctly the parent clip path 2`] = `null`;
+
+exports[`render Should works with normal simple text Mouseout after the mouseover should reAdd correctly the parent clip path 1`] = `"url(#node-viewmocked_id_clip_path_value)"`;
+
+exports[`render Should works with normal simple text Mouseout after the mouseover should reAdd correctly the parent clip path 2`] = `"url(#node-viewmocked_id_clip_path_value)"`;
+
+exports[`render Should works with normal simple text Should render correctly 1`] = `"<div><g clip-path=\\"url(#node-viewmocked_id_clip_path_value)\\"><rect fill=\\"mocked_color_value\\" class=\\"mocked_css_class_value\\" x=\\"-53\\" y=\\"-50\\" rx=\\"5\\" ry=\\"5\\" width=\\"106\\" height=\\"100\\"></rect><text x=\\"0\\" y=\\"8\\" text-anchor=\\"middle\\" class=\\"mocked_css_class_value2\\">mocked text value</text></g></div>"`;
+
+exports[`render Should works with undefined text Should render correctly 1`] = `"<div><g><rect fill=\\"mocked_color_value\\" class=\\"mocked_css_class_value\\" x=\\"-53\\" y=\\"-50\\" rx=\\"5\\" ry=\\"5\\" width=\\"6\\" height=\\"0\\"></rect><text x=\\"0\\" y=\\"8\\" text-anchor=\\"middle\\" class=\\"mocked_css_class_value2\\"></text></g></div>"`;

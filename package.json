@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -43,21 +43,21 @@
     "uglify": "uglifyjs -b beautify=false,preamble=\"'// Copyright (c) 2018 NHOGS Interactive.'\" dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js && uglifycss css/popoto.css css/popoto-svg.css --output dist/popoto.min.css"
   },
   "dependencies": {
-    "d3": "^5.1.0",
+    "d3": "^5.4.0",
     "jquery": "^3.3.1"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-jest": "^22.4.3",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "jest": "^22.4.3",
     "jest-canvas-mock": "^1.0.2",
     "json2module": "^0.0.3",
     "rimraf": "^2.6.2",
-    "rollup": "^0.58.2",
+    "rollup": "^0.59.0",
     "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "uglify-js": "^3.3.22",
+    "uglify-js": "^3.3.25",
     "uglifycss": "^0.0.29"
   }
 }

@@ -3,7 +3,7 @@ import provider from '../../../src/provider/provider';
 import * as d3 from 'd3';
 
 test('Test TEXT_Y default value to center text vertically', () => {
-    expect(textRenderer.TEXT_Y).toEqual(8);
+    expect(textRenderer.TEXT_Y).toMatchSnapshot();
 });
 
 describe("render", function () {
@@ -29,32 +29,22 @@ describe("render", function () {
         });
 
         test('Should render correctly', () => {
-            expect(document.body.innerHTML).toEqual(
-                "<div>" +
-                "<g clip-path=\"url(#node-view" + idClipPathMockValue + ")\">" +
-                "<rect fill=\"" + colorMockValue + "\" class=\"" + cssClassMockValue + "\" x=\"-53\" y=\"-50\" rx=\"5\" ry=\"5\" width=\"106\" height=\"100\">" +
-                "</rect>" +
-                "<text x=\"0\" y=\"8\" text-anchor=\"middle\" class=\"" + cssClassMockValue2 + "\">" +
-                "mocked text value" +
-                "</text>" +
-                "</g>" +
-                "</div>"
-            );
+            expect(document.body.innerHTML).toMatchSnapshot();
         });
 
         test('MouseOver should remove correctly the parent clip path', () => {
-            expect(d3.select('g').attr("clip-path")).toEqual("url(#node-view" + idClipPathMockValue + ")");
+            expect(d3.select('g').attr("clip-path")).toMatchSnapshot();
             d3.select('text').dispatch("mouseover");
-            expect(d3.select('g').attr("clip-path")).toBeNull();
+            expect(d3.select('g').attr("clip-path")).toMatchSnapshot();
         });
 
         test('Mouseout after the mouseover should reAdd correctly the parent clip path', () => {
             d3.select('g').data([{id: idClipPathMockValue}]);
 
-            expect(d3.select('g').attr("clip-path")).toEqual("url(#node-view" + idClipPathMockValue + ")");
+            expect(d3.select('g').attr("clip-path")).toMatchSnapshot();
             d3.select('text').dispatch("mouseover");
             d3.select('text').dispatch("mouseout");
-            expect(d3.select('g').attr("clip-path")).toEqual("url(#node-view" + idClipPathMockValue + ")");
+            expect(d3.select('g').attr("clip-path")).toMatchSnapshot();
         });
     });
 
@@ -74,16 +64,7 @@ describe("render", function () {
         });
 
         test('Should render correctly', () => {
-            expect(document.body.innerHTML).toEqual(
-                "<div>" +
-                "<g>" +
-                "<rect fill=\"" + colorMockValue + "\" class=\"" + cssClassMockValue + "\" x=\"-53\" y=\"-50\" rx=\"5\" ry=\"5\" width=\"6\" height=\"0\">" +
-                "</rect>" +
-                "<text x=\"0\" y=\"8\" text-anchor=\"middle\" class=\"" + cssClassMockValue2 + "\">" +
-                "</text>" +
-                "</g>" +
-                "</div>"
-            );
+            expect(document.body.innerHTML).toMatchSnapshot();
         });
     });
 
@@ -103,16 +84,7 @@ describe("render", function () {
         });
 
         test('Should render correctly', () => {
-            expect(document.body.innerHTML).toEqual(
-                "<div>" +
-                "<g>" +
-                "<rect fill=\"" + colorMockValue + "\" class=\"" + cssClassMockValue + "\" x=\"-53\" y=\"-50\" rx=\"5\" ry=\"5\" width=\"6\" height=\"0\">" +
-                "</rect>" +
-                "<text x=\"0\" y=\"8\" text-anchor=\"middle\" class=\"" + cssClassMockValue2 + "\">" +
-                "</text>" +
-                "</g>" +
-                "</div>"
-            );
+            expect(document.body.innerHTML).toMatchSnapshot();
         });
     });
 
@@ -132,18 +104,7 @@ describe("render", function () {
         });
 
         test('Should render correctly', () => {
-            expect(document.body.innerHTML).toEqual(
-                "<div>" +
-                "<g>" +
-                "<rect fill=\"" + colorMockValue + "\" class=\"" + cssClassMockValue + "\" x=\"-53\" y=\"-50\" rx=\"5\" ry=\"5\" width=\"6\" height=\"0\">" +
-                "</rect>" +
-                "<text x=\"0\" y=\"8\" text-anchor=\"middle\" class=\"" + cssClassMockValue2 + "\">" +
-                "0"+
-                "</text>" +
-                "</g>" +
-                "</div>"
-            );
+            expect(document.body.innerHTML).toMatchSnapshot();
         });
     })
 });
-

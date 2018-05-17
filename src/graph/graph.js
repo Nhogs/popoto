@@ -7,8 +7,7 @@ import query from "../query/query";
 import queryviewer from "../queryviewer/queryviewer";
 import result from "../result/result";
 import rest from "../rest/rest";
-import taxonomy from "../taxonomy/taxonomy";
-import tools from "../tools/tools";
+import toolBar from "../toolbar/toolbar";
 import textRenderer from "./node/textRenderer";
 import {update, updateGraph} from "../popoto";
 import fitTextRenderer from "./node/fitTextRenderer";
@@ -27,13 +26,6 @@ graph.hasGraphChanged = true;
 // Defines the min and max level of zoom available in graph query builder.
 graph.zoom = d3.zoom().scaleExtent([0.1, 10]);
 graph.WHEEL_ZOOM_ENABLED = true;
-graph.TOOL_TAXONOMY = "Show/hide taxonomy panel";
-graph.TOOL_RELATION = "Show/hide relation";
-graph.TOOL_CENTER = "Center view";
-graph.TOOL_FULL_SCREEN = "Full screen";
-graph.TOOL_RESET = "Reset graph";
-graph.TOOL_SAVE = "Save graph";
-graph.TOOL_FIT_TEXT = "Fit text in nodes";
 graph.USE_DONUT_FORCE = false;
 graph.USE_VORONOI_LAYOUT = false;
 graph.USE_FIT_TEXT = false;
@@ -118,72 +110,7 @@ graph.createGraphArea = function () {
 
     var htmlContainer = d3.select("#" + graph.containerId);
 
-    var toolbar = htmlContainer
-        .append("div")
-        .attr("class", "ppt-toolbar");
-
-    if (tools.TOGGLE_VIEW_RELATION) {
-        toolbar.append("span")
-            .attr("id", "popoto-toggle-relation")
-            .attr("class", "ppt-icon ppt-menu relation")
-            .attr("title", graph.TOOL_RELATION)
-            .on("click", function () {
-                tools.toggleViewRelation();
-            });
-    }
-
-    if (tools.RESET_GRAPH) {
-        toolbar.append("span")
-            .attr("id", "popoto-reset-menu")
-            .attr("class", "ppt-icon ppt-menu reset")
-            .attr("title", graph.TOOL_RESET)
-            .on("click", function () {
-                graph.notifyListeners(graph.Events.GRAPH_RESET, []);
-                tools.reset();
-            });
-    }
-
-    if (taxonomy.isActive && tools.TOGGLE_TAXONOMY) {
-        toolbar.append("span")
-            .attr("id", "popoto-taxonomy-menu")
-            .attr("class", "ppt-icon ppt-menu taxonomy")
-            .attr("title", graph.TOOL_TAXONOMY)
-            .on("click", tools.toggleTaxonomy);
-    }
-
-    if (tools.CENTER_GRAPH) {
-        toolbar.append("span")
-            .attr("id", "popoto-center-menu")
-            .attr("class", "ppt-icon ppt-menu center")
-            .attr("title", graph.TOOL_CENTER)
-            .on("click", tools.center);
-    }
-
-    if (tools.TOGGLE_FULL_SCREEN) {
-        toolbar.append("span")
-            .attr("id", "popoto-fullscreen-menu")
-            .attr("class", "ppt-icon ppt-menu fullscreen")
-            .attr("title", graph.TOOL_FULL_SCREEN)
-            .on("click", tools.toggleFullScreen);
-    }
-
-    if (tools.SAVE_GRAPH) {
-        toolbar.append("span")
-            .attr("id", "popoto-save-menu")
-            .attr("class", "ppt-icon ppt-menu save")
-            .attr("title", graph.TOOL_SAVE)
-            .on("click", function () {
-                graph.notifyListeners(graph.Events.GRAPH_SAVE, [graph.getSchema()]);
-            });
-    }
-
-    if (tools.TOGGLE_FIT_TEXT) {
-        toolbar.append("span")
-            .attr("id", "popoto-fit-text-menu")
-            .attr("class", "ppt-icon ppt-menu fit-text")
-            .attr("title", graph.TOOL_FIT_TEXT)
-            .on("click", tools.toggleFitText);
-    }
+    toolBar.render(htmlContainer);
 
     graph.svgTag = htmlContainer.append("svg")
         .attr("class", "ppt-svg-graph")

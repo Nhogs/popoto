@@ -117,7 +117,7 @@ export function update() {
     updateGraph();
 
     // Do not update if rootNode is not valid.
-    var root = graph.getRootNode();
+    var root = dataModel.getRootNode();
 
     if (!root || root.label === undefined) {
         return;

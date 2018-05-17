@@ -301,8 +301,8 @@ graph.createGraphArea = function () {
 };
 
 graph.centerRootNode = function () {
-    graph.getRootNode().fx = graph.getSVGWidth() / 2;
-    graph.getRootNode().fy = graph.getSVGHeight() / 2;
+    dataModel.getRootNode().fx = graph.getSVGWidth() / 2;
+    dataModel.getRootNode().fy = graph.getSVGHeight() / 2;
     update();
 };
 
@@ -811,23 +811,13 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
 };
 
 /**
- * Get the graph root node.
- * @returns {*}
- */
-graph.getRootNode = function () {
-    if (graph.force !== undefined) {
-        return dataModel.nodes[0];
-    }
-};
-
-/**
  * Get the current schema of the graph.
  * @returns {{}}
  */
 graph.getSchema = function () {
     var nodesMap = {};
 
-    var rootNode = graph.getRootNode();
+    var rootNode = dataModel.getRootNode();
 
     nodesMap[rootNode.id] = {
         label: rootNode.label

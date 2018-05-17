@@ -3,7 +3,7 @@ import query from "../query/query";
 import provider from "../provider/provider";
 import logger from "../logger/logger";
 import rest from "../rest/rest";
-import graph from "../graph/graph";
+import dataModel from "../datamodel/dataModel";
 
 var result = {};
 result.containerId = "popoto-results";
@@ -115,7 +115,7 @@ result.updateResults = function () {
                 var resultObjects = parsedData[0].map(function (d, i) {
                     return {
                         "resultIndex": i,
-                        "label": graph.getRootNode().label,
+                        "label": dataModel.getRootNode().label,
                         "attributes": d
                     };
                 });
@@ -179,7 +179,7 @@ result.updateResultsCount = function () {
     // Update result counts with root node count
     if (result.resultCountListeners.length > 0) {
         result.resultCountListeners.forEach(function (listener) {
-            listener(graph.getRootNode().count);
+            listener(dataModel.getRootNode().count);
         });
     }
 };

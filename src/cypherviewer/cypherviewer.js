@@ -93,7 +93,7 @@ cypherviewer.updateQuery = function () {
         return d.type === cypherviewer.QueryElementTypes.SOURCE;
     })
         .attr("class", function (d) {
-            if (d.node === graph.getRootNode()) {
+            if (d.node === dataModel.getRootNode()) {
                 if (d.node.value !== undefined && d.node.value.length > 0) {
                     return "ppt-span-root-value";
                 } else {
@@ -142,7 +142,7 @@ cypherviewer.updateQuery = function () {
         return d.type === cypherviewer.QueryElementTypes.WHERE;
     })
         .attr("class", function (d) {
-            if (d.node === graph.getRootNode()) {
+            if (d.node === dataModel.getRootNode()) {
                 return "ppt-span-root-value";
             } else {
                 return "ppt-span-value";
@@ -237,7 +237,7 @@ cypherviewer.updateQuery = function () {
  */
 cypherviewer.generateData = function (links) {
     var elmts = [], id = 0;
-    var rootNode = graph.getRootNode();
+    var rootNode = dataModel.getRootNode();
     var relevantLinks = query.getRelevantLinks(rootNode, rootNode, links);
     var negativeLinks = relevantLinks.filter(function (rl) {
         return rl.target.isNegative === true && (!rl.target.hasOwnProperty("value") || rl.target.value.length <= 0)

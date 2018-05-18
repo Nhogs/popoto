@@ -1516,7 +1516,7 @@ node.addRelatedValues = function (n, values, isNegative) {
                     var dataRel = data[0].rel;
 
                     var value = {
-                        "id": graph.generateId(),
+                        "id": dataModel.generateId(),
                         "parent": n,
                         "attributes": dataValue,
                         "type": node.NodeTypes.VALUE,
@@ -1656,7 +1656,7 @@ node.expandNode = function (clickedNode) {
             ny = clickedNode.y + (100 * Math.sin((angleDeg * (Math.PI / 180)) - parentAngle));
 
         var n = {
-            "id": graph.generateId(),
+            "id": dataModel.generateId(),
             "parent": clickedNode,
             "attributes": d,
             "type": node.NodeTypes.VALUE,
@@ -1670,7 +1670,7 @@ node.expandNode = function (clickedNode) {
         dataModel.nodes.push(n);
         dataModel.links.push(
             {
-                id: "l" + graph.generateId(),
+                id: "l" + dataModel.generateId(),
                 source: clickedNode,
                 target: n,
                 type: graph.link.LinkTypes.VALUE

@@ -16,9 +16,6 @@ graph.node = node;
 graph.DISABLE_RELATION = false;
 graph.DISABLE_COUNT = false;
 
-// Counter used internally to generate unique id in graph elements (like nodes and links)
-graph.idGen = 0;
-
 /**
  * ID of the HTML component where the graph query builder elements will be generated in.
  * @type {string}
@@ -45,10 +42,6 @@ graph.Events = Object.freeze({
     GRAPH_NODE_ADD_VALUE: "graph.node.add_value",
     GRAPH_NODE_DATA_LOADED: "graph.node.data_loaded"
 });
-
-graph.generateId = function () {
-    return graph.idGen++;
-};
 
 graph.listeners = {};
 
@@ -318,7 +311,7 @@ graph.addRootNode = function (label) {
     } else {
 
         var n = {
-            "id": graph.generateId(),
+            "id": dataModel.generateId(),
             "type": graph.node.NodeTypes.ROOT,
             // x and y coordinates are set to the center of the SVG area.
             // These coordinate will never change at runtime except if the window is resized.
@@ -370,7 +363,7 @@ graph.loadSchema = function (graphToLoad) {
 
     var rootNodeSchema = graphToLoad;
     var rootNode = {
-        "id": graph.generateId(),
+        "id": dataModel.generateId(),
         "type": graph.node.NodeTypes.ROOT,
         // x and y coordinates are set to the center of the SVG area.
         // These coordinate will never change at runtime except if the window is resized.
@@ -432,7 +425,7 @@ graph.loadSchema = function (graphToLoad) {
         nodeSchemaValue.forEach(function (value) {
             rootNode.value.push(
                 {
-                    "id": graph.generateId(),
+                    "id": dataModel.generateId(),
                     "parent": rootNode,
                     "attributes": value,
                     "type": graph.node.NodeTypes.VALUE,
@@ -454,7 +447,7 @@ graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, pare
     var target = graph.loadSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label, (relationSchema.hasOwnProperty("isReverse") && relationSchema.isReverse === true));
 
     var newLink = {
-        id: "l" + graph.generateId(),
+        id: "l" + dataModel.generateId(),
         source: parentNode,
         target: target,
         type: graph.link.LinkTypes.RELATION,
@@ -521,7 +514,7 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
     // var ty = ny + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
 
     var n = {
-        "id": graph.generateId(),
+        "id": dataModel.generateId(),
         "parent": parentNode,
         "parentRel": parentRel,
         "type": (isGroupNode) ? graph.node.NodeTypes.GROUP : graph.node.NodeTypes.CHOOSE,
@@ -552,7 +545,7 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
         nodeSchemaValue.forEach(function (value) {
             n.value.push(
                 {
-                    "id": graph.generateId(),
+                    "id": dataModel.generateId(),
                     "parent": n,
                     "attributes": value,
                     "type": graph.node.NodeTypes.VALUE,
@@ -579,7 +572,7 @@ graph.addSchema = function (graphSchema) {
     var rootNodeSchema = graphSchema;
 
     var rootNode = {
-        "id": graph.generateId(),
+        "id": dataModel.generateId(),
         "type": graph.node.NodeTypes.ROOT,
         // x and y coordinates are set to the center of the SVG area.
         // These coordinate will never change at runtime except if the window is resized.
@@ -637,7 +630,7 @@ graph.addSchemaRelation = function (relationSchema, parentNode, linkIndex, paren
     var target = graph.addSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label);
 
     var newLink = {
-        id: "l" + graph.generateId(),
+        id: "l" + dataModel.generateId(),
         source: parentNode,
         target: target,
         type: graph.link.LinkTypes.RELATION,
@@ -669,7 +662,7 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
     // var ty = ny + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
 
     var n = {
-        "id": graph.generateId(),
+        "id": dataModel.generateId(),
         "parent": parentNode,
         "parentRel": parentRel,
         "type": (isGroupNode) ? graph.node.NodeTypes.GROUP : graph.node.NodeTypes.CHOOSE,
@@ -718,7 +711,7 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
         nodeSchemaValue.forEach(function (value) {
             n.value.push(
                 {
-                    "id": graph.generateId(),
+                    "id": dataModel.generateId(),
                     "parent": n,
                     "attributes": value,
                     "type": graph.node.NodeTypes.VALUE,
@@ -975,7 +968,7 @@ graph.computeParentAngle = function (n) {
  */
 graph.addRelationshipData = function (n, l, callback, values, isNegative) {
     var targetNode = {
-        "id": "" + graph.generateId(),
+        "id": "" + dataModel.generateId(),
         "parent": n,
         "parentRel": l.label,
         "type": graph.node.NodeTypes.CHOOSE,
@@ -997,7 +990,7 @@ graph.addRelationshipData = function (n, l, callback, values, isNegative) {
     }
 
     var newLink = {
-        id: "l" + graph.generateId(),
+        id: "l" + dataModel.generateId(),
         source: n,
         target: targetNode,
         type: graph.link.LinkTypes.RELATION,

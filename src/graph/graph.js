@@ -1,21 +1,20 @@
 import * as d3 from "d3";
 import dataModel from "../datamodel/dataModel";
-import cypherviewer from "../cypherviewer/cypherviewer";
 import logger from "../logger/logger";
 import provider from "../provider/provider";
-import query from "../query/query";
-import queryviewer from "../queryviewer/queryviewer";
 import result from "../result/result";
-import rest from "../rest/rest";
 import toolBar from "../toolbar/toolbar";
-import textRenderer from "./node/textRenderer";
 import {update, updateGraph} from "../popoto";
-import fitTextRenderer from "./node/fitTextRenderer";
+import link from "./link/link";
+import node from "./node/node";
 
 var graph = {};
 
-// Counter used internally to generate unique id in graph elements (like nodes and links)
-graph.idGen = 0;
+graph.link = link;
+graph.node = node;
+
+graph.DISABLE_RELATION = false;
+graph.DISABLE_COUNT = false;
 
 /**
  * ID of the HTML component where the graph query builder elements will be generated in.
@@ -43,10 +42,6 @@ graph.Events = Object.freeze({
     GRAPH_NODE_ADD_VALUE: "graph.node.add_value",
     GRAPH_NODE_DATA_LOADED: "graph.node.data_loaded"
 });
-
-graph.generateId = function () {
-    return graph.idGen++;
-};
 
 graph.listeners = {};
 
@@ -315,8 +310,8 @@ graph.addRootNode = function (label) {
         graph.addSchema(provider.node.getSchema(label));
     } else {
 
-        var node = {
-            "id": graph.generateId(),
+        var n = {
+            "id": dataModel.generateId(),
             "type": graph.node.NodeTypes.ROOT,
             // x and y coordinates are set to the center of the SVG area.
             // These coordinate will never change at runtime except if the window is resized.
@@ -338,16 +333,16 @@ graph.addRootNode = function (label) {
             "isAutoLoadValue": provider.node.getIsAutoLoadValue(label) === true
         };
 
-        dataModel.nodes.push(node);
-        graph.notifyListeners(graph.Events.NODE_ROOT_ADD, [node]);
+        dataModel.nodes.push(n);
+        graph.notifyListeners(graph.Events.NODE_ROOT_ADD, [n]);
 
-        graph.node.loadRelationshipData(node, function (relationships) {
-            node.relationships = relationships;
+        graph.node.loadRelationshipData(n, function (relationships) {
+            n.relationships = relationships;
 
             if (provider.node.getIsAutoExpandRelations(label)) {
 
                 graph.ignoreCount = true;
-                graph.node.expandRelationships(node, function () {
+                graph.node.expandRelationships(n, function () {
 
                     graph.ignoreCount = false;
                     graph.hasGraphChanged = true;
@@ -368,7 +363,7 @@ graph.loadSchema = function (graphToLoad) {
 
     var rootNodeSchema = graphToLoad;
     var rootNode = {
-        "id": graph.generateId(),
+        "id": dataModel.generateId(),
         "type": graph.node.NodeTypes.ROOT,
         // x and y coordinates are set to the center of the SVG area.
         // These coordinate will never change at runtime except if the window is resized.
@@ -430,7 +425,7 @@ graph.loadSchema = function (graphToLoad) {
         nodeSchemaValue.forEach(function (value) {
             rootNode.value.push(
                 {
-                    "id": graph.generateId(),
+                    "id": dataModel.generateId(),
                     "parent": rootNode,
                     "attributes": value,
                     "type": graph.node.NodeTypes.VALUE,
@@ -452,7 +447,7 @@ graph.loadSchemaRelation = function (relationSchema, parentNode, linkIndex, pare
     var target = graph.loadSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label, (relationSchema.hasOwnProperty("isReverse") && relationSchema.isReverse === true));
 
     var newLink = {
-        id: "l" + graph.generateId(),
+        id: "l" + dataModel.generateId(),
         source: parentNode,
         target: target,
         type: graph.link.LinkTypes.RELATION,
@@ -518,8 +513,8 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
     // var tx = nx + ((provider.link.getDistance(newLink)) * Math.cos(link.directionAngle - Math.PI / 2));
     // var ty = ny + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
 
-    var node = {
-        "id": graph.generateId(),
+    var n = {
+        "id": dataModel.generateId(),
         "parent": parentNode,
         "parentRel": parentRel,
         "type": (isGroupNode) ? graph.node.NodeTypes.GROUP : graph.node.NodeTypes.CHOOSE,
@@ -534,33 +529,33 @@ graph.loadSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalC
     };
 
     if (isReverse === true) {
-        node.isParentRelReverse = true;
+        n.isParentRelReverse = true;
     }
 
     if (nodeSchema.hasOwnProperty("isNegative") && nodeSchema.isNegative === true) {
-        node.isNegative = true;
-        node.count = 0;
+        n.isNegative = true;
+        n.count = 0;
     }
 
-    dataModel.nodes.push(node);
+    dataModel.nodes.push(n);
 
     if (nodeSchema.hasOwnProperty("value")) {
         var nodeSchemaValue = [].concat(nodeSchema.value);
-        node.value = [];
+        n.value = [];
         nodeSchemaValue.forEach(function (value) {
-            node.value.push(
+            n.value.push(
                 {
-                    "id": graph.generateId(),
-                    "parent": node,
+                    "id": dataModel.generateId(),
+                    "parent": n,
                     "attributes": value,
                     "type": graph.node.NodeTypes.VALUE,
-                    "label": node.label
+                    "label": n.label
                 }
             );
         });
     }
 
-    return node;
+    return n;
 };
 
 /**
@@ -577,7 +572,7 @@ graph.addSchema = function (graphSchema) {
     var rootNodeSchema = graphSchema;
 
     var rootNode = {
-        "id": graph.generateId(),
+        "id": dataModel.generateId(),
         "type": graph.node.NodeTypes.ROOT,
         // x and y coordinates are set to the center of the SVG area.
         // These coordinate will never change at runtime except if the window is resized.
@@ -635,7 +630,7 @@ graph.addSchemaRelation = function (relationSchema, parentNode, linkIndex, paren
     var target = graph.addSchemaNode(targetNodeSchema, parentNode, linkIndex, parentLinkTotalCount, relationSchema.label);
 
     var newLink = {
-        id: "l" + graph.generateId(),
+        id: "l" + dataModel.generateId(),
         source: parentNode,
         target: target,
         type: graph.link.LinkTypes.RELATION,
@@ -666,8 +661,8 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
     // var tx = nx + ((provider.link.getDistance(newLink)) * Math.cos(link.directionAngle - Math.PI / 2));
     // var ty = ny + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
 
-    var node = {
-        "id": graph.generateId(),
+    var n = {
+        "id": dataModel.generateId(),
         "parent": parentNode,
         "parentRel": parentRel,
         "type": (isGroupNode) ? graph.node.NodeTypes.GROUP : graph.node.NodeTypes.CHOOSE,
@@ -696,7 +691,7 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
 
         }
 
-        node.relationships = graph.node.pie(relSegments).map(function (d) {
+        n.relationships = graph.node.pie(relSegments).map(function (d) {
             return {
                 id: d.data.label + d.data.target.label,
                 count: d.data.count || 0,
@@ -712,29 +707,29 @@ graph.addSchemaNode = function (nodeSchema, parentNode, index, parentLinkTotalCo
 
     if (nodeSchema.hasOwnProperty("value")) {
         var nodeSchemaValue = [].concat(nodeSchema.value);
-        node.value = [];
+        n.value = [];
         nodeSchemaValue.forEach(function (value) {
-            node.value.push(
+            n.value.push(
                 {
-                    "id": graph.generateId(),
-                    "parent": node,
+                    "id": dataModel.generateId(),
+                    "parent": n,
                     "attributes": value,
                     "type": graph.node.NodeTypes.VALUE,
-                    "label": node.label
+                    "label": n.label
                 }
             );
         });
     }
 
-    dataModel.nodes.push(node);
+    dataModel.nodes.push(n);
 
     if (!isCollapsed && nodeSchema.hasOwnProperty("rel")) {
         for (var linkIndex = 0; linkIndex < nodeSchema.rel.length; linkIndex++) {
-            graph.addSchemaRelation(nodeSchema.rel[linkIndex], node, linkIndex + 1, nodeSchema.rel.length);
+            graph.addSchemaRelation(nodeSchema.rel[linkIndex], n, linkIndex + 1, nodeSchema.rel.length);
         }
     }
 
-    return node;
+    return n;
 };
 
 /**
@@ -759,10 +754,10 @@ graph.getSchema = function () {
 
     var links = dataModel.links;
     if (links.length > 0) {
-        links.forEach(function (link) {
-            if (link.type === graph.link.LinkTypes.RELATION) {
-                var sourceNode = link.source;
-                var targetNode = link.target;
+        links.forEach(function (l) {
+            if (l.type === graph.link.LinkTypes.RELATION) {
+                var sourceNode = l.source;
+                var targetNode = l.target;
 
                 if (!nodesMap.hasOwnProperty(sourceNode.id)) {
                     nodesMap[sourceNode.id] = {
@@ -799,7 +794,7 @@ graph.getSchema = function () {
                 }
 
                 var rel = {
-                    label: link.label,
+                    label: l.label,
                     target: nodesMap[targetNode.id]
                 };
 
@@ -926,1845 +921,21 @@ graph.tick = function () {
     }
 };
 
-// LINKS -----------------------------------------------------------------------------------------------------------
-graph.link = {};
-graph.link.TEXT_DY = -4;
-
-/**
- * Define whether or not to display path markers.
- */
-graph.link.SHOW_MARKER = false;
-
-// ID of the g element in SVG graph containing all the link elements.
-graph.link.gID = "popoto-glinks";
-
-/**
- * Defines the different type of link.
- * RELATION is a relation link between two nodes.
- * VALUE is a link between a generic node and a value.
- */
-graph.link.LinkTypes = Object.freeze({RELATION: 0, VALUE: 1, SEGMENT: 2});
-
-/**
- * Function to call to update the links after modification in the model.
- * This function will update the graph with all removed, modified or added links using d3.js mechanisms.
- */
-graph.link.updateLinks = function () {
-    var data = graph.link.updateData();
-    graph.link.removeElements(data.exit());
-    graph.link.addNewElements(data.enter());
-    graph.link.updateElements();
-};
-
-/**
- * Update the links element with data coming from dataModel.links.
- */
-graph.link.updateData = function () {
-    return graph.svg.select("#" + graph.link.gID).selectAll(".ppt-glink").data(dataModel.links, function (d) {
-        return d.id;
-    });
-};
-
-/**
- * Clean links elements removed from the list.
- */
-graph.link.removeElements = function (exitingData) {
-    exitingData.remove();
-};
-
-/**
- * Create new elements.
- */
-graph.link.addNewElements = function (enteringData) {
-
-    var newLinkElements = enteringData.append("g")
-        .attr("class", "ppt-glink")
-        .on("click", graph.link.clickLink)
-        .on("mouseover", graph.link.mouseOverLink)
-        .on("mouseout", graph.link.mouseOutLink);
-
-    newLinkElements.append("path")
-        .attr("class", "ppt-link");
-
-    newLinkElements.append("text")
-        .attr("text-anchor", "middle")
-        .attr("dy", graph.link.TEXT_DY)
-        .append("textPath")
-        .attr("class", "ppt-textPath")
-        .attr("startOffset", "50%");
-};
-
-/**
- * Update all the elements (new + modified)
- */
-graph.link.updateElements = function () {
-    var toUpdateElem = graph.svg.select("#" + graph.link.gID).selectAll(".ppt-glink");
-
-    toUpdateElem
-        .attr("id", function (d) {
-            return "ppt-glink_" + d.id;
-        });
-
-    toUpdateElem.selectAll(".ppt-link")
-        .attr("id", function (d) {
-            return "ppt-path_" + d.id
-        })
-        .attr("stroke", function (d) {
-            return provider.link.getColor(d, "path", "stroke");
-        })
-        .attr("class", function (link) {
-            return "ppt-link " + provider.link.getCSSClass(link, "path")
-        });
-
-    // Due to a bug on webkit browsers (as of 30/01/2014) textPath cannot be selected
-    // To workaround this issue the selection is done with its associated css class
-    toUpdateElem.selectAll("text")
-        .attr("id", function (d) {
-            return "ppt-text_" + d.id
-        })
-        .attr("class", function (link) {
-            return provider.link.getCSSClass(link, "text")
-        })
-        .attr("fill", function (d) {
-            return provider.link.getColor(d, "text", "fill");
-        })
-        .selectAll(".ppt-textPath")
-        .attr("id", function (d) {
-            return "ppt-textpath_" + d.id;
-        })
-        .attr("class", function (link) {
-            return "ppt-textpath " + provider.link.getCSSClass(link, "text-path")
-        })
-        .attr("xlink:href", function (d) {
-            return "#ppt-path_" + d.id;
-        })
-        .text(function (d) {
-            return provider.link.getTextValue(d);
-        });
-};
-
-/**
- * Function called when mouse is over the link.
- * This function is used to change the CSS class on hover of the link and query viewer element.
- *
- * TODO try to introduce event instead of directly access query spans here. This could be used in future extensions.
- */
-graph.link.mouseOverLink = function () {
-    d3.select(this)
-        .select("path")
-        .attr("class", function (link) {
-            return "ppt-link " + provider.link.getCSSClass(link, "path--hover")
-        });
-
-    d3.select(this).select("text")
-        .attr("class", function (link) {
-            return provider.link.getCSSClass(link, "text--hover")
-        });
-
-    var hoveredLink = d3.select(this).data()[0];
-
-    if (queryviewer.isActive) {
-        queryviewer.queryConstraintSpanElements.filter(function (d) {
-            return d.ref === hoveredLink;
-        }).classed("hover", true);
-        queryviewer.querySpanElements.filter(function (d) {
-            return d.ref === hoveredLink;
-        }).classed("hover", true);
-    }
-
-    if (cypherviewer.isActive) {
-        cypherviewer.querySpanElements.filter(function (d) {
-            return d.link === hoveredLink;
-        }).classed("hover", true);
-    }
-};
-
-/**
- * Function called when mouse goes out of the link.
- * This function is used to reinitialize the CSS class of the link and query viewer element.
- */
-graph.link.mouseOutLink = function () {
-    d3.select(this)
-        .select("path")
-        .attr("class", function (link) {
-            return "ppt-link " + provider.link.getCSSClass(link, "path")
-        });
-
-    d3.select(this).select("text")
-        .attr("class", function (link) {
-            return provider.link.getCSSClass(link, "text")
-        });
-
-    var hoveredLink = d3.select(this).data()[0];
-
-    if (queryviewer.isActive) {
-        queryviewer.queryConstraintSpanElements.filter(function (d) {
-            return d.ref === hoveredLink;
-        }).classed("hover", false);
-        queryviewer.querySpanElements.filter(function (d) {
-            return d.ref === hoveredLink;
-        }).classed("hover", false);
-    }
-
-    if (cypherviewer.isActive) {
-        cypherviewer.querySpanElements.filter(function (d) {
-            return d.link === hoveredLink;
-        }).classed("hover", false);
-    }
-};
-
-// Delete all related nodes from this link
-graph.link.clickLink = function () {
-    var clickedLink = d3.select(this).data()[0];
-
-    if (clickedLink.type !== graph.link.LinkTypes.VALUE) {
-        // Collapse all expanded choose nodes first to avoid having invalid displayed value node if collapsed relation contains a value.
-        graph.node.collapseAllNode();
-
-        var willChangeResults = graph.node.removeNode(clickedLink.target);
-
-        graph.hasGraphChanged = true;
-        result.hasChanged = willChangeResults;
-        update();
-    }
-
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// NODES -----------------------------------------------------------------------------------------------------------
-
-graph.node = {};
-
-// ID of the g element in SVG graph containing all the link elements.
-graph.node.gID = "popoto-gnodes";
-
-// Node ellipse size used by default for text nodes.
-graph.node.DONUTS_MARGIN = 0;
-graph.node.DONUT_WIDTH = 20;
-
-graph.DISABLE_RELATION = false;
-
-// Define the max number of character displayed in node.
-graph.node.NODE_MAX_CHARS = 11;
-graph.node.NODE_TITLE_MAX_CHARS = 100;
-
-// Number of nodes displayed per page during value selection.
-graph.node.PAGE_SIZE = 10;
-
-// Define if the count should be displayed on nodes.
-graph.DISABLE_COUNT = false;
-
-// Count box default size
-graph.node.CountBox = {x: 16, y: 33, w: 52, h: 19};
-
-// Store choose node state to avoid multiple node expand at the same time
-graph.node.chooseWaiting = false;
-
-graph.node.getDonutInnerRadius = function (node) {
-    return provider.node.getSize(node) + graph.node.DONUTS_MARGIN;
-};
-
-graph.node.getDonutOuterRadius = function (node) {
-    return provider.node.getSize(node) + graph.node.DONUTS_MARGIN + graph.node.DONUT_WIDTH;
-};
-
-graph.node.pie = d3.pie()
-    .sort(null)
-    .value(function (d) {
-        return 1;
-    });
-
-/**
- * Defines the list of possible nodes.
- * ROOT: Node used as graph root. It is the target of the query. Only one node of this type should be available in graph.
- * CHOOSE: Nodes defining a generic node label. From these node is is possible to select a value or explore relations.
- * VALUE: Unique node containing a value constraint. Usually replace CHOOSE nodes once a value as been selected.
- * GROUP: Empty node used to group relations. No value can be selected but relations can be explored. These nodes doesn't have count.
- */
-graph.node.NodeTypes = Object.freeze({ROOT: 0, CHOOSE: 1, VALUE: 2, GROUP: 3});
-
-// Used to generate unique internal labels used for example as identifier in Cypher query.
-graph.node.internalLabels = {};
-
-/**
- * Create a normalized identifier from a node label.
- * Multiple calls with the same node label will generate different unique identifier.
- *
- * @param nodeLabel
- * @returns {string}
- */
-graph.node.generateInternalLabel = function (nodeLabel) {
-    var label = nodeLabel ? nodeLabel.toLowerCase().replace(/ /g, '') : "n";
-
-    if (label in graph.node.internalLabels) {
-        graph.node.internalLabels[label] = graph.node.internalLabels[label] + 1;
-    } else {
-        graph.node.internalLabels[label] = 0;
-        return label;
-    }
-
-    return label + graph.node.internalLabels[label];
-};
-
-/**
- * Update Nodes SVG elements using D3.js update mechanisms.
- */
-graph.node.updateNodes = function () {
-    var data = graph.node.updateData();
-    graph.node.removeElements(data.exit());
-    graph.node.addNewElements(data.enter());
-    graph.node.updateElements();
-};
-
-/**
- * Update node data with changes done in dataModel.nodes model.
- */
-graph.node.updateData = function () {
-    var data = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").data(dataModel.nodes, function (d) {
-        return d.id;
-    });
-
-    if (graph.hasGraphChanged) {
-        graph.node.updateAutoLoadValues();
-
-        if (!graph.DISABLE_COUNT && !graph.ignoreCount) {
-            graph.node.updateCount();
-        }
-    }
-    graph.hasGraphChanged = false;
-
-    return data;
-};
-
-/**
- * Update nodes and result counts by executing a query for every nodes with the new graph structure.
- */
-graph.node.updateCount = function () {
-
-    // Abort any old running request before starting a new one
-    if (graph.node.updateCountXhr !== undefined) {
-        graph.node.updateCountXhr.abort();
-    }
-
-    var statements = [];
-
-    var countedNodes = dataModel.nodes
-        .filter(function (d) {
-            return d.type !== graph.node.NodeTypes.VALUE && d.type !== graph.node.NodeTypes.GROUP && (!d.hasOwnProperty("isNegative") || !d.isNegative);
-        });
-
-    countedNodes.forEach(function (node) {
-        var nodeCountQuery = query.generateNodeCountQuery(node);
-        statements.push(
-            {
-                "statement": nodeCountQuery.statement,
-                "parameters": nodeCountQuery.parameters
-            }
-        );
-    });
-
-    logger.info("Count nodes ==>");
-    graph.node.updateCountXhr = rest.post(
-        {
-            "statements": statements
-        })
-        .done(function (response) {
-            logger.info("<== Count nodes");
-            var parsedData = rest.response.parse(response);
-
-            // TODO throw exception in parser in case of failure?
-            // if (parsedData.status === "success") {
-            //     logger.error("Cypher query error:" + JSON.stringify(parsedData.errors));
-            //     countedNodes.forEach(function (node) {
-            //         node.count = 0;
-            //     });
-            // }
-
-            for (var i = 0; i < countedNodes.length; i++) {
-                countedNodes[i].count = parsedData[i][0].count;
-            }
-
-            // Update result count with root node new count
-            if (result.resultCountListeners.length > 0) {
-                result.updateResultsCount();
-            }
-
-            graph.node.updateElements();
-            graph.link.updateElements();
-        })
-        .fail(function (xhr, textStatus, errorThrown) {
-            if (textStatus !== "abort") {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
-                countedNodes.forEach(function (node) {
-                    node.count = 0;
-                });
-                graph.node.updateElements();
-                graph.link.updateElements();
-            } else {
-                logger.info("<=X= Count nodes - Aborted!");
-            }
-        });
-};
-
-/**
- * Update values for nodes having preloadData property
- */
-graph.node.updateAutoLoadValues = function () {
-    var statements = [];
-
-    var nodesToLoadData = graph.node.getAutoLoadValueNodes();
-
-    for (var i = 0; i < nodesToLoadData.length; i++) {
-        var nodeToQuery = nodesToLoadData[i];
-        var nodeValueQuery = query.generateNodeValueQuery(nodeToQuery);
-        statements.push(
-            {
-                "statement": nodeValueQuery.statement,
-                "parameters": nodeValueQuery.parameters
-            }
-        );
-    }
-
-    if (statements.length > 0) {
-        logger.info("AutoLoadValue ==>");
-        rest.post(
-            {
-                "statements": statements
-            })
-            .done(function (response) {
-                logger.info("<== AutoLoadValue");
-
-                var parsedData = rest.response.parse(response);
-
-                for (var i = 0; i < nodesToLoadData.length; i++) {
-                    var nodeToQuery = nodesToLoadData[i];
-                    var constraintAttr = provider.node.getConstraintAttribute(nodeToQuery.label);
-                    // Here results are parsed and values already selected are filtered out
-                    nodeToQuery.data = parsedData[i].filter(function (dataToFilter) {
-                        var keepData = true;
-                        if (nodeToQuery.hasOwnProperty("value") && nodeToQuery.value.length > 0) {
-                            nodeToQuery.value.forEach(function (value) {
-                                if (value.attributes[constraintAttr] === dataToFilter[constraintAttr]) {
-                                    keepData = false;
-                                }
-                            })
-                        }
-                        return keepData;
-                    });
-
-                    nodeToQuery.page = 1;
-                }
-
-                graph.notifyListeners(graph.Events.GRAPH_NODE_DATA_LOADED, [nodesToLoadData]);
-            })
-            .fail(function (xhr, textStatus, errorThrown) {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
-            });
-    }
-};
-
-/**
- * Remove old elements.
- * Should be called after updateData.
- */
-graph.node.removeElements = function (exitingData) {
-    // Nodes without parent are simply removed.
-    exitingData.filter(function (d) {
-        return !d.parent;
-    }).remove();
-
-    // Nodes with a parent are removed with an animation (nodes are collapsed to their parents before being removed)
-    exitingData.filter(function (d) {
-        return d.parent;
-    }).transition().duration(300).attr("transform", function (d) {
-        return "translate(" + d.parent.x + "," + d.parent.y + ")";
-    }).remove();
-};
-
-/**
- * Add all new elements.
- * Only the skeleton of new nodes are added custom data will be added during the element update phase.
- * Should be called after updateData and before updateElements.
- */
-graph.node.addNewElements = function (enteringData) {
-
-    var gNewNodeElements = enteringData
-        .append("g")
-        .attr("class", "ppt-gnode")
-
-    gNewNodeElements.on("click", graph.node.nodeClick)
-        .on("mouseover", graph.node.mouseOverNode)
-        // .on("mousemove", graph.node.mouseMoveNode)
-        .on("mouseout", graph.node.mouseOutNode);
-
-    // Add right click on all nodes except value
-    gNewNodeElements.filter(function (d) {
-        return d.type !== graph.node.NodeTypes.VALUE;
-    }).on("contextmenu", graph.node.clearSelection);
-
-    // Disable right click context menu on value nodes
-    gNewNodeElements.filter(function (d) {
-        return d.type === graph.node.NodeTypes.VALUE;
-    }).on("contextmenu", function () {
-        // Disable context menu on
-        d3.event.preventDefault();
-    });
-
-    var nodeDefs = gNewNodeElements.append("defs");
-
-    // Circle clipPath using node radius size
-    nodeDefs.append("clipPath")
-        .attr("id", function (node) {
-            return "node-view" + node.id;
-        })
-        .append("circle")
-        .attr("cx", 0)
-        .attr("cy", 0);
-
-    // Nodes are composed of 3 layouts and skeleton are created here.
-    graph.node.addBackgroundElements(gNewNodeElements);
-    graph.node.addMiddlegroundElements(gNewNodeElements);
-    graph.node.addForegroundElements(gNewNodeElements);
-};
-
-/**
- * Create the background for a new node element.
- * The background of a node is defined by a circle not visible by default (fill-opacity set to 0) but can be used to highlight a node with animation on this attribute.
- * This circle also define the node zone that can receive events like mouse clicks.
- *
- * @param gNewNodeElements
- */
-graph.node.addBackgroundElements = function (gNewNodeElements) {
-    var background = gNewNodeElements
-        .append("g")
-        .attr("class", "ppt-g-node-background")
-        .classed("hide", graph.DISABLE_RELATION);
-
-    background.append("g")
-        .attr("class", "ppt-donut-labels");
-    background.append("g")
-        .attr("class", "ppt-donut-segments");
-};
-
-/**
- * Create the node main elements.
- *
- * @param gNewNodeElements
- */
-graph.node.addMiddlegroundElements = function (gNewNodeElements) {
-    var middle = gNewNodeElements
-        .append("g")
-        .attr("class", "ppt-g-node-middleground");
-};
-
-/**
- * Create the node foreground elements.
- * It contains node additional elements, count or tools like navigation arrows.
- *
- * @param gNewNodeElements
- */
-graph.node.addForegroundElements = function (gNewNodeElements) {
-    var foreground = gNewNodeElements
-        .append("g")
-        .attr("class", "ppt-g-node-foreground");
-
-    // Arrows icons added only for root and choose nodes
-    var gArrow = foreground.filter(function (d) {
-        return d.type === graph.node.NodeTypes.ROOT || d.type === graph.node.NodeTypes.CHOOSE;
-    })
-        .append("g")
-        .attr("class", "ppt-node-foreground-g-arrows");
-
-    var glArrow = gArrow.append("g");
-    //glArrow.append("polygon")
-    //.attr("points", "-53,-23 -33,-33 -33,-13");
-    glArrow.append("circle")
-        .attr("class", "ppt-larrow")
-        .attr("cx", "-43")
-        .attr("cy", "-23")
-        .attr("r", "17");
-
-    glArrow.append("path")
-        .attr("class", "ppt-arrow")
-        .attr("d", "m -44.905361,-23 6.742,-6.742 c 0.81,-0.809 0.81,-2.135 0,-2.944 l -0.737,-0.737 c -0.81,-0.811 -2.135,-0.811 -2.945,0 l -8.835,8.835 c -0.435,0.434 -0.628,1.017 -0.597,1.589 -0.031,0.571 0.162,1.154 0.597,1.588 l 8.835,8.834 c 0.81,0.811 2.135,0.811 2.945,0 l 0.737,-0.737 c 0.81,-0.808 0.81,-2.134 0,-2.943 l -6.742,-6.743 z");
-
-    glArrow.on("click", function (clickedNode) {
-        d3.event.stopPropagation(); // To avoid click event on svg element in background
-
-        // On left arrow click page number is decreased and node expanded to display the new page
-        if (clickedNode.page > 1) {
-            clickedNode.page--;
-            graph.node.collapseNode(clickedNode);
-            graph.node.expandNode(clickedNode);
-        }
-    });
-
-    var grArrow = gArrow.append("g");
-    //grArrow.append("polygon")
-    //.attr("points", "53,-23 33,-33 33,-13");
-
-    grArrow.append("circle")
-        .attr("class", "ppt-rarrow")
-        .attr("cx", "43")
-        .attr("cy", "-23")
-        .attr("r", "17");
-
-    grArrow.append("path")
-        .attr("class", "ppt-arrow")
-        .attr("d", "m 51.027875,-24.5875 -8.835,-8.835 c -0.811,-0.811 -2.137,-0.811 -2.945,0 l -0.738,0.737 c -0.81,0.81 -0.81,2.136 0,2.944 l 6.742,6.742 -6.742,6.742 c -0.81,0.81 -0.81,2.136 0,2.943 l 0.737,0.737 c 0.81,0.811 2.136,0.811 2.945,0 l 8.835,-8.836 c 0.435,-0.434 0.628,-1.017 0.597,-1.588 0.032,-0.569 -0.161,-1.152 -0.596,-1.586 z");
-
-    grArrow.on("click", function (clickedNode) {
-        d3.event.stopPropagation(); // To avoid click event on svg element in background
-
-        if (clickedNode.page * graph.node.PAGE_SIZE < clickedNode.count) {
-            clickedNode.page++;
-            graph.node.collapseNode(clickedNode);
-            graph.node.expandNode(clickedNode);
-        }
-    });
-
-    // Count box
-    if (!graph.DISABLE_COUNT) {
-        var countForeground = foreground.filter(function (d) {
-            return d.type !== graph.node.NodeTypes.GROUP;
-        });
-
-        countForeground
-            .append("rect")
-            .attr("x", graph.node.CountBox.x)
-            .attr("y", graph.node.CountBox.y)
-            .attr("width", graph.node.CountBox.w)
-            .attr("height", graph.node.CountBox.h)
-            .attr("class", "ppt-count-box");
-
-        countForeground
-            .append("text")
-            .attr("x", 42)
-            .attr("y", 48)
-            .attr("text-anchor", "middle")
-            .attr("class", "ppt-count-text");
-    }
-
-    var ban = foreground.filter(function (d) {
-        return d.type === graph.node.NodeTypes.CHOOSE;
-    }).append("g")
-        .attr("class", "ppt-g-node-ban")
-        .append("path")
-        .attr("d", "M89.1 19.2C88 17.7 86.6 16.2 85.2 14.8 83.8 13.4 82.3 12 80.8 10.9 72 3.9 61.3 0 50 0 36.7 0 24.2 5.4 14.8 14.8 5.4 24.2 0 36.7 0 50c0 11.4 3.9 22.1 10.9 30.8 1.2 1.5 2.5 3 3.9 4.4 1.4 1.4 2.9 2.7 4.4 3.9C27.9 96.1 38.6 100 50 100 63.3 100 75.8 94.6 85.2 85.2 94.6 75.8 100 63.3 100 50 100 38.7 96.1 28 89.1 19.2ZM11.9 50c0-10.2 4-19.7 11.1-27C30.3 15.9 39.8 11.9 50 11.9c8.2 0 16 2.6 22.4 7.3L19.3 72.4C14.5 66 11.9 58.2 11.9 50Zm65 27c-7.2 7.1-16.8 11.1-27 11.1-8.2 0-16-2.6-22.4-7.4L80.8 27.6C85.5 34 88.1 41.8 88.1 50c0 10.2-4 19.7-11.1 27z");
-};
-
-/**
- * Updates all elements.
- */
-graph.node.updateElements = function () {
-    var toUpdateElem = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode");
-
-    toUpdateElem.attr("id", function (d) {
-        return "popoto-gnode_" + d.id;
-    });
-
-    if (graph.USE_VORONOI_LAYOUT) {
-        toUpdateElem.attr("clip-path", function (d) {
-            return "url(#voroclip-" + d.id + ")";
-        });
-    }
-
-    toUpdateElem.select("defs")
-        .select("clipPath")
-        .attr("id", function (node) {
-            return "node-view" + node.id;
-        }).selectAll("circle")
-        .attr("r", function (node) {
-            return provider.node.getSize(node);
-        });
-
-    // Display voronoi paths
-    // TODO ZZZ re|move
-    // graph.node.selectAllData.selectAll(".gra").data(["unique"]).enter().append("g").attr("class", "gra").append("use");
-    // graph.node.selectAllData.selectAll("use").attr("xlink:href",function(d){
-    //     console.log("#pvoroclip-"+d3.select(this.parentNode.parentNode).datum().id);
-    //     return "#pvoroclip-"+d3.select(this.parentNode.parentNode).datum().id;
-    // }).attr("fill","none").attr("stroke","red").attr("stroke-width","1px");
-
-    // TODO ZZZ move functions?
-    toUpdateElem.filter(function (n) {
-        return n.type !== graph.node.NodeTypes.ROOT
-    }).call(d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
-
-    function dragstarted(d) {
-        if (!d3.event.active) graph.force.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-        if (!d3.event.active) graph.force.alphaTarget(0);
-        if (d.fixed === false) {
-            d.fx = null;
-            d.fy = null;
-        }
-
-    }
-
-    graph.node.updateBackgroundElements();
-    graph.node.updateMiddlegroundElements();
-    graph.node.updateForegroundElements();
-};
-
-graph.node.updateBackgroundElements = function () {
-    var nodeBackgroundElements = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-background");
-
-    nodeBackgroundElements.select(".ppt-donut-labels").selectAll("*").remove();
-    nodeBackgroundElements.select(".ppt-donut-segments").selectAll("*").remove();
-
-    var gSegment = nodeBackgroundElements.select(".ppt-donut-segments").selectAll(".ppt-segment-container")
-        .data(function (d) {
-            var relationships = [];
-            if (d.hasOwnProperty("relationships")) {
-                relationships = d.relationships;
-            }
-            return relationships;
-        }, function (d) {
-            return d.id;
-        })
-        .enter()
-        .append("g")
-        .attr("class", ".ppt-segment-container")
-        .on("click", graph.node.segmentClick)
-        .on("mouseover", function (d) {
-            d3.select(this).select(".ppt-text-arc").classed("hover", true)
-        })
-        .on("mouseout", function (d) {
-            d3.select(this).select(".ppt-text-arc").classed("hover", false)
-        });
-
-    gSegment.append("title").attr("class", "ppt-svg-title")
-        .text(function (d) {
-            return d.label + " " + d.target;
-        });
-
-    var gLabel = nodeBackgroundElements.select(".ppt-donut-labels").selectAll(".ppt-segment-container")
-        .data(function (node) {
-            var relationships = [];
-            if (node.hasOwnProperty("relationships")) {
-                relationships = node.relationships;
-            }
-            return relationships;
-        }, function (relationship) {
-            return relationship.id;
-        })
-        .enter()
-        .append("g")
-        .attr("class", ".ppt-segment-container")
-        .on("click", graph.node.segmentClick)
-        .on("mouseover", function (d) {
-            d3.select(this).select(".ppt-text-arc").classed("hover", true)
-        })
-        .on("mouseout", function (d) {
-            d3.select(this).select(".ppt-text-arc").classed("hover", false)
-        });
-
-    gLabel.append("path")
-        .attr("class", "ppt-hidden-arc")
-        .attr("id", function (d, i) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-            return "arc_" + node.id + "_" + i;
-        })
-        .attr("d", function (relationship) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-
-            //A regular expression that captures all in between the start of a string (denoted by ^)
-            //and the first capital letter L
-            var firstArcSection = /(^.+?)L/;
-            var singleArcSection = /(^.+?)M/;
-
-            var intermediateArc = {
-                startAngle: relationship.directionAngle - (Math.PI - 0.1),
-                endAngle: relationship.directionAngle + (Math.PI - 0.1)
-            };
-
-            var arcPath = d3.arc()
-                .innerRadius(graph.node.getDonutInnerRadius(node))
-                .outerRadius(graph.node.getDonutOuterRadius(node))(intermediateArc);
-
-            //The [1] gives back the expression between the () (thus not the L as well)
-            //which is exactly the arc statement
-            var res = firstArcSection.exec(arcPath);
-            var newArc = "";
-            if (res && res.length > 1) {
-                newArc = res[1];
-            } else {
-                newArc = singleArcSection.exec(arcPath)[1];
-            }
-
-            //Replace all the comma's so that IE can handle it -_-
-            //The g after the / is a modifier that "find all matches rather than stopping after the first match"
-            newArc = newArc.replace(/,/g, " ");
-
-            return newArc;
-        })
-        .style("fill", "none")
-        .style("stroke", "none");
-
-    gSegment.append("text")
-        .attr("text-anchor", "middle")
-        .attr("class", function (d) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-            if (node.hasOwnProperty("count") && node.count === 0) {
-                return "ppt-text-arc disabled";
-            } else {
-                return "ppt-text-arc";
-            }
-        })
-        .attr("fill", function (d) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-
-            return provider.link.getColor({
-                label: d.label,
-                type: graph.link.LinkTypes.SEGMENT,
-                source: node,
-                target: {label: d.target}
-            }, "segment", "fill");
-        })
-        .attr("dy", graph.link.TEXT_DY)
-        .append("textPath")
-        .attr("startOffset", "50%")
-        .attr("xlink:href", function (d, i) {
-            var node = d3.select(this.parentNode.parentNode.parentNode).datum();
-            return "#arc_" + node.id + "_" + i;
-        })
-        .text(function (d) {
-            var node = d3.select(this.parentNode.parentNode.parentNode).datum();
-
-            return provider.link.getTextValue({
-                source: node,
-                target: {label: d.target},
-                label: d.label,
-                type: graph.link.LinkTypes.SEGMENT
-            });
-        });
-
-    gSegment.append("path")
-        .attr("class", function (d) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-            if (node.hasOwnProperty("count") && node.count === 0) {
-                return "ppt-segment disabled";
-            } else {
-                return "ppt-segment";
-            }
-        })
-        .attr("d", function (d) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-            return d3.arc()
-                .innerRadius(graph.node.getDonutInnerRadius(node))
-                .outerRadius(graph.node.getDonutOuterRadius(node))(d)
-        })
-        .attr("fill", function (d) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-            return provider.link.getColor({
-                label: d.label,
-                type: graph.link.LinkTypes.RELATION,
-                source: node,
-                target: {label: d.target}
-            }, "path", "fill");
-        })
-        .attr("stroke", function (d) {
-            var node = d3.select(this.parentNode.parentNode).datum();
-
-            return provider.link.getColor({
-                label: d.label,
-                type: graph.link.LinkTypes.RELATION,
-                source: node,
-                target: {label: d.target}
-            }, "path", "stroke");
-        })
-    ;
-
-};
-
-/**
- * Update the middle layer of nodes.
- * TODO refactor node generation to allow future extensions (for example add plugin with new node types...)
- */
-graph.node.updateMiddlegroundElements = function () {
-    var middleG = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-middleground");
-
-    middleG.attr("clip-path", function (node) {
-        return "url(#node-view" + node.id + ")";
-    });
-
-    // Clear all content in case node type has changed
-    middleG.selectAll("*").remove();
-
-
-    graph.node.updateMiddlegroundElementsTooltip(middleG);
-
-    graph.node.updateMiddlegroundElementsText(middleG.filter(function (d) {
-        return provider.node.getNodeDisplayType(d) === provider.node.DisplayTypes.TEXT;
-    }));
-
-    graph.node.updateMiddlegroundElementsImage(middleG.filter(function (d) {
-        return provider.node.getNodeDisplayType(d) === provider.node.DisplayTypes.IMAGE;
-    }));
-
-    graph.node.updateMiddlegroundElementsSymbol(middleG.filter(function (d) {
-        return provider.node.getNodeDisplayType(d) === provider.node.DisplayTypes.SYMBOL;
-    }));
-
-    graph.node.updateMiddlegroundElementsSVG(middleG.filter(function (d) {
-        return provider.node.getNodeDisplayType(d) === provider.node.DisplayTypes.SVG;
-    }));
-
-    graph.node.updateMiddlegroundElementsDisplayedText(middleG.filter(function (d) {
-        return provider.node.isTextDisplayed(d);
-    }));
-
-};
-
-graph.node.updateMiddlegroundElementsTooltip = function (middleG) {
-    // Most browser will generate a tooltip if a title is specified for the SVG element
-    // TODO Introduce an SVG tooltip instead?
-    middleG.append("title")
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "title")
-        })
-        .text(function (d) {
-            return provider.node.getTextValue(d, graph.node.NODE_TITLE_MAX_CHARS);
-        });
-
-};
-
-graph.node.updateMiddlegroundElementsText = function (gMiddlegroundTextNodes) {
-    var circle = gMiddlegroundTextNodes.append("circle").attr("r", function (node) {
-        return provider.node.getSize(node);
-    });
-
-    // Set class according to node type
-    circle
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "circle")
-        })
-        .attr("fill", function (node) {
-            return provider.node.getColor(node, "circle", "fill");
-        })
-        .attr("stroke", function (node) {
-            return provider.node.getColor(node, "circle", "stroke");
-        });
-};
-
-graph.node.updateMiddlegroundElementsImage = function (gMiddlegroundImageNodes) {
-    gMiddlegroundImageNodes.append("circle").attr("r", function (node) {
-        return provider.node.getSize(node);
-    })
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "image-background-circle")
-        });
-
-    gMiddlegroundImageNodes.append("image")
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "image")
-        })
-        .attr("width", function (d) {
-            return provider.node.getImageWidth(d);
-        })
-        .attr("height", function (d) {
-            return provider.node.getImageHeight(d);
-        })
-        // Center the image on node
-        .attr("transform", function (d) {
-            return "translate(" + (-provider.node.getImageWidth(d) / 2) + "," + (-provider.node.getImageHeight(d) / 2) + ")";
-        })
-        .attr("xlink:href", function (d) {
-            return provider.node.getImagePath(d);
-        });
-};
-
-graph.node.updateMiddlegroundElementsSymbol = function (gMiddlegroundSymbolNodes) {
-    gMiddlegroundSymbolNodes.append("circle").attr("r", function (node) {
-        return provider.node.getSize(node);
-    })
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "symbol-background-circle")
-        })
-        .attr("fill", function (node) {
-            return provider.node.getColor(node, "circle", "fill");
-        })
-        .attr("stroke", function (node) {
-            return provider.node.getColor(node, "circle", "stroke");
-        });
-
-    gMiddlegroundSymbolNodes.append("use")
-        .attr("class", function (node) {
-            return provider.node.getCSSClass(node, "symbol")
-        })
-        .attr("width", function (d) {
-            return provider.node.getImageWidth(d);
-        })
-        .attr("height", function (d) {
-            return provider.node.getImageHeight(d);
-        })
-        // Center the image on node
-        .attr("transform", function (d) {
-            return "translate(" + (-provider.node.getImageWidth(d) / 2) + "," + (-provider.node.getImageHeight(d) / 2) + ")";
-        })
-        .attr("xlink:href", function (d) {
-            return provider.node.getImagePath(d);
-        })
-        .attr("fill", function (node) {
-            return provider.node.getColor(node, "circle", "fill");
-        })
-        .attr("stroke", function (node) {
-            return provider.node.getColor(node, "circle", "stroke");
-        });
-};
-
-graph.node.updateMiddlegroundElementsSVG = function (gMiddlegroundSVGNodes) {
-    var SVGmiddleG = gMiddlegroundSVGNodes.append("g");
-
-    var circle = SVGmiddleG.append("circle").attr("r", function (node) {
-        return provider.node.getSize(node);
-    }).attr("class", "ppt-svg-node-background");
-
-    var svgMiddlePaths = SVGmiddleG.selectAll("path").data(function (d) {
-        return provider.node.getSVGPaths(d);
-    });
-
-    // Update nested data elements
-    svgMiddlePaths.exit().remove();
-    svgMiddlePaths.enter().append("path");
-
-    SVGmiddleG
-        .selectAll("path")
-        .attr("class", function (d) {
-            var node = d3.select(this.parentNode).datum();
-            return provider.node.getCSSClass(node, "path")
-        })
-        .each(function (d, i) {
-            for (var prop in d) {
-                if (d.hasOwnProperty(prop)) {
-                    d3.select(this).attr(prop, d[prop]);
-                }
-            }
-        })
-};
-
-graph.node.updateMiddlegroundElementsDisplayedText = function (middleG) {
-    var textDisplayed = middleG.filter(function (d) {
-        return provider.node.isTextDisplayed(d);
-    });
-
-    if (graph.USE_FIT_TEXT) {
-        fitTextRenderer.render(textDisplayed);
-    } else {
-        textRenderer.render(textDisplayed);
-    }
-};
-
-/**
- * Updates the foreground elements
- */
-graph.node.updateForegroundElements = function () {
-
-    // Updates browse arrows status
-    // TODO ZZZ extract variable?
-    var gArrows = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground")
-        .selectAll(".ppt-node-foreground-g-arrows");
-    gArrows.classed("active", function (d) {
-        return d.valueExpanded && d.data && d.data.length > graph.node.PAGE_SIZE;
-    });
-
-    gArrows.selectAll(".ppt-larrow").classed("enabled", function (d) {
-        return d.page > 1;
-    });
-
-    gArrows.selectAll(".ppt-rarrow").classed("enabled", function (d) {
-        if (d.data) {
-            var count = d.data.length;
-            return d.page * graph.node.PAGE_SIZE < count;
-        } else {
-            return false;
-        }
-    });
-
-    // Update count box class depending on node type
-    var gForegrounds = graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground");
-
-    gForegrounds.selectAll(".ppt-count-box").filter(function (d) {
-        return d.type !== graph.node.NodeTypes.CHOOSE;
-    }).classed("root", true);
-
-    gForegrounds.selectAll(".ppt-count-box").filter(function (d) {
-        return d.type === graph.node.NodeTypes.CHOOSE;
-    }).classed("value", true);
-
-    gForegrounds.selectAll(".ppt-count-box").classed("disabled", function (d) {
-        return d.count === 0;
-    });
-
-    if (!graph.DISABLE_COUNT) {
-        gForegrounds.selectAll(".ppt-count-text")
-            .text(function (d) {
-                if (d.count !== null) {
-                    return d.count;
-                } else {
-                    return "...";
-                }
-            })
-            .classed("disabled", function (d) {
-                return d.count === 0;
-            });
-    }
-
-    graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground").filter(function (node) {
-        return node.isNegative === true;
-    }).selectAll(".ppt-g-node-ban")
-        .attr("transform", function (d) {
-            return "translate(" + (-provider.node.getSize(d)) + "," + (-provider.node.getSize(d)) + ") " +
-                "scale(" + ((provider.node.getSize(d) * 2) / 100) + ")"; // 100 is the size of the image drawn with the path
-        })
-        .attr("stroke-width", function (d) {
-            return (2 / ((provider.node.getSize(d) * 2) / 100)) + "px";
-        });
-
-
-    graph.svg.select("#" + graph.node.gID).selectAll(".ppt-gnode").selectAll(".ppt-g-node-foreground").selectAll(".ppt-g-node-ban")
-        .classed("active", function (node) {
-            return node.isNegative === true;
-        });
-};
-
-graph.node.segmentClick = function (d) {
-    d3.event.preventDefault();
-
-    var node = d3.select(this.parentNode.parentNode).datum();
-
-    graph.ignoreCount = true;
-
-    graph.addRelationshipData(node, d, function () {
-        graph.ignoreCount = false;
-        graph.hasGraphChanged = true;
-        update();
-    });
-};
-
-/**
- * Handle the mouse over event on nodes.
- */
-graph.node.mouseOverNode = function () {
-    d3.event.preventDefault();
-
-    // TODO don't work on IE (nodes unstable) find another way to move node in foreground on mouse over?
-    // d3.select(this).moveToFront();
-
-    // tootip.div.style("display", "inline");
-
-    var hoveredNode = d3.select(this).data()[0];
-
-    if (queryviewer.isActive) {
-        // Hover the node in query
-        queryviewer.queryConstraintSpanElements.filter(function (d) {
-            return d.ref === hoveredNode;
-        }).classed("hover", true);
-        queryviewer.querySpanElements.filter(function (d) {
-            return d.ref === hoveredNode;
-        }).classed("hover", true);
-    }
-
-    if (cypherviewer.isActive) {
-        cypherviewer.querySpanElements.filter(function (d) {
-            return d.node === hoveredNode;
-        }).classed("hover", true);
-    }
-};
-
-// graph.node.mouseMoveNode = function () {
-//     d3.event.preventDefault();
-//
-//     var hoveredNode = d3.select(this).data()[0];
-//
-//     tootip.div
-//         .text(provider.node.getTextValue(hoveredNode, graph.node.NODE_TITLE_MAX_CHARS))
-//         .style("left", (d3.event.pageX - 34) + "px")
-//         .style("top", (d3.event.pageY - 12) + "px");
-// };
-
-/**
- * Handle mouse out event on nodes.
- */
-graph.node.mouseOutNode = function () {
-    d3.event.preventDefault();
-
-    // tootip.div.style("display", "none");
-
-    var hoveredNode = d3.select(this).data()[0];
-
-    if (queryviewer.isActive) {
-        // Remove hover class on node.
-        queryviewer.queryConstraintSpanElements.filter(function (d) {
-            return d.ref === hoveredNode;
-        }).classed("hover", false);
-        queryviewer.querySpanElements.filter(function (d) {
-            return d.ref === hoveredNode;
-        }).classed("hover", false);
-    }
-
-    if (cypherviewer.isActive) {
-        cypherviewer.querySpanElements.filter(function (d) {
-            return d.node === hoveredNode;
-        }).classed("hover", false);
-    }
-};
-
-/**
- * Handle the click event on nodes.
- */
-graph.node.nodeClick = function () {
-    if (!d3.event.defaultPrevented) { // To avoid click on drag end
-        var clickedNode = d3.select(this).data()[0]; // Clicked node data
-        logger.debug("nodeClick (" + clickedNode.label + ")");
-
-        if (clickedNode.type === graph.node.NodeTypes.VALUE) {
-            graph.node.valueNodeClick(clickedNode);
-        } else if (clickedNode.type === graph.node.NodeTypes.CHOOSE || clickedNode.type === graph.node.NodeTypes.ROOT) {
-            if (d3.event.ctrlKey) {
-                if (clickedNode.type === graph.node.NodeTypes.CHOOSE) {
-                    clickedNode.isNegative = !clickedNode.hasOwnProperty("isNegative") || !clickedNode.isNegative;
-
-                    graph.node.collapseAllNode();
-
-                    if (clickedNode.hasOwnProperty("value") && clickedNode.value.length > 0) {
-
-                    } else {
-
-                        if (clickedNode.isNegative) {
-                            // Remove all related nodes
-                            for (var i = dataModel.links.length - 1; i >= 0; i--) {
-                                if (dataModel.links[i].source === clickedNode) {
-                                    graph.node.removeNode(dataModel.links[i].target);
-                                }
-                            }
-
-                            clickedNode.count = 0;
-                        }
-                    }
-
-                    result.hasChanged = true;
-                    graph.hasGraphChanged = true;
-                    update();
-                } // negation not supported on root node
-            } else {
-                if (clickedNode.valueExpanded) {
-                    graph.node.collapseNode(clickedNode);
-                } else {
-                    graph.node.chooseNodeClick(clickedNode);
-                }
-            }
-        }
-    }
-};
-
-/**
- * Remove all the value node directly linked to clicked node.
- *
- * @param clickedNode
- */
-graph.node.collapseNode = function (clickedNode) {
-    if (clickedNode.valueExpanded) { // node is collapsed only if it has been expanded first
-        logger.debug("collapseNode (" + clickedNode.label + ")");
-
-        graph.notifyListeners(graph.Events.GRAPH_NODE_VALUE_COLLAPSE, [clickedNode]);
-
-        var linksToRemove = dataModel.links.filter(function (l) {
-            return l.source === clickedNode && l.type === graph.link.LinkTypes.VALUE;
-        });
-
-        // Remove children nodes from model
-        linksToRemove.forEach(function (l) {
-            dataModel.nodes.splice(dataModel.nodes.indexOf(l.target), 1);
-        });
-
-        // Remove links from model
-        for (var i = dataModel.links.length - 1; i >= 0; i--) {
-            if (linksToRemove.indexOf(dataModel.links[i]) >= 0) {
-                dataModel.links.splice(i, 1);
-            }
-        }
-
-        // Node has been fixed when expanded so we unfix it back here.
-        if (clickedNode.type !== graph.node.NodeTypes.ROOT) {
-            clickedNode.fixed = false;
-            clickedNode.fx = null;
-            clickedNode.fy = null;
-        }
-
-        // Parent node too if not root
-        if (clickedNode.parent && clickedNode.parent.type !== graph.node.NodeTypes.ROOT) {
-            clickedNode.parent.fixed = false;
-            clickedNode.parent.fx = null;
-            clickedNode.parent.fy = null;
-        }
-
-        clickedNode.valueExpanded = false;
-        update();
-
-    } else {
-        logger.debug("collapseNode called on an unexpanded node");
-    }
-};
-
-/**
- * Collapse all nodes with value expanded.
- *
- */
-graph.node.collapseAllNode = function () {
-    dataModel.nodes.forEach(function (n) {
-        if ((n.type === graph.node.NodeTypes.CHOOSE || n.type === graph.node.NodeTypes.ROOT) && n.valueExpanded) {
-            graph.node.collapseNode(n);
-        }
-    });
-};
-
-/**
- * Function called on a value node click.
- * In this case the value is added in the parent node and all the value nodes are collapsed.
- *
- * @param clickedNode
- */
-graph.node.valueNodeClick = function (clickedNode) {
-    logger.debug("valueNodeClick (" + clickedNode.label + ")");
-
-    graph.notifyListeners(graph.Events.GRAPH_NODE_ADD_VALUE, [clickedNode]);
-
-    if (clickedNode.parent.value === undefined) {
-        clickedNode.parent.value = [];
-    }
-    clickedNode.parent.value.push(clickedNode);
-    result.hasChanged = true;
-    graph.hasGraphChanged = true;
-
-    graph.node.collapseNode(clickedNode.parent);
-};
-
-/**
- * Function called on choose node click.
- * In this case a query is executed to get all the possible value
- * @param clickedNode
- * TODO optimize with cached data?
- */
-graph.node.chooseNodeClick = function (clickedNode) {
-    logger.debug("chooseNodeClick (" + clickedNode.label + ") with waiting state set to " + graph.node.chooseWaiting);
-    if (!graph.node.chooseWaiting && !clickedNode.immutable && !(clickedNode.count === 0)) {
-
-        // Collapse all expanded nodes first
-        graph.node.collapseAllNode();
-
-        // Set waiting state to true to avoid multiple call on slow query execution
-        graph.node.chooseWaiting = true;
-
-        // Don't run query to get value if node isAutoLoadValue is set to true
-        if (clickedNode.data !== undefined && clickedNode.isAutoLoadValue) {
-            clickedNode.page = 1;
-            graph.node.expandNode(clickedNode);
-            graph.node.chooseWaiting = false;
-        } else {
-            logger.info("Values (" + clickedNode.label + ") ==>");
-            var nodeValueQuery = query.generateNodeValueQuery(clickedNode);
-            rest.post(
-                {
-                    "statements": [
-                        {
-                            "statement": nodeValueQuery.statement,
-                            "parameters": nodeValueQuery.parameters
-                        }]
-                })
-                .done(function (response) {
-                    logger.info("<== Values (" + clickedNode.label + ")");
-                    var parsedData = rest.response.parse(response);
-                    var constraintAttr = provider.node.getConstraintAttribute(clickedNode.label);
-
-                    clickedNode.data = parsedData[0].filter(function (dataToFilter) {
-                        var keepData = true;
-                        if (clickedNode.hasOwnProperty("value") && clickedNode.value.length > 0) {
-                            clickedNode.value.forEach(function (value) {
-                                if (value.attributes[constraintAttr] === dataToFilter[constraintAttr]) {
-                                    keepData = false;
-                                }
-                            })
-                        }
-                        return keepData;
-                    });
-
-                    clickedNode.page = 1;
-                    graph.node.expandNode(clickedNode);
-                    graph.node.chooseWaiting = false;
-                })
-                .fail(function (xhr, textStatus, errorThrown) {
-                    graph.node.chooseWaiting = false;
-                    logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
-                });
-        }
-    }
-};
-
-/**
- * Add in all expanded choose nodes the value containing the specified value for the given attribute.
- * And remove it from the nodes data.
- *
- * @param attribute
- * @param value
- */
-graph.node.addExpandedValue = function (attribute, value) {
-
-    var isAnyChangeDone = false;
-
-    // For each expanded nodes
-    for (var i = dataModel.nodes.length - 1; i >= 0; i--) {
-        if (dataModel.nodes[i].valueExpanded) {
-
-            // Look in node data if value can be found in reverse order to be able to remove value without effect on iteration index
-            for (var j = dataModel.nodes[i].data.length - 1; j >= 0; j--) {
-                if (dataModel.nodes[i].data[j][attribute] === value) {
-                    isAnyChangeDone = true;
-
-                    // Create field value if needed
-                    if (!dataModel.nodes[i].hasOwnProperty("value")) {
-                        dataModel.nodes[i].value = [];
-                    }
-
-                    // Add value
-                    dataModel.nodes[i].value.push({
-                        attributes: dataModel.nodes[i].data[j]
-                    });
-
-                    // Remove data added in value
-                    dataModel.nodes[i].data.splice(j, 1);
-                }
-            }
-
-            // Refresh node
-            graph.node.collapseNode(dataModel.nodes[i]);
-            graph.node.expandNode(dataModel.nodes[i]);
-        }
-    }
-
-    if (isAnyChangeDone) {
-        result.hasChanged = true;
-        graph.hasGraphChanged = true;
-        update();
-    }
-};
-
-/**
- * Get all nodes that contains a value.
- *
- * @param label If set return only node of this label.
- * @return {Array} Array of nodes containing at least one value.
- */
-graph.node.getContainingValue = function (label) {
-    var nodesWithValue = [];
-    var links = dataModel.links, nodes = dataModel.nodes;
-
-    if (nodes.length > 0) {
-
-        var rootNode = nodes[0];
-
-        // Add root value
-        if (rootNode.value !== undefined && rootNode.value.length > 0) {
-            if (label === undefined || label === rootNode.label) {
-                nodesWithValue.push(rootNode);
-            }
-        }
-
-        links.forEach(function (l) {
-            var targetNode = l.target;
-            if (l.type === graph.link.LinkTypes.RELATION && targetNode.value !== undefined && targetNode.value.length > 0) {
-                if (label === undefined || label === targetNode.label) {
-                    nodesWithValue.push(targetNode);
-                }
-            }
-        });
-    }
-
-    return nodesWithValue;
-};
-
-
-/**
- * Add value in all CHOOSE nodes with specified label.
- *
- * @param label nodes where to insert
- * @param value
- */
-graph.node.addValueForLabel = function (label, value) {
-    var isAnyChangeDone = false;
-
-    // Find choose node with label
-    for (var i = dataModel.nodes.length - 1; i >= 0; i--) {
-        if (dataModel.nodes[i].type === graph.node.NodeTypes.CHOOSE && dataModel.nodes[i].label === label) {
-
-            // Create field value if needed
-            if (!dataModel.nodes[i].hasOwnProperty("value")) {
-                dataModel.nodes[i].value = [];
-            }
-
-            // check if value already exists
-            var isValueFound = false;
-            var constraintAttr = provider.node.getConstraintAttribute(label);
-            dataModel.nodes[i].value.forEach(function (val) {
-                if (val.attributes.hasOwnProperty(constraintAttr) && val.attributes[constraintAttr] === value.attributes[constraintAttr]) {
-                    isValueFound = true;
-                }
-            });
-
-            if (!isValueFound) {
-                // Add value
-                dataModel.nodes[i].value.push(value);
-                isAnyChangeDone = true;
-            }
-        }
-    }
-
-    return isAnyChangeDone;
-};
-
-/**
- * Add a value in a node with the given id and the value of the first attribute if found in its data.
- *
- * @param nodeIds a list of node ids where to add the value.
- * @param displayAttributeValue the value to find in data and to add if found
- */
-graph.node.addValue = function (nodeIds, displayAttributeValue) {
-    var isAnyChangeDone = false;
-
-    // Find choose node with label
-    for (var i = 0; i < dataModel.nodes.length; i++) {
-        var node = dataModel.nodes[i];
-        if (nodeIds.indexOf(node.id) >= 0) {
-
-            // Create field value in node if needed
-            if (!node.hasOwnProperty("value")) {
-                node.value = [];
-            }
-
-            var displayAttr = provider.node.getReturnAttributes(node.label)[0];
-
-            // Find data for this node and add value
-            node.data.forEach(function (d) {
-                if (d.hasOwnProperty(displayAttr) && d[displayAttr] === displayAttributeValue) {
-                    isAnyChangeDone = true;
-                    node.value.push({attributes: d})
-                }
-            });
-        }
-    }
-
-    if (isAnyChangeDone) {
-        result.hasChanged = true;
-        graph.hasGraphChanged = true;
-        update();
-    }
-};
-
-/**
- * Remove a value from a node.
- * If the value is not found nothing is done.
- *
- * @param node
- * @param value
- */
-graph.node.removeValue = function (node, value) {
-    var isAnyChangeDone = false;
-
-    // Remove values having same constraintAttributeValue
-    for (var j = node.value.length - 1; j >= 0; j--) {
-        if (node.value[j] === value) {
-            graph.node.collapseNode(node);
-            node.value.splice(j, 1);
-
-            // Add values back in data
-            // Not needed as node is collapsed and if clicked data will be reloaded
-            // for (var k = 0; k < removedValues.length; k++) {
-            //     node.data.push(removedValues[k].attributes);
-            // }
-            isAnyChangeDone = true;
-        }
-    }
-    return isAnyChangeDone
-};
-
-/**
- * Get the value in the provided nodeId for a specific value id.
- *
- * @param nodeId
- * @param constraintAttributeValue
- */
-graph.node.getValue = function (nodeId, constraintAttributeValue) {
-    for (var i = 0; i < dataModel.nodes.length; i++) {
-        var node = dataModel.nodes[i];
-
-        if (node.id === nodeId) {
-            var constraintAttribute = provider.node.getConstraintAttribute(node.label);
-
-            for (var j = node.value.length - 1; j >= 0; j--) {
-                if (node.value[j].attributes[constraintAttribute] === constraintAttributeValue) {
-                    return node.value[j]
-                }
-            }
-        }
-    }
-};
-
-/**
- * Remove in all expanded nodes the value containing the specified value for the given attribute.
- * And move it back to nodes data.
- *
- * @param attribute
- * @param value
- */
-graph.node.removeExpandedValue = function (attribute, value) {
-    var isAnyChangeDone = false;
-
-    // For each expanded nodes in reverse order as some values can be removed
-    for (var i = dataModel.nodes.length - 1; i >= 0; i--) {
-        if (dataModel.nodes[i].valueExpanded) {
-
-            var removedValues = [];
-
-            // Remove values
-            for (var j = dataModel.nodes[i].value.length - 1; j >= 0; j--) {
-                if (dataModel.nodes[i].value[j].attributes[attribute] === value) {
-                    isAnyChangeDone = true;
-
-                    removedValues = removedValues.concat(dataModel.nodes[i].value.splice(j, 1));
-                }
-            }
-
-            //And add them back in data
-            for (var k = 0; k < removedValues.length; k++) {
-                dataModel.nodes[i].data.push(removedValues[k].attributes);
-            }
-
-            // Refresh node
-            graph.node.collapseNode(dataModel.nodes[i]);
-            graph.node.expandNode(dataModel.nodes[i]);
-        }
-    }
-
-    if (isAnyChangeDone) {
-        result.hasChanged = true;
-        graph.hasGraphChanged = true;
-        update();
-    }
-};
-
-/**
- * Return all nodes with isAutoLoadValue property set to true.
- */
-graph.node.getAutoLoadValueNodes = function () {
-    return dataModel.nodes
-        .filter(function (d) {
-            return d.hasOwnProperty("isAutoLoadValue") && d.isAutoLoadValue === true && !(d.isNegative === true);
-        });
-};
-
-/**
- * Add a list of related value if not already found in node.
- * A value is defined with the following structure
- * {
-     *   id,
-     *   rel,
-     *   label
-     * }
- *
- * @param node
- * @param values
- * @param isNegative
- */
-graph.node.addRelatedValues = function (node, values, isNegative) {
-    var valuesToAdd = graph.node.filterExistingValues(node, values);
-
-    if (valuesToAdd.length <= 0) {
-        return;
-    }
-
-    var statements = [];
-
-    valuesToAdd.forEach(function (v) {
-        var constraintAttr = provider.node.getConstraintAttribute(v.label);
-
-        var statement = "MATCH ";
-        if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-            statement += "(v:`" + v.label + "`) WHERE (ID(v) = $p)";
-        } else {
-            statement += "(v:`" + v.label + "`) WHERE (v." + constraintAttr + " = $p)";
-        }
-
-        var resultAttributes = provider.node.getReturnAttributes(v.label);
-        var sep = "";
-
-        statement += " RETURN DISTINCT \"" + v.rel + "\" AS rel, \"" + v.label + "\" AS label, {" + resultAttributes.reduce(function (a, attr) {
-            a += sep + attr + ":v." + attr;
-            sep = ", ";
-            return a
-        }, "") + "} AS value LIMIT 1";
-
-        statements.push(
-            {
-                "statement": statement,
-                "parameters": {p: v.id},
-                "resultDataContents": ["row"]
-            }
-        )
-    });
-
-    logger.info("addRelatedValues ==>");
-    rest.post(
-        {
-            "statements": statements
-        })
-        .done(function (response) {
-            logger.info("<== addRelatedValues");
-
-            var parsedData = rest.response.parse(response);
-            var count = 0;
-            parsedData.forEach(function (data) {
-                if (data.length > 0) {
-                    var dataLabel = data[0].label;
-                    var dataValue = data[0].value;
-                    var dataRel = data[0].rel;
-
-                    var value = {
-                        "id": graph.generateId(),
-                        "parent": node,
-                        "attributes": dataValue,
-                        "type": graph.node.NodeTypes.VALUE,
-                        "label": dataLabel
-                    };
-                    graph.ignoreCount = true;
-
-                    var nodeRelationships = node.relationships;
-                    var nodeRels = nodeRelationships.filter(function (r) {
-                        return r.label === dataRel && r.target === dataLabel
-                    });
-
-                    var nodeRel = {label: dataRel, target: dataLabel};
-                    if (nodeRels.length > 0) {
-                        nodeRel = nodeRels[0];
-                    }
-
-                    graph.addRelationshipData(node, nodeRel, function () {
-                        count++;
-
-                        if (count === parsedData.length) {
-                            graph.ignoreCount = false;
-                            graph.hasGraphChanged = true;
-                            result.hasChanged = true;
-                            update();
-                        }
-                    }, [value], isNegative);
-                }
-            });
-        })
-        .fail(function (xhr, textStatus, errorThrown) {
-            console.error(xhr, textStatus, errorThrown);
-        });
-};
-
-/**
- * Add a list of related value prefixed by a path of nodes.
- * A value is defined with the following structure
- * {
-     *   id,
-     *   rel,
-     *   label
-     * }
- *
- * @param node
- * @param relPath
- * @param values
- * @param isNegative
- */
-graph.node.addRelatedBranch = function (node, relPath, values, isNegative) {
-    if (relPath.length > 0) {
-        var rel = relPath[0];
-        relPath = relPath.slice(1);
-
-        var relationships = node.relationships.filter(function (r) {
-            return r.label === rel.type && r.target === rel.target;
-        });
-
-        if (relationships.length > 0) {
-            graph.addRelationshipData(node, relationships[0], function (createdNode) {
-                graph.node.addRelatedBranch(createdNode, relPath, values, isNegative);
-            });
-        }
-    } else {
-        graph.node.addRelatedValues(node, values, isNegative)
-    }
-};
-
-/**
- * A value is defined with the following structure
- * {
-     *   id,
-     *   rel,
-     *   label
-     * }
- *
- * @param node
- * @param values
- */
-graph.node.filterExistingValues = function (node, values) {
-    var notFoundValues = [];
-    var possibleValueNodes = dataModel.nodes.filter(function (n) {
-        return n.parent === node && n.hasOwnProperty("value") && n.value.length > 0;
-    });
-
-    values.forEach(function (v) {
-        var found = false;
-        var constraintAttr = provider.node.getConstraintAttribute(v.label);
-
-        possibleValueNodes.forEach(function (n) {
-            if (n.label === v.label) {
-                n.value.forEach(function (nv) {
-                    if (nv.attributes[constraintAttr] === v.id) {
-                        found = true;
-                    }
-                });
-            }
-        });
-
-        if (!found) {
-            notFoundValues.push(v)
-        }
-    });
-
-    return notFoundValues;
-};
-
 /**
  * Compute the angle in radian between the node and its parent.
  * TODO: clean or add comments to explain the code...
  *
- * @param node node to compute angle.
+ * @param n node to compute angle.
  * @returns {number} angle in radian.
  */
-graph.computeParentAngle = function (node) {
+graph.computeParentAngle = function (n) {
     var angleRadian = 0;
     var r = 100;
-    if (node.parent) {
-        var xp = node.parent.x;
-        var yp = node.parent.y;
-        var x0 = node.x;
-        var y0 = node.y;
+    if (n.parent) {
+        var xp = n.parent.x;
+        var yp = n.parent.y;
+        var x0 = n.x;
+        var y0 = n.y;
         var dist = Math.sqrt(Math.pow(xp - x0, 2) + Math.pow(yp - y0, 2));
 
         var k = r / (dist - r);
@@ -2788,195 +959,26 @@ graph.computeParentAngle = function (node) {
 };
 
 /**
- * Function called to expand a node containing values.
- * This function will create the value nodes with the clicked node internal data.
- * Only nodes corresponding to the current page index will be generated.
  *
- * @param clickedNode
- */
-graph.node.expandNode = function (clickedNode) {
-
-    graph.notifyListeners(graph.Events.GRAPH_NODE_VALUE_EXPAND, [clickedNode]);
-
-    // Get subset of node corresponding to the current node page and page size
-    var lIndex = clickedNode.page * graph.node.PAGE_SIZE;
-    var sIndex = lIndex - graph.node.PAGE_SIZE;
-
-    var dataToAdd = clickedNode.data.slice(sIndex, lIndex);
-    var parentAngle = graph.computeParentAngle(clickedNode);
-
-    // Then each node are created and dispatched around the clicked node using computed coordinates.
-    var i = 1;
-    dataToAdd.forEach(function (d) {
-        var angleDeg;
-        if (clickedNode.parent) {
-            angleDeg = (((360 / (dataToAdd.length + 1)) * i));
-        } else {
-            angleDeg = (((360 / (dataToAdd.length)) * i));
-        }
-
-        var nx = clickedNode.x + (100 * Math.cos((angleDeg * (Math.PI / 180)) - parentAngle)),
-            ny = clickedNode.y + (100 * Math.sin((angleDeg * (Math.PI / 180)) - parentAngle));
-
-        var node = {
-            "id": graph.generateId(),
-            "parent": clickedNode,
-            "attributes": d,
-            "type": graph.node.NodeTypes.VALUE,
-            "label": clickedNode.label,
-            "count": d.count,
-            "x": nx,
-            "y": ny,
-            "internalID": d[query.NEO4J_INTERNAL_ID.queryInternalName]
-        };
-
-        dataModel.nodes.push(node);
-        dataModel.links.push(
-            {
-                id: "l" + graph.generateId(),
-                source: clickedNode,
-                target: node,
-                type: graph.link.LinkTypes.VALUE
-            }
-        );
-
-        i++;
-    });
-
-    // Pin clicked node and its parent to avoid the graph to move for selection, only new value nodes will blossom around the clicked node.
-    clickedNode.fixed = true;
-    clickedNode.fx = clickedNode.x;
-    clickedNode.fy = clickedNode.y;
-    if (clickedNode.parent && clickedNode.parent.type !== graph.node.NodeTypes.ROOT) {
-        clickedNode.parent.fixed = true;
-        clickedNode.parent.fx = clickedNode.parent.x;
-        clickedNode.parent.fy = clickedNode.parent.y;
-    }
-    // Change node state
-    clickedNode.valueExpanded = true;
-    update();
-};
-
-/**
- * Fetches the list of relationships of a node and store them in the relationships property.
- *
- * @param node the node to fetch the relationships.
- * @param callback
- * @param directionAngle
- */
-graph.node.loadRelationshipData = function (node, callback, directionAngle) {
-    var schema = provider.node.getSchema(node.label);
-
-    if (schema !== undefined) {
-        if (schema.hasOwnProperty("rel") && schema.rel.length > 0) {
-            callback(graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(schema.rel).map(function (d) {
-                var data = {
-                    id: d.data.label + d.data.target.label,
-                    label: d.data.label,
-                    target: d.data.target.label,
-                    count: 0,
-                    startAngle: d.startAngle,
-                    endAngle: d.endAngle,
-                    directionAngle: (d.startAngle + d.endAngle) / 2
-                };
-
-                if (d.data.isReverse === true) {
-                    data.isReverse = true;
-                }
-
-                return data;
-            }));
-        } else {
-            callback([]);
-        }
-    } else {
-        var nodeRelationQuery = query.generateNodeRelationQuery(node);
-
-        logger.info("Relations (" + node.label + ") ==>");
-        rest.post(
-            {
-                "statements": [
-                    {
-                        "statement": nodeRelationQuery.statement,
-                        "parameters": nodeRelationQuery.parameters
-                    }]
-            })
-            .done(function (response) {
-                logger.info("<== Relations (" + node.label + ")");
-                var parsedData = rest.response.parse(response);
-
-                // Filter data to eventually remove relations if a filter has been defined in config.
-                var filteredData = parsedData[0].filter(function (d) {
-                    return query.filterRelation(d);
-                });
-
-                filteredData = graph.node.pie.startAngle(directionAngle - Math.PI).endAngle(directionAngle + Math.PI)(filteredData).map(function (d) {
-                    return {
-                        id: d.data.label + d.data.target,
-                        label: d.data.label,
-                        target: d.data.target,
-                        count: d.data.count,
-                        startAngle: d.startAngle,
-                        endAngle: d.endAngle,
-                        directionAngle: (d.startAngle + d.endAngle) / 2
-                    }
-                });
-
-                callback(filteredData);
-            })
-            .fail(function (xhr, textStatus, errorThrown) {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
-                callback([]);
-            });
-    }
-};
-
-/**
- * Expands all the relationships available in node.
- *
- * @param node
- * @param callback
- */
-graph.node.expandRelationships = function (node, callback) {
-    var callbackCount = 0;
-
-    if (node.hasOwnProperty("relationships") && node.relationships.length > 0) {
-
-        for (var i = 0; i < node.relationships.length; i++) {
-            graph.addRelationshipData(node, node.relationships[i], function () {
-                callbackCount++;
-
-                if (callbackCount === node.relationships.length) {
-                    callback();
-                }
-            })
-        }
-    } else {
-        callback();
-    }
-};
-
-/**
- *
- * @param node
- * @param link
+ * @param n
+ * @param l
  * @param callback
  * @param values
  * @param isNegative
  */
-graph.addRelationshipData = function (node, link, callback, values, isNegative) {
+graph.addRelationshipData = function (n, l, callback, values, isNegative) {
     var targetNode = {
-        "id": "" + graph.generateId(),
-        "parent": node,
-        "parentRel": link.label,
+        "id": "" + dataModel.generateId(),
+        "parent": n,
+        "parentRel": l.label,
         "type": graph.node.NodeTypes.CHOOSE,
-        "label": link.target,
+        "label": l.target,
         "fixed": false,
-        "internalLabel": graph.node.generateInternalLabel(link.target),
+        "internalLabel": graph.node.generateInternalLabel(l.target),
         "relationships": []
     };
 
-    if (link.isReverse === true) {
+    if (l.isReverse === true) {
         targetNode.isParentRelReverse = true;
     }
 
@@ -2988,18 +990,18 @@ graph.addRelationshipData = function (node, link, callback, values, isNegative) 
     }
 
     var newLink = {
-        id: "l" + graph.generateId(),
-        source: node,
+        id: "l" + dataModel.generateId(),
+        source: n,
         target: targetNode,
         type: graph.link.LinkTypes.RELATION,
-        label: link.label
+        label: l.label
     };
 
-    targetNode.x = node.x + ((provider.link.getDistance(newLink) * 2 / 3) * Math.cos(link.directionAngle - Math.PI / 2)) + Math.random() * 10;
-    targetNode.y = node.y + ((provider.link.getDistance(newLink) * 2 / 3) * Math.sin(link.directionAngle - Math.PI / 2)) + Math.random() * 10;
+    targetNode.x = n.x + ((provider.link.getDistance(newLink) * 2 / 3) * Math.cos(l.directionAngle - Math.PI / 2)) + Math.random() * 10;
+    targetNode.y = n.y + ((provider.link.getDistance(newLink) * 2 / 3) * Math.sin(l.directionAngle - Math.PI / 2)) + Math.random() * 10;
 
-    targetNode.tx = node.tx + ((provider.link.getDistance(newLink)) * Math.cos(link.directionAngle - Math.PI / 2));
-    targetNode.ty = node.ty + ((provider.link.getDistance(newLink)) * Math.sin(link.directionAngle - Math.PI / 2));
+    targetNode.tx = n.tx + ((provider.link.getDistance(newLink)) * Math.cos(l.directionAngle - Math.PI / 2));
+    targetNode.ty = n.ty + ((provider.link.getDistance(newLink)) * Math.sin(l.directionAngle - Math.PI / 2));
 
     dataModel.nodes.push(targetNode);
     dataModel.links.push(newLink);
@@ -3021,77 +1023,10 @@ graph.addRelationshipData = function (node, link, callback, values, isNegative) 
                 callback(targetNode)
             }
         },
-        link.directionAngle
+        l.directionAngle
     );
 
 
-};
-
-/**
- * Remove a node and its relationships (recursively) from the graph.
- *
- * @param node the node to remove.
- */
-graph.node.removeNode = function (node) {
-    var willChangeResults = node.hasOwnProperty("value") && node.value.length > 0;
-
-    var linksToRemove = dataModel.links.filter(function (l) {
-        return l.source === node;
-    });
-
-    // Remove children nodes from model
-    linksToRemove.forEach(function (l) {
-        var rc = graph.node.removeNode(l.target);
-        willChangeResults = willChangeResults || rc;
-    });
-
-    // Remove links from model
-    for (var i = dataModel.links.length - 1; i >= 0; i--) {
-        if (dataModel.links[i].target === node) {
-            dataModel.links.splice(i, 1);
-        }
-    }
-
-    dataModel.nodes.splice(dataModel.nodes.indexOf(node), 1);
-
-    return willChangeResults;
-};
-
-/**
- * Function to add on node event to clear the selection.
- * Call to this function on a node will remove the selected value and trigger a graph update.
- */
-graph.node.clearSelection = function () {
-    // Prevent default event like right click  opening menu.
-    d3.event.preventDefault();
-
-    // Get clicked node.
-    var clickedNode = d3.select(this).data()[0];
-
-    // Collapse all expanded choose nodes first
-    graph.node.collapseAllNode();
-
-    if (clickedNode.value !== undefined && clickedNode.value.length > 0 && !clickedNode.immutable) {
-        // Remove last value of chosen node
-        clickedNode.value.pop();
-
-        if (clickedNode.isNegative === true) {
-            if (clickedNode.value.length === 0) {
-                // Remove all related nodes
-                for (var i = dataModel.links.length - 1; i >= 0; i--) {
-                    if (dataModel.links[i].source === clickedNode) {
-                        graph.node.removeNode(dataModel.links[i].target);
-                    }
-                }
-
-                clickedNode.count = 0;
-            }
-        }
-
-        result.hasChanged = true;
-        graph.hasGraphChanged = true;
-        update();
-    }
 };
 
 graph.voronoi = d3.voronoi()

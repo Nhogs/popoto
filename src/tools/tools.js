@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import dataModel from "../datamodel/dataModel";
 import provider from "../provider/provider";
 import result from "../result/result";
 import graph from "../graph/graph";
@@ -12,7 +13,7 @@ var tools = {};
 tools.CENTER_GRAPH = true;
 tools.RESET_GRAPH = true;
 tools.SAVE_GRAPH = false;
-tools.TOGGLE_TAXONOMY = true;
+tools.TOGGLE_TAXONOMY = false;
 tools.TOGGLE_FULL_SCREEN = true;
 tools.TOGGLE_VIEW_RELATION = true;
 tools.TOGGLE_FIT_TEXT = true;
@@ -21,12 +22,8 @@ tools.TOGGLE_FIT_TEXT = true;
  * Reset the graph to display the root node only.
  */
 tools.reset = function () {
-    while (graph.nodes.length > 0) {
-        graph.nodes.pop();
-    }
-    while (graph.links.length > 0) {
-        graph.links.pop();
-    }
+    dataModel.nodes.length = 0;
+    dataModel.links.length = 0;
 
     // Reinitialize internal label generator
     graph.node.internalLabels = {};

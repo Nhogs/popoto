@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import dataModel from "../datamodel/dataModel";
 import queryviewer from "../queryviewer/queryviewer";
 import provider from "../provider/provider";
 import query from "../query/query";
@@ -41,7 +42,7 @@ cypherviewer.updateQuery = function () {
     cypherviewer.querySpanElements.exit().remove();
 
     // Update data
-    cypherviewer.querySpanElements = cypherviewer.querySpanElements.data(cypherviewer.generateData(graph.links, graph.nodes));
+    cypherviewer.querySpanElements = cypherviewer.querySpanElements.data(cypherviewer.generateData(dataModel.links, dataModel.nodes));
 
     // Remove old span (not needed as all have been cleaned before)
     // queryviewer.querySpanElements.exit().remove();
@@ -92,7 +93,7 @@ cypherviewer.updateQuery = function () {
         return d.type === cypherviewer.QueryElementTypes.SOURCE;
     })
         .attr("class", function (d) {
-            if (d.node === graph.getRootNode()) {
+            if (d.node === dataModel.getRootNode()) {
                 if (d.node.value !== undefined && d.node.value.length > 0) {
                     return "ppt-span-root-value";
                 } else {
@@ -141,7 +142,7 @@ cypherviewer.updateQuery = function () {
         return d.type === cypherviewer.QueryElementTypes.WHERE;
     })
         .attr("class", function (d) {
-            if (d.node === graph.getRootNode()) {
+            if (d.node === dataModel.getRootNode()) {
                 return "ppt-span-root-value";
             } else {
                 return "ppt-span-value";
@@ -236,7 +237,7 @@ cypherviewer.updateQuery = function () {
  */
 cypherviewer.generateData = function (links) {
     var elmts = [], id = 0;
-    var rootNode = graph.getRootNode();
+    var rootNode = dataModel.getRootNode();
     var relevantLinks = query.getRelevantLinks(rootNode, rootNode, links);
     var negativeLinks = relevantLinks.filter(function (rl) {
         return rl.target.isNegative === true && (!rl.target.hasOwnProperty("value") || rl.target.value.length <= 0)

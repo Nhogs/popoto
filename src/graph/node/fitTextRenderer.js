@@ -1,9 +1,14 @@
+import * as d3 from "d3";
 import provider from "../../provider/provider";
 
 var fitTextRenderer = {};
 
 var CONTEXT_2D = document.createElement("canvas").getContext("2d");
 var DEFAULT_CANVAS_LINE_HEIGHT = 12;
+
+fitTextRenderer.getNodeBoundingBox = function (node) {
+    return node.getBBox();
+};
 
 export function measureTextWidth(text) {
     return CONTEXT_2D.measureText(text).width;
@@ -68,6 +73,16 @@ export function getLines(text) {
  */
 fitTextRenderer.render = function (nodeSelection) {
 
+    var backgroundRectSelection = nodeSelection
+        .append("rect")
+        .attr("fill", function (node) {
+            return provider.node.getColor(node, "back-text", "fill");
+        })
+        .attr("class", function (node) {
+            return provider.node.getCSSClass(node, "back-text")
+        });
+
+
     var textMiddle = nodeSelection.append('text')
         .attr("class", function (node) {
             return provider.node.getCSSClass(node, "text")
@@ -98,11 +113,34 @@ fitTextRenderer.render = function (nodeSelection) {
 
     textMiddle.attr("transform", function (d) {
         var scale = 1;
-        if(d.textRadius !== 0 && d.textRadius){
+        if (d.textRadius !== 0 && d.textRadius) {
             scale = provider.node.getSize(d) / d.textRadius;
         }
         return "translate(" + 0 + "," + 0 + ")" + " scale(" + scale + ")"
-    })
+    });
+
+    backgroundRectSelection
+        .attr("x", function (d) {
+            var bbox = fitTextRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
+            return bbox.x - 3;
+        })
+        .attr("y", function (d) {
+            var bbox = fitTextRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
+            return bbox.y;
+        })
+        .attr("rx", "5")
+        .attr("ry", "5")
+        .attr("width", function (d) {
+            var bbox = fitTextRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
+            return bbox.width + 6;
+        })
+        .attr("height", function (d) {
+            var bbox = fitTextRenderer.getNodeBoundingBox(d3.select(this.parentNode).select("text").node());
+            return bbox.height;
+        })
+        .attr("transform", function (d) {
+            return d3.select(this.parentNode).select("text").attr("transform")
+        });
 };
 
 export default fitTextRenderer

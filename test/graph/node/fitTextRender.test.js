@@ -1,60 +1,6 @@
 import fitTextRenderer from '../../../src/graph/node/fitTextRenderer'
 import provider from '../../../src/provider/provider';
 import * as d3 from 'd3';
-import {measureTextWidth, getLines} from '../../../src/graph/node/fitTextRenderer'
-
-describe("measureTextWidth", function () {
-    test("Should measure undefined text correctly", () => {
-        expect(measureTextWidth()).toMatchSnapshot();
-    });
-
-    test("Should measure empty text correctly", () => {
-        expect(measureTextWidth("")).toMatchSnapshot();
-    });
-
-    test("Should measure text correctly", () => {
-        expect(measureTextWidth("mockedTextValue")).toMatchSnapshot();
-    });
-});
-
-describe("getLines", function () {
-
-    test("Should works with undefined as text", () => {
-        const lines = getLines();
-        expect(lines).toMatchSnapshot();
-    });
-
-    test("Should works with empty string as text", () => {
-        const lines = getLines("");
-        expect(lines).toMatchSnapshot();
-    });
-
-    test("Should works with simple word as text", () => {
-        const lines = getLines("mockedTextValue");
-        expect(lines).toMatchSnapshot();
-    });
-
-    test("Should works with multiple words on same line", () => {
-        const lines = getLines("mocked text a value");
-        expect(lines).toMatchSnapshot();
-    });
-
-    test("Should works with multiple words as text", () => {
-        const lines = getLines("mocked text value");
-        expect(lines).toMatchSnapshot();
-    });
-
-    test("Should works with multiple spaces and multiple words as text", () => {
-        const lines = getLines("        mocked   text       value           ");
-        expect(lines).toMatchSnapshot();
-    });
-
-    test("Should works with integer as text", () => {
-        const lines = getLines(0);
-        expect(lines).toMatchSnapshot();
-    });
-
-});
 
 describe("render", function () {
 

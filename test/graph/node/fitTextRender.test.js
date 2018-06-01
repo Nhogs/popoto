@@ -60,7 +60,7 @@ describe("render", function () {
                 '</g>' +
                 '</div>';
 
-            provider.node.getTextValue = jest.fn().mockReturnValueOnce("mockedTextValue");
+            provider.node.getTextValue = jest.fn().mockReturnValueOnce("mockedTextValue").mockReturnValueOnce("mockedTextValue");
             provider.node.getSize = jest.fn().mockReturnValue(50);
             provider.node.getCSSClass = jest.fn().mockReturnValueOnce(cssClassMockValue).mockReturnValueOnce(cssClassMockValue);
             provider.node.getColor = jest.fn().mockReturnValue(colorMockValue);
@@ -82,7 +82,7 @@ describe("render", function () {
                 '</g>' +
                 '</div>';
 
-            provider.node.getTextValue = jest.fn().mockReturnValueOnce("mocked text value");
+            provider.node.getTextValue = jest.fn().mockReturnValueOnce("mocked text value").mockReturnValueOnce("mocked text value");
             provider.node.getSize = jest.fn().mockReturnValue(50);
             provider.node.getCSSClass = jest.fn().mockReturnValueOnce(cssClassMockValue).mockReturnValueOnce(cssClassMockValue);
             provider.node.getColor = jest.fn().mockReturnValue(colorMockValue);
@@ -104,7 +104,7 @@ describe("render", function () {
                 '</g>' +
                 '</div>';
 
-            provider.node.getTextValue = jest.fn().mockReturnValueOnce("mocked text a value");
+            provider.node.getTextValue = jest.fn().mockReturnValueOnce("mocked text a value").mockReturnValueOnce("mocked text a value");
             provider.node.getSize = jest.fn().mockReturnValue(50);
             provider.node.getCSSClass = jest.fn().mockReturnValueOnce(cssClassMockValue).mockReturnValueOnce(cssClassMockValue);
             provider.node.getColor = jest.fn().mockReturnValue(colorMockValue);
@@ -126,7 +126,7 @@ describe("render", function () {
                 '</g>' +
                 '</div>';
 
-            provider.node.getTextValue = jest.fn().mockReturnValueOnce(0);
+            provider.node.getTextValue = jest.fn().mockReturnValueOnce(0).mockReturnValueOnce(0);
             provider.node.getSize = jest.fn().mockReturnValue(50);
             provider.node.getCSSClass = jest.fn().mockReturnValueOnce(cssClassMockValue).mockReturnValueOnce(cssClassMockValue);
             provider.node.getColor = jest.fn().mockReturnValue(colorMockValue);

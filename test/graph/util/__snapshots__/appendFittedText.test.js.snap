@@ -6,102 +6,78 @@ exports[`appendFittedText Should works with text, radius, class parameters as fu
 
 exports[`appendFittedText Should works with text, radius, class parameters as value without data in selection Should render correctly 1`] = `"<div><g><text class=\\"mocked_css_class_value fitted-text\\" style=\\"text-anchor: middle; font: 10px sans-serif\\" transform=\\"translate(0,0) scale(0.4893501829289196)\\"><tspan x=\\"0\\" y=\\"3.6000000000000005\\">mocked_text_value</tspan></text></g></div>"`;
 
-exports[`getLines Should works with empty string as text 1`] = `
-Object {
-  "lines": Array [],
-  "textRadius": 0,
-}
+exports[`extractLines Should works with empty string as text 1`] = `Array []`;
+
+exports[`extractLines Should works with integer as text 1`] = `
+Array [
+  Object {
+    "text": "0",
+    "width": 12,
+  },
+]
 `;
 
-exports[`getLines Should works with integer as text 1`] = `
-Object {
-  "lines": Array [
-    Object {
-      "linesLength": 1,
-      "text": "0",
-    },
-  ],
-  "textRadius": 8.48528137423857,
-}
+exports[`extractLines Should works with multiple spaces and multiple words as text 1`] = `
+Array [
+  Object {
+    "text": "mocked",
+    "width": 72,
+  },
+  Object {
+    "text": "text",
+    "width": 48,
+  },
+  Object {
+    "text": "value",
+    "width": 60,
+  },
+]
 `;
 
-exports[`getLines Should works with multiple spaces and multiple words as text 1`] = `
-Object {
-  "lines": Array [
-    Object {
-      "linesLength": 3,
-      "text": "mocked",
-    },
-    Object {
-      "linesLength": 3,
-      "text": "text",
-    },
-    Object {
-      "linesLength": 3,
-      "text": "value",
-    },
-  ],
-  "textRadius": 40.24922359499622,
-}
+exports[`extractLines Should works with multiple words as text 1`] = `
+Array [
+  Object {
+    "text": "mocked",
+    "width": 72,
+  },
+  Object {
+    "text": "text",
+    "width": 48,
+  },
+  Object {
+    "text": "value",
+    "width": 60,
+  },
+]
 `;
 
-exports[`getLines Should works with multiple words as text 1`] = `
-Object {
-  "lines": Array [
-    Object {
-      "linesLength": 3,
-      "text": "mocked",
-    },
-    Object {
-      "linesLength": 3,
-      "text": "text",
-    },
-    Object {
-      "linesLength": 3,
-      "text": "value",
-    },
-  ],
-  "textRadius": 40.24922359499622,
-}
+exports[`extractLines Should works with multiple words on same line 1`] = `
+Array [
+  Object {
+    "text": "mocked",
+    "width": 72,
+  },
+  Object {
+    "text": "text",
+    "width": 48,
+  },
+  Object {
+    "text": "a value",
+    "width": 84,
+  },
+]
 `;
 
-exports[`getLines Should works with multiple words on same line 1`] = `
-Object {
-  "lines": Array [
-    Object {
-      "linesLength": 3,
-      "text": "mocked",
-    },
-    Object {
-      "linesLength": 3,
-      "text": "text",
-    },
-    Object {
-      "linesLength": 3,
-      "text": "a value",
-    },
-  ],
-  "textRadius": 45.69463863518345,
-}
+exports[`extractLines Should works with simple word as text 1`] = `
+Array [
+  Object {
+    "text": "mockedTextValue",
+    "width": 180,
+  },
+]
 `;
 
-exports[`getLines Should works with simple word as text 1`] = `
-Object {
-  "lines": Array [
-    Object {
-      "linesLength": 1,
-      "text": "mockedTextValue",
-    },
-  ],
-  "textRadius": 90.19977827023745,
-}
-`;
-
-exports[`getLines Should works with undefined as text 1`] = `
-Object {
-  "lines": Array [],
-}
-`;
+exports[`extractLines Should works with undefined as text 1`] = `Array []`;
 
 exports[`measureTextWidth Should measure empty text correctly 1`] = `0`;
 

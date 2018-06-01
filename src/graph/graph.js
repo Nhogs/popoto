@@ -222,6 +222,10 @@ graph.createGraphArea = function () {
     window.addEventListener('resize', graph.centerRootNode);
 };
 
+graph.getRootNode = function () {
+    return dataModel.getRootNode();
+};
+
 graph.centerRootNode = function () {
     dataModel.getRootNode().fx = graph.getSVGWidth() / 2;
     dataModel.getRootNode().fy = graph.getSVGHeight() / 2;

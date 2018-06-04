@@ -6,6 +6,7 @@ import provider from "../../provider/provider"
 import query from "../../query/query"
 import result from "../../result/result"
 import graph from "../graph"
+
 /**
  * Update node data with changes done in dataModel.nodes model.
  */

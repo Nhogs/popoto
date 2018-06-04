@@ -86,23 +86,30 @@ export function extractLines(text) {
 
 function createTextElements(selection, getClass) {
     selection.each(function (d) {
-        d3.select(this)
+        var text = d3.select(this)
             .selectAll(".fitted-text")
-            .data([{}])
-            .enter()
+            .data([{}]);
+
+        text.enter()
             .append("text")
+            .merge(text)
             .attr("class", (getClass !== undefined ? getClass(d) : "") + " fitted-text")
             .attr("style", "text-anchor: middle; font: 10px sans-serif");
+
     });
 }
 
 function createSpanElements(text, getText) {
     text.each(function (fitData) {
         var lines = extractLines(getText(fitData));
-        d3.select(this).selectAll("tspan")
-            .data(lines)
-            .enter()
+        var span = d3.select(this).selectAll("tspan")
+            .data(lines);
+
+        span.exit().remove();
+
+        span.enter()
             .append("tspan")
+            .merge(span)
             .attr("x", 0)
             .attr("y", function (d, i) {
                 var lineCount = lines.length;
@@ -113,6 +120,8 @@ function createSpanElements(text, getText) {
             });
     });
 }
+
+
 
 /**
  * Create the text representation of a node by slicing the text into lines to fit the node.
@@ -134,7 +143,6 @@ export default function appendFittedText(selection, textParam, radiusParam, clas
     createSpanElements(text, getText);
 
     text.attr("transform", function (d) {
-        console.log(d);
         var lines = extractLines(getText(d));
         var textRadius = computeTextRadius(lines);
 

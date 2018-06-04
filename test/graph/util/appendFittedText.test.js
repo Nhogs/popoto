@@ -151,7 +151,6 @@ describe("appendFittedText", function () {
                 return d.cssClassMockValue
             };
 
-
             document.body.innerHTML =
                 '<div>' +
                 '<g>' +
@@ -163,11 +162,124 @@ describe("appendFittedText", function () {
             appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
         });
 
-        test('Should render correctly', () => {
-            expect(data).toEqual([
+        describe('Should works with text, radius, class parameters as value without data in selection', () => {
+            beforeEach(() => {
+                const textMockValue = "mocked_text_value";
+                const radiusMockValue = 50;
+                const cssClassMockValue = "mocked_css_class_value";
+
+                document.body.innerHTML =
+                    '<div>' +
+                    '<g>' +
+                    '</g>' +
+                    '</div>';
+                appendFittedText(d3.selectAll('g').data([{}]), textMockValue, radiusMockValue, cssClassMockValue)
+            });
+
+            test('Should render correctly', () => {
+                expect(document.body.innerHTML).toMatchSnapshot();
+            });
+        });
+
+    });
+
+    describe('Should update correctly', () => {
+        let textMockValue;
+        let radiusMockValue;
+        let cssClassMockValue;
+        beforeEach(() => {
+            textMockValue = function (d) {
+                return d.textMockValue
+            };
+            radiusMockValue = function (d) {
+                return d.radiusMockValue
+            };
+            cssClassMockValue = function (d) {
+                return d.cssClassMockValue
+            };
+
+            document.body.innerHTML =
+                '<div>' +
+                '<g>' +
+                '</g>' +
+                '<g>' +
+                '</g>' +
+                '</div>';
+
+        });
+
+        test('Should update correctly if data changed', () => {
+            let data = [
                 {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"},
                 {textMockValue: "mocked_text_value2", radiusMockValue: 52, cssClassMockValue: "mocked_css_class_value2"}
-            ])
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+            data = [
+                {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"},
+                {textMockValue: "mocked_text_value3", radiusMockValue: 53, cssClassMockValue: "mocked_css_class_value3"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+        });
+
+        test('Should update correctly if data add text div', () => {
+            let data = [
+                {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+            data = [
+                {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"},
+                {textMockValue: "mocked_text_value2", radiusMockValue: 52, cssClassMockValue: "mocked_css_class_value2"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+        });
+
+        test('Should update correctly if data add span', () => {
+            let data = [
+                {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"},
+                {textMockValue: "mocked_text_value2", radiusMockValue: 52, cssClassMockValue: "mocked_css_class_value2"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+            data = [
+                {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"},
+                {textMockValue: "mocked text value 3", radiusMockValue: 53, cssClassMockValue: "mocked_css_class_value3"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+        });
+
+        test('Should update correctly if data remove span', () => {
+
+            let data = [
+                {textMockValue: "mocked text value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
+            data = [
+                {textMockValue: "mocked_text_value", radiusMockValue: 50, cssClassMockValue: "mocked_css_class_value"}
+            ];
+
+            appendFittedText(d3.selectAll('g').data(data), textMockValue, radiusMockValue, cssClassMockValue);
+            expect(document.body.innerHTML).toMatchSnapshot();
+
         });
     });
 });

@@ -1,0 +1,1 @@
+import textRenderer from '../../../src/graph/node/updateData'

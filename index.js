@@ -1,5 +1,6 @@
 export {version} from "./dist/package";
 export {default as cypherviewer} from "./src/cypherviewer/cypherviewer";
+export {default as dataModel} from "./src/datamodel/dataModel";
 export {default as graph} from "./src/graph/graph";
 export {default as logger} from "./src/logger/logger";
 export {default as provider} from "./src/provider/provider";

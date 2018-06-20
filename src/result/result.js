@@ -100,7 +100,7 @@ result.updateResults = function () {
                 {
                     "statement": graphQuery.statement,
                     "parameters": graphQuery.parameters,
-                    "resultDataContents": ["graph"]
+                    "resultDataContents": ["row", "graph"]
                 });
         }
 

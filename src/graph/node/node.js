@@ -922,7 +922,12 @@ node.segmentClick = function (d) {
 
     graph.ignoreCount = true;
 
-    graph.addRelationshipData(n, d, function () {
+    graph.addRelationshipData(n, d, function (targetNode) {
+        graph.notifyListeners(graph.Events.GRAPH_NODE_RELATION_ADD, [
+            dataModel.links.filter(function (l) {
+                return l.target === targetNode;
+            })
+        ]);
         graph.ignoreCount = false;
         graph.hasGraphChanged = true;
         update();

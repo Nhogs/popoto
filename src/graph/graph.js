@@ -37,6 +37,7 @@ graph.Events = Object.freeze({
     NODE_EXPAND_RELATIONSHIP: "node.expandRelationship",
     GRAPH_SAVE: "graph.save",
     GRAPH_RESET: "graph.reset",
+    GRAPH_NODE_RELATION_ADD: "graph.node.relation_add",
     GRAPH_NODE_VALUE_EXPAND: "graph.node.value_expand",
     GRAPH_NODE_VALUE_COLLAPSE: "graph.node.value_collapse",
     GRAPH_NODE_ADD_VALUE: "graph.node.add_value",

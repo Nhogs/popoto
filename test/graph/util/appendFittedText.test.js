@@ -75,6 +75,24 @@ describe("appendFittedText", function () {
         });
     });
 
+    describe('Should works without class parameters', () => {
+        beforeEach(() => {
+            const textMockValue = "mocked_text_value";
+            const radiusMockValue = 50;
+
+            document.body.innerHTML =
+                '<div>' +
+                '<g>' +
+                '</g>' +
+                '</div>';
+            appendFittedText(d3.selectAll('g').data([{}]), textMockValue, radiusMockValue)
+        });
+
+        test('Should render correctly', () => {
+            expect(document.body.innerHTML).toMatchSnapshot();
+        });
+    });
+
     describe('Should works with text, radius, class parameters as function without data in selection', () => {
         beforeEach(() => {
             const textMockValue = function (d) {

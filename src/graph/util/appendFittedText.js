@@ -93,9 +93,8 @@ function createTextElements(selection, getClass) {
         text.enter()
             .append("text")
             .merge(text)
-            .attr("class", (getClass !== undefined ? getClass(d) : "") + " fitted-text")
+            .attr("class", "fitted-text" + (getClass !== undefined ? " " + getClass(d) : ""))
             .attr("style", "text-anchor: middle; font: 10px sans-serif");
-
     });
 }
 
@@ -121,8 +120,6 @@ function createSpanElements(text, getText) {
     });
 }
 
-
-
 /**
  * Create the text representation of a node by slicing the text into lines to fit the node.
  *
@@ -134,7 +131,7 @@ function createSpanElements(text, getText) {
 export default function appendFittedText(selection, textParam, radiusParam, classParam) {
     var getRadius = toFunction(radiusParam);
     var getText = toFunction(textParam);
-    var getClass = toFunction(classParam);
+    var getClass = classParam ? toFunction(classParam) : classParam;
 
     createTextElements(selection, getClass);
 

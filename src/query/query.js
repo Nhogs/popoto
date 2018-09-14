@@ -58,8 +58,9 @@ query.generateTaxonomyCountQuery = function (label) {
  * @param links list of links subset of the graph.
  * @returns {{matchElements: Array, whereElements: Array}}  list of match and where elements.
  * @param isConstraintNeeded (used only for relation query)
+ * @param useCustomConstraints define whether to use the custom constraints (actually it is used only for results)
  */
-query.generateQueryElements = function (rootNode, selectedNode, links, isConstraintNeeded) {
+query.generateQueryElements = function (rootNode, selectedNode, links, isConstraintNeeded, useCustomConstraints) {
     var matchElements = [];
     var whereElements = [];
     var relationElements = [];
@@ -76,7 +77,7 @@ query.generateQueryElements = function (rootNode, selectedNode, links, isConstra
 
     // Generate root node match element
     if (isConstraintNeeded || rootNode.immutable) {
-        var rootValueConstraints = query.generateNodeValueConstraints(rootNode);
+        var rootValueConstraints = query.generateNodeValueConstraints(rootNode, useCustomConstraints);
         whereElements = whereElements.concat(rootValueConstraints.whereElements);
         for (var param in rootValueConstraints.parameters) {
             if (rootValueConstraints.parameters.hasOwnProperty(param)) {
@@ -130,12 +131,24 @@ query.generateQueryElements = function (rootNode, selectedNode, links, isConstra
                 returnElements.push("COLLECT(" + relIdentifier + ") AS incomingRels");
             }
 
-            matchElements.push("(" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + ":`" + targetNode.label + "`)");
+            var sourceLabelStatement = "";
+
+            if (!useCustomConstraints || provider.node.getGenerateNodeValueConstraints(sourceNode) === undefined) {
+                sourceLabelStatement = ":`" + sourceNode.label + "`";
+            }
+
+            var targetLabelStatement = "";
+
+            if (!useCustomConstraints || provider.node.getGenerateNodeValueConstraints(targetNode) === undefined) {
+                targetLabelStatement = ":`" + targetNode.label + "`";
+            }
+
+            matchElements.push("(" + sourceNode.internalLabel + sourceLabelStatement + ")-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + targetLabelStatement + ")");
         }
 
 
         if (targetNode !== selectedNode && (isConstraintNeeded || targetNode.immutable)) {
-            var nodeValueConstraints = query.generateNodeValueConstraints(targetNode);
+            var nodeValueConstraints = query.generateNodeValueConstraints(targetNode, useCustomConstraints);
             whereElements = whereElements.concat(nodeValueConstraints.whereElements);
             for (var param in nodeValueConstraints.parameters) {
                 if (nodeValueConstraints.parameters.hasOwnProperty(param)) {
@@ -157,75 +170,80 @@ query.generateQueryElements = function (rootNode, selectedNode, links, isConstra
 /**
  * Generate the where and parameter statements for the nodes with value
  *
- * @param node
+ * @param node the node to generate value constraints
+ * @param useCustomConstraints define whether to use custom generation in popoto config
  */
-query.generateNodeValueConstraints = function (node) {
-    var parameters = {}, whereElements = [];
-    if (node.value !== undefined && node.value.length > 0) {
-        var constraintAttr = provider.node.getConstraintAttribute(node.label);
-        var paramName = node.internalLabel + "_" + constraintAttr;
+query.generateNodeValueConstraints = function (node, useCustomConstraints) {
+    if (useCustomConstraints && provider.node.getGenerateNodeValueConstraints(node) !== undefined) {
+        return provider.node.getGenerateNodeValueConstraints(node)(node);
+    } else {
+        var parameters = {}, whereElements = [];
+        if (node.value !== undefined && node.value.length > 0) {
+            var constraintAttr = provider.node.getConstraintAttribute(node.label);
+            var paramName = node.internalLabel + "_" + constraintAttr;
 
-        if (node.value.length > 1) { // Generate IN constraint
-            if (node.isNegative === undefined || !node.isNegative) {
-                parameters[paramName] = [];
+            if (node.value.length > 1) { // Generate IN constraint
+                if (node.isNegative === undefined || !node.isNegative) {
+                    parameters[paramName] = [];
 
-                node.value.forEach(function (value) {
-                    var constraintValue;
+                    node.value.forEach(function (value) {
+                        var constraintValue;
+                        if (constraintAttr === query.NEO4J_INTERNAL_ID) {
+                            constraintValue = value.internalID
+                        } else {
+                            constraintValue = value.attributes[constraintAttr];
+                        }
+
+                        parameters[paramName].push(constraintValue);
+                    });
+
                     if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                        constraintValue = value.internalID
+                        whereElements.push("ID(" + node.internalLabel + ") IN " + "{`" + paramName + "`}");
                     } else {
-                        constraintValue = value.attributes[constraintAttr];
+                        whereElements.push(node.internalLabel + "." + constraintAttr + " IN " + "{`" + paramName + "`}");
                     }
-
-                    parameters[paramName].push(constraintValue);
-                });
-
-                if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                    whereElements.push("ID(" + node.internalLabel + ") IN " + "{`" + paramName + "`}");
                 } else {
-                    whereElements.push(node.internalLabel + "." + constraintAttr + " IN " + "{`" + paramName + "`}");
+                    var count = 0;
+
+                    node.value.forEach(function (value) {
+                        var constraintValue;
+                        if (constraintAttr === query.NEO4J_INTERNAL_ID) {
+                            constraintValue = value.internalID
+                        } else {
+                            constraintValue = value.attributes[constraintAttr];
+                        }
+                        if (count === 0) {
+                            parameters[paramName] = constraintValue;
+                            count++;
+                        } else {
+                            parameters[paramName + count++] = constraintValue;
+                        }
+                    });
                 }
-            } else {
-                var count = 0;
 
-                node.value.forEach(function (value) {
-                    var constraintValue;
-                    if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                        constraintValue = value.internalID
-                    } else {
-                        constraintValue = value.attributes[constraintAttr];
-                    }
-                    if (count === 0) {
-                        parameters[paramName] = constraintValue;
-                        count++;
-                    } else {
-                        parameters[paramName + count++] = constraintValue;
-                    }
-                });
-            }
-
-        } else { // Generate = constraint
-            if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                parameters[paramName] = node.value[0].internalID;
-            } else {
-                parameters[paramName] = node.value[0].attributes[constraintAttr];
-            }
-
-            if (node.isNegative === undefined || !node.isNegative) {
-                var operator = "=";
-
+            } else { // Generate = constraint
                 if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                    whereElements.push("ID(" + node.internalLabel + ") " + operator + " " + "{`" + paramName + "`}");
+                    parameters[paramName] = node.value[0].internalID;
                 } else {
-                    whereElements.push(node.internalLabel + "." + constraintAttr + " " + operator + " " + "{`" + paramName + "`}");
+                    parameters[paramName] = node.value[0].attributes[constraintAttr];
+                }
+
+                if (node.isNegative === undefined || !node.isNegative) {
+                    var operator = "=";
+
+                    if (constraintAttr === query.NEO4J_INTERNAL_ID) {
+                        whereElements.push("ID(" + node.internalLabel + ") " + operator + " " + "{`" + paramName + "`}");
+                    } else {
+                        whereElements.push(node.internalLabel + "." + constraintAttr + " " + operator + " " + "{`" + paramName + "`}");
+                    }
                 }
             }
         }
-    }
 
-    return {
-        parameters: parameters,
-        whereElements: whereElements
+        return {
+            parameters: parameters,
+            whereElements: whereElements
+        }
     }
 };
 
@@ -327,7 +345,7 @@ query.getLinksToRoot = function (node, links) {
  */
 query.generateResultQuery = function (isGraph) {
     var rootNode = dataModel.getRootNode();
-    var queryElements = query.generateQueryElements(rootNode, rootNode, query.getRelevantLinks(rootNode, rootNode, dataModel.links), true);
+    var queryElements = query.generateQueryElements(rootNode, rootNode, query.getRelevantLinks(rootNode, rootNode, dataModel.links), true, true);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryRelationElements = queryElements.relationElements,
@@ -390,7 +408,7 @@ query.generateResultQuery = function (isGraph) {
  * @returns {string} the node count cypher query
  */
 query.generateNodeCountQuery = function (countedNode) {
-    var queryElements = query.generateQueryElements(dataModel.getRootNode(), countedNode, query.getRelevantLinks(dataModel.getRootNode(), countedNode, dataModel.links), true);
+    var queryElements = query.generateQueryElements(dataModel.getRootNode(), countedNode, query.getRelevantLinks(dataModel.getRootNode(), countedNode, dataModel.links), true, false);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryReturnElements = [],
@@ -432,7 +450,7 @@ query.generateNodeCountQuery = function (countedNode) {
 query.generateNodeValueQuery = function (targetNode) {
 
     var rootNode = dataModel.getRootNode();
-    var queryElements = query.generateQueryElements(rootNode, targetNode, query.getRelevantLinks(rootNode, targetNode, dataModel.links), true);
+    var queryElements = query.generateQueryElements(rootNode, targetNode, query.getRelevantLinks(rootNode, targetNode, dataModel.links), true, false);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryReturnElements = [],
@@ -503,7 +521,7 @@ query.generateNodeRelationQuery = function (targetNode) {
 
     var linksToRoot = query.getLinksToRoot(targetNode, dataModel.links);
 
-    var queryElements = query.generateQueryElements(dataModel.getRootNode(), targetNode, linksToRoot, false);
+    var queryElements = query.generateQueryElements(dataModel.getRootNode(), targetNode, linksToRoot, false, false);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryReturnElements = [],

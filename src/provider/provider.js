@@ -709,6 +709,10 @@ provider.node.filterNodeRelationQuery = function (node, initialQuery) {
     return provider.node.getProperty(node.label, "filterNodeRelationQuery")(node, initialQuery);
 };
 
+provider.node.getGenerateNodeValueConstraints = function (node) {
+    return provider.node.getProperty(node.label, "generateNodeValueConstraints");
+};
+
 /**
  * Return the displayResults function defined in label parameter's provider.
  *

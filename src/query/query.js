@@ -408,7 +408,7 @@ query.generateResultQuery = function (isGraph) {
  * @returns {string} the node count cypher query
  */
 query.generateNodeCountQuery = function (countedNode) {
-    var queryElements = query.generateQueryElements(dataModel.getRootNode(), countedNode, query.getRelevantLinks(dataModel.getRootNode(), countedNode, dataModel.links), true, false);
+    var queryElements = query.generateQueryElements(dataModel.getRootNode(), countedNode, query.getRelevantLinks(dataModel.getRootNode(), countedNode, dataModel.links), true, true);
     var queryMatchElements = queryElements.matchElements,
         queryWhereElements = queryElements.whereElements,
         queryReturnElements = [],

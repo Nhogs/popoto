@@ -1458,10 +1458,10 @@ node.getAutoLoadValueNodes = function () {
  * Add a list of related value if not already found in node.
  * A value is defined with the following structure
  * {
-     *   id,
-     *   rel,
-     *   label
-     * }
+ *   id,
+ *   rel,
+ *   label
+ * }
  *
  * @param node
  * @param values
@@ -1561,10 +1561,10 @@ node.addRelatedValues = function (n, values, isNegative) {
  * Add a list of related value prefixed by a path of nodes.
  * A value is defined with the following structure
  * {
-     *   id,
-     *   rel,
-     *   label
-     * }
+ *   id,
+ *   rel,
+ *   label
+ * }
  *
  * @param node
  * @param relPath
@@ -1593,10 +1593,10 @@ node.addRelatedBranch = function (n, relPath, values, isNegative) {
 /**
  * A value is defined with the following structure
  * {
-     *   id,
-     *   rel,
-     *   label
-     * }
+ *   id,
+ *   rel,
+ *   label
+ * }
  *
  * @param node
  * @param values

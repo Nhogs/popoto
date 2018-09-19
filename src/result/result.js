@@ -12,6 +12,7 @@ result.resultCountListeners = [];
 result.resultListeners = [];
 result.graphResultListeners = [];
 result.RESULTS_PAGE_SIZE = 10;
+result.TOTAL_COUNT = false;
 
 /**
  * Register a listener to the result count event.
@@ -72,6 +73,8 @@ result.parseGraphResultData = function (data) {
 
 result.updateResults = function () {
     if (result.hasChanged) {
+        var resultsIndex = {};
+        var index = 0;
 
         // Abort any old running request before starting a new one
         if (result.resultsXhr !== undefined) {
@@ -90,6 +93,7 @@ result.updateResults = function () {
                 }
             ]
         };
+        resultsIndex["results"] = index++;
 
         // Add Graph result query if listener found
         if (result.graphResultListeners.length > 0) {
@@ -102,6 +106,18 @@ result.updateResults = function () {
                     "parameters": graphQuery.parameters,
                     "resultDataContents": ["row", "graph"]
                 });
+            resultsIndex["graph"] = index++;
+        }
+
+        if (result.TOTAL_COUNT === true && result.resultCountListeners.length > 0) {
+            var nodeCountQuery = query.generateNodeCountQuery(dataModel.getRootNode());
+            postData.statements.push(
+                {
+                    "statement": nodeCountQuery.statement,
+                    "parameters": nodeCountQuery.parameters
+                }
+            );
+            resultsIndex["total"] = index++;
         }
 
         logger.info("Results ==>");
@@ -112,7 +128,7 @@ result.updateResults = function () {
 
                 var parsedData = rest.response.parse(response);
 
-                var resultObjects = parsedData[0].map(function (d, i) {
+                var resultObjects = parsedData[resultsIndex["results"]].map(function (d, i) {
                     return {
                         "resultIndex": i,
                         "label": dataModel.getRootNode().label,
@@ -121,6 +137,15 @@ result.updateResults = function () {
                 });
 
                 result.lastResults = resultObjects;
+
+                if (resultsIndex.hasOwnProperty("total")) {
+                    var count = parsedData[resultsIndex["total"]][0].count;
+
+                    // Notify listeners
+                    result.resultCountListeners.forEach(function (listener) {
+                        listener(count);
+                    });
+                }
 
                 // Notify listeners
                 result.resultListeners.forEach(function (listener) {

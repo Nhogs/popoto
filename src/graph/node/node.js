@@ -1362,20 +1362,28 @@ node.addValue = function (nodeIds, displayAttributeValue) {
 node.removeValue = function (n, value) {
     var isAnyChangeDone = false;
 
-    // Remove values having same constraintAttributeValue
+    node.collapseNode(n);
+
     for (var j = n.value.length - 1; j >= 0; j--) {
         if (n.value[j] === value) {
-            node.collapseNode(n);
             n.value.splice(j, 1);
 
-            // Add values back in data
-            // Not needed as node is collapsed and if clicked data will be reloaded
-            // for (var k = 0; k < removedValues.length; k++) {
-            //     node.data.push(removedValues[k].attributes);
-            // }
             isAnyChangeDone = true;
         }
     }
+    return isAnyChangeDone;
+};
+
+node.removeValues = function (n) {
+    var isAnyChangeDone = false;
+
+    node.collapseNode(n);
+
+    if (n.value !== undefined && n.value.length > 0) {
+        n.value.length = 0;
+        isAnyChangeDone = true;
+    }
+
     return isAnyChangeDone
 };
 
@@ -1816,7 +1824,7 @@ node.removeNode = function (n) {
         willChangeResults = willChangeResults || rc;
     });
 
-    // Remove links from model
+    // Remove links to nodes from model
     for (var i = dataModel.links.length - 1; i >= 0; i--) {
         if (dataModel.links[i].target === n) {
             dataModel.links.splice(i, 1);
@@ -1826,6 +1834,58 @@ node.removeNode = function (n) {
     dataModel.nodes.splice(dataModel.nodes.indexOf(n), 1);
 
     return willChangeResults;
+};
+
+/**
+ * Remove empty branches containing a node.
+ *
+ * @param node the node to remove.
+ * @return true if node have been removed
+ */
+node.removeEmptyBranches = function (n) {
+    var hasValues = n.hasOwnProperty("value") && n.value.length > 0;
+
+    var childrenLinks = dataModel.links.filter(function (l) {
+        return l.source === n;
+    });
+
+    childrenLinks.forEach(function (l) {
+        var hasRemainingNodes = !node.removeEmptyBranches(l.target);
+        hasValues = hasValues || hasRemainingNodes;
+    });
+
+    if (!hasValues) {
+        // Remove links to node from model
+        for (var i = dataModel.links.length - 1; i >= 0; i--) {
+            if (dataModel.links[i].target === n) {
+                dataModel.links.splice(i, 1);
+            }
+        }
+
+        dataModel.nodes.splice(dataModel.nodes.indexOf(n), 1);
+    }
+
+    return !hasValues;
+};
+
+/**
+ * Get in the parent nodes the closest one to the root.
+ *
+ * @param n the node to start from.
+ * @return {*} the trunk node or the node in parameters if not found.
+ */
+node.getTrunkNode = function (n) {
+
+    for (var i = 0; i < dataModel.links.length; i++) {
+        var l = dataModel.links[i];
+        if (l.target === n) {
+            if (l.source !== graph.getRootNode()) {
+                return node.getTrunkNode(l.source);
+            }
+        }
+    }
+
+    return n;
 };
 
 /**

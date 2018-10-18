@@ -140,6 +140,7 @@ node.updateCount = function () {
     logger.info("Count nodes ==>");
     node.updateCountXhr = rest.post(
         {
+            "description": "Count nodes",
             "statements": statements
         })
         .done(function (response) {
@@ -203,6 +204,7 @@ node.updateAutoLoadValues = function () {
         logger.info("AutoLoadValue ==>");
         rest.post(
             {
+                "description": "Auto load values",
                 "statements": statements
             })
             .done(function (response) {
@@ -1158,6 +1160,7 @@ node.chooseNodeClick = function (clickedNode) {
             var nodeValueQuery = query.generateNodeValueQuery(clickedNode);
             rest.post(
                 {
+                    "description": "Node values with label \"" + clickedNode.label + "\"",
                     "statements": [
                         {
                             "statement": nodeValueQuery.statement,
@@ -1515,6 +1518,7 @@ node.addRelatedValues = function (n, values, isNegative) {
     logger.info("addRelatedValues ==>");
     rest.post(
         {
+            "description": "Add related value",
             "statements": statements
         })
         .done(function (response) {
@@ -1745,6 +1749,7 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
         logger.info("Relations (" + n.label + ") ==>");
         rest.post(
             {
+                "description": "Relations on label \"" + n.label + "\"",
                 "statements": [
                     {
                         "statement": nodeRelationQuery.statement,

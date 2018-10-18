@@ -85,6 +85,7 @@ result.updateResults = function () {
         result.lastGeneratedQuery = resultQuery;
 
         var postData = {
+            "description":"Get results",
             "statements": [
                 {
                     "statement": resultQuery.statement,

@@ -140,6 +140,7 @@ node.updateCount = function () {
     logger.info("Count nodes ==>");
     node.updateCountXhr = rest.post(
         {
+            "description": "Count nodes",
             "statements": statements
         })
         .done(function (response) {
@@ -203,6 +204,7 @@ node.updateAutoLoadValues = function () {
         logger.info("AutoLoadValue ==>");
         rest.post(
             {
+                "description": "Auto load values",
                 "statements": statements
             })
             .done(function (response) {
@@ -1158,6 +1160,7 @@ node.chooseNodeClick = function (clickedNode) {
             var nodeValueQuery = query.generateNodeValueQuery(clickedNode);
             rest.post(
                 {
+                    "description": "Node values with label \"" + clickedNode.label + "\"",
                     "statements": [
                         {
                             "statement": nodeValueQuery.statement,
@@ -1356,7 +1359,7 @@ node.addValue = function (nodeIds, displayAttributeValue) {
  * Remove a value from a node.
  * If the value is not found nothing is done.
  *
- * @param node
+ * @param n
  * @param value
  */
 node.removeValue = function (n, value) {
@@ -1471,7 +1474,7 @@ node.getAutoLoadValueNodes = function () {
  *   label
  * }
  *
- * @param node
+ * @param n
  * @param values
  * @param isNegative
  */
@@ -1515,6 +1518,7 @@ node.addRelatedValues = function (n, values, isNegative) {
     logger.info("addRelatedValues ==>");
     rest.post(
         {
+            "description": "Add related value",
             "statements": statements
         })
         .done(function (response) {
@@ -1574,7 +1578,7 @@ node.addRelatedValues = function (n, values, isNegative) {
  *   label
  * }
  *
- * @param node
+ * @param n
  * @param relPath
  * @param values
  * @param isNegative
@@ -1606,7 +1610,7 @@ node.addRelatedBranch = function (n, relPath, values, isNegative) {
  *   label
  * }
  *
- * @param node
+ * @param n
  * @param values
  */
 node.filterExistingValues = function (n, values) {
@@ -1710,7 +1714,7 @@ node.expandNode = function (clickedNode) {
 /**
  * Fetches the list of relationships of a node and store them in the relationships property.
  *
- * @param node the node to fetch the relationships.
+ * @param n the node to fetch the relationships.
  * @param callback
  * @param directionAngle
  */
@@ -1745,6 +1749,7 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
         logger.info("Relations (" + n.label + ") ==>");
         rest.post(
             {
+                "description": "Relations on label \"" + n.label + "\"",
                 "statements": [
                     {
                         "statement": nodeRelationQuery.statement,
@@ -1784,7 +1789,7 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
 /**
  * Expands all the relationships available in node.
  *
- * @param node
+ * @param n
  * @param callback
  */
 node.expandRelationships = function (n, callback) {
@@ -1809,7 +1814,7 @@ node.expandRelationships = function (n, callback) {
 /**
  * Remove a node and its relationships (recursively) from the graph.
  *
- * @param node the node to remove.
+ * @param n the node to remove.
  */
 node.removeNode = function (n) {
     var willChangeResults = n.hasOwnProperty("value") && n.value.length > 0;
@@ -1839,7 +1844,7 @@ node.removeNode = function (n) {
 /**
  * Remove empty branches containing a node.
  *
- * @param node the node to remove.
+ * @param n the node to remove.
  * @return true if node have been removed
  */
 node.removeEmptyBranches = function (n) {

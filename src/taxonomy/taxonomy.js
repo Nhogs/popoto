@@ -101,6 +101,7 @@ taxonomy.updateCount = function (taxonomyData) {
         logger.info("Count taxonomies ==>");
         rest.post(
             {
+                "description": "Count taxonomies",
                 "statements": statements
             })
             .done(function (response) {

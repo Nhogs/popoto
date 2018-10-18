@@ -12,6 +12,7 @@ query.USE_PARENT_RELATION = false;
 query.USE_RELATION_DIRECTION = true;
 query.COLLECT_RELATIONS_WITH_VALUES = false;
 query.prefilter = "";
+query.prefilterParameters = {};
 
 /**
  * Immutable constant object to identify Neo4j internal ID
@@ -360,7 +361,8 @@ query.generateResultQuery = function (isGraph) {
         queryEndElements.push("ORDER BY " + resultOrderByAttribute + " " + order);
     }
 
-    queryEndElements.push("LIMIT " + query.MAX_RESULTS_COUNT);
+    queryParameters.limit = query.MAX_RESULTS_COUNT;
+    queryEndElements.push("LIMIT $limit");
 
     var resultAttributes = provider.node.getReturnAttributes(rootNode.label);
 
@@ -398,6 +400,10 @@ query.generateResultQuery = function (isGraph) {
 
     queryStructure.statement = query.prefilter + queryStructure.statement;
 
+    Object.keys(query.prefilterParameters).forEach(function (key) {
+        queryStructure.parameters[key] = query.prefilterParameters[key];
+    });
+
     return queryStructure;
 };
 
@@ -433,6 +439,10 @@ query.generateNodeCountQuery = function (countedNode) {
         returnElements: queryReturnElements,
         endElements: queryEndElements,
         parameters: queryParameters
+    });
+
+    Object.keys(query.prefilterParameters).forEach(function (key) {
+        queryStructure.parameters[key] = query.prefilterParameters[key];
     });
 
     return {
@@ -504,6 +514,10 @@ query.generateNodeValueQuery = function (targetNode) {
         parameters: queryParameters
     });
 
+    Object.keys(query.prefilterParameters).forEach(function (key) {
+        queryStructure.parameters[key] = query.prefilterParameters[key];
+    });
+
     return {
         statement: query.prefilter + queryStructure.statement,
         parameters: queryStructure.parameters
@@ -549,6 +563,10 @@ query.generateNodeRelationQuery = function (targetNode) {
         returnElements: queryReturnElements,
         endElements: queryEndElements,
         parameters: queryParameters
+    });
+
+    Object.keys(query.prefilterParameters).forEach(function (key) {
+        queryStructure.parameters[key] = query.prefilterParameters[key];
     });
 
     return {

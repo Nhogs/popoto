@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -54,7 +54,7 @@
     "jest-canvas-mock": "^1.1.0",
     "json2module": "^0.0.3",
     "rimraf": "^2.6.2",
-    "rollup": "^0.66.6",
+    "rollup": "^0.67.1",
     "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-node-resolve": "^3.4.0",
     "uglify-js": "^3.4.9",

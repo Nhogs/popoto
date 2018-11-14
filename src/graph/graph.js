@@ -263,7 +263,12 @@ graph.getSVGHeight = function () {
  * Function to call on SVG zoom event to update the svg transform attribute.
  */
 graph.rescale = function () {
-    graph.svg.attr("transform", d3.event.transform);
+    var transform = d3.event.transform;
+    if (isNaN(transform.x) || isNaN(transform.y) || isNaN(transform.k)) {
+        graph.svg.attr("transform", d3.zoomIdentity);
+    } else {
+        graph.svg.attr("transform", transform);
+    }
 };
 
 graph.CHARGE = -500;

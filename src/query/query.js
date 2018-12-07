@@ -356,9 +356,36 @@ query.generateResultQuery = function (isGraph) {
 
     // Sort results by specified attribute
     var resultOrderByAttribute = provider.node.getResultOrderByAttribute(rootNode.label);
-    if (resultOrderByAttribute) {
-        var order = provider.node.isResultOrderAscending(rootNode.label) ? "ASC" : "DESC";
-        queryEndElements.push("ORDER BY " + resultOrderByAttribute + " " + order);
+
+    if (resultOrderByAttribute !== undefined && resultOrderByAttribute !== null) {
+        var sorts = [];
+        var order = provider.node.isResultOrderAscending(rootNode.label);
+
+        var orders = [];
+        if (Array.isArray(order)) {
+            orders = order.map(function (v) {
+                return v ? "ASC" : "DESC";
+            });
+        } else {
+            orders.push(order ? "ASC" : "DESC");
+        }
+
+        if (Array.isArray(resultOrderByAttribute)) {
+            sorts = resultOrderByAttribute.map(function (ra) {
+                var index = resultOrderByAttribute.indexOf(ra);
+
+                if (index < orders.length) {
+                    return ra + " " + orders[index];
+                } else {
+                    return ra + " " + orders[orders.length - 1];
+                }
+            })
+
+        } else {
+            sorts.push(resultOrderByAttribute + " " + orders[0]);
+        }
+
+        queryEndElements.push("ORDER BY " + sorts.join(", "));
     }
 
     queryParameters.limit = query.MAX_RESULTS_COUNT;

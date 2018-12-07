@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`order by generation test array order by attr array order [born ASC, name DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born ASC, name DESC LIMIT $limit"`;
+
+exports[`order by generation test array order by attr array order [born DESC, name ASC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born DESC, name ASC LIMIT $limit"`;
+
+exports[`order by generation test array order by attr array order [born DESC, name DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born DESC, name DESC LIMIT $limit"`;
+
+exports[`order by generation test array order by attr array order [name ASC, born DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY name ASC, born DESC LIMIT $limit"`;
+
+exports[`order by generation test array order by attr default order [born ASC, name ASC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born ASC, name ASC LIMIT $limit"`;
+
+exports[`order by generation test array order by attr simple array order [born DESC, name DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born DESC, name DESC LIMIT $limit"`;
+
+exports[`order by generation test array order by attr simple order [born DESC, name DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born DESC, name DESC LIMIT $limit"`;
+
+exports[`order by generation test default order by (should be null and not generated in query) [] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born LIMIT $limit"`;
+
+exports[`order by generation test default order when attribute set [name ASC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY name ASC LIMIT $limit"`;
+
+exports[`order by generation test null order by (should not be generated in query) [] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born LIMIT $limit"`;
+
+exports[`order by generation test order by ascending [name ASC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY name ASC LIMIT $limit"`;
+
+exports[`order by generation test order by descending [name DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY name DESC LIMIT $limit"`;

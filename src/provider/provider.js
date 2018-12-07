@@ -798,7 +798,8 @@ provider.node.DEFAULT_PROVIDER = (
         "isValueOrderAscending": false,
 
         /**
-         * Defines the attribute used to order the results.
+         * Defines the attributes used to order the results.
+         * It can be an attribute name or a list of attribute names.
          *
          * Default value is "null" to disable order by.
          */
@@ -807,6 +808,8 @@ provider.node.DEFAULT_PROVIDER = (
         /**
          * Defines whether the result query order by is ascending, if false
          * order by will be descending.
+         * It can be a boolean value or a list of boolean to match the resultOrderByAttribute.
+         * If size of isResultOrderAscending < size of resultOrderByAttribute last value is used.
          *
          * Default value is true (ascending)
          */

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`one branch WHERE (NOT exists (path-to-branch)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one branch with one value WHERE (NOT exists (path-to-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`{Nid:$node_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch WHERE (NOT exists (path-to-long-branch)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with NOT value mid WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`{Nid:$node_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with value leaf WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`{Nid:$node2_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with value mid WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node1.Nid = $node1_Nid AND (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;

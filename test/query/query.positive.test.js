@@ -493,3 +493,89 @@ describe("one long-branch with two values", function () {
     });
 });
 
+describe("one very long-branch with value leaf", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            },
+            {
+                id: 1,
+                label: "Label1",
+                internalLabel: "label1",
+                isNegative: false,
+                type: 1,
+            },
+            {
+                id: 2,
+                label: "Label2",
+                internalLabel: "label2",
+                type: 1,
+            },
+            {
+                id: 3,
+                label: "Label3",
+                internalLabel: "label3",
+                value: [{label: "Label3", attributes: {Nid: "Vid3", Nname: "Vname3"}}],
+                type: 1,
+            }
+        ];
+
+        dataModel.links = [
+            {
+                id: 1,
+                label: "LINKED_TO1",
+                source: dataModel.nodes[0],
+                target: dataModel.nodes[1],
+                type: 1
+            },
+            {
+                id: 2,
+                label: "LINKED_TO2",
+                source: dataModel.nodes[1],
+                target: dataModel.nodes[2],
+                type: 1
+            },
+            {
+                id: 2,
+                label: "LINKED_TO3",
+                source: dataModel.nodes[2],
+                target: dataModel.nodes[3],
+                type: 1
+            }
+        ];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Label1": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            },
+            "Label2": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            },
+            "Label3": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+

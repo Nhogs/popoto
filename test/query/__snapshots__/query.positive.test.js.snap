@@ -65,6 +65,15 @@ Object {
 }
 `;
 
+exports[`one very long-branch with value leaf generation 1`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)-[r1:\`LINKED_TO2\`]->(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE label3.Nid = $label3_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one very long-branch with value leaf generation 2`] = `
+Object {
+  "label3_Nid": "Vid3",
+  "limit": 100,
+}
+`;
+
 exports[`root only generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
 
 exports[`root only generation 2`] = `

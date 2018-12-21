@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 1`] = `"MATCH (root:\`Root\`), (label1:\`Label1\`)-[r0:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN label2.Nname AS Nname, label2.Nid AS Nid, count(DISTINCT root.id) AS count ORDER BY count DESC LIMIT 100"`;
+
+exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 2`] = `
+Object {
+  "label3_Nid": "Vid3",
+}
+`;
+
+exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 3`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)-[r1:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN label3.Nname AS Nname, label3.Nid AS Nid, count(DISTINCT root.id) AS count ORDER BY count DESC LIMIT 100"`;
+
+exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 4`] = `
+Object {
+  "label3_Nid": "Vid3",
+}
+`;
+
+exports[`root only generateNodeValueQuery 1`] = `"MATCH (root:\`Root\`) RETURN root.name AS name, root.id AS id, count(DISTINCT root.id) AS count ORDER BY count DESC LIMIT 100"`;
+
+exports[`root only generateNodeValueQuery 2`] = `Object {}`;

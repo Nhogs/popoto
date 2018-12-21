@@ -493,12 +493,19 @@ query.generateResultQuery = function (isGraph) {
  * @returns {string} the node count cypher query
  */
 query.generateNodeCountQuery = function (countedNode) {
+    var negativeElements = query.generateNegativeQueryElements();
     var queryElements = query.generateQueryElements(dataModel.getRootNode(), countedNode, query.getRelevantLinks(dataModel.getRootNode(), countedNode, dataModel.links), true, true);
     var queryMatchElements = queryElements.matchElements,
-        queryWhereElements = queryElements.whereElements,
+        queryWhereElements = queryElements.whereElements.concat(negativeElements.whereElements),
         queryReturnElements = [],
         queryEndElements = [],
         queryParameters = queryElements.parameters;
+
+    for (var prop in negativeElements.parameters) {
+        if (negativeElements.parameters.hasOwnProperty(prop)) {
+            queryParameters[prop] = negativeElements.parameters[prop];
+        }
+    }
 
     var countAttr = provider.node.getConstraintAttribute(countedNode.label);
 
@@ -537,14 +544,20 @@ query.generateNodeCountQuery = function (countedNode) {
  * @returns {string} the query to execute to get all the values of targetNode corresponding to the graph.
  */
 query.generateNodeValueQuery = function (targetNode) {
-
+    var negativeElements = query.generateNegativeQueryElements();
     var rootNode = dataModel.getRootNode();
     var queryElements = query.generateQueryElements(rootNode, targetNode, query.getRelevantLinks(rootNode, targetNode, dataModel.links), true, false);
     var queryMatchElements = queryElements.matchElements,
-        queryWhereElements = queryElements.whereElements,
+        queryWhereElements = queryElements.whereElements.concat(negativeElements.whereElements),
         queryReturnElements = [],
         queryEndElements = [],
         queryParameters = queryElements.parameters;
+
+    for (var prop in negativeElements.parameters) {
+        if (negativeElements.parameters.hasOwnProperty(prop)) {
+            queryParameters[prop] = negativeElements.parameters[prop];
+        }
+    }
 
     // Sort results by specified attribute
     var valueOrderByAttribute = provider.node.getValueOrderByAttribute(targetNode.label);

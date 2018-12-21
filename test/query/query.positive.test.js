@@ -2,6 +2,79 @@ import provider from "../../src/provider/provider";
 import query from '../../src/query/query.js'
 import dataModel from "../../src/datamodel/dataModel";
 
+describe("root only", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            }
+        ];
+
+        dataModel.links = [];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
+describe("root only with value", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0,
+                value: [{label: "Root", attributes: {id: "Rid", name: "Rname"}}],
+            }
+        ];
+
+        dataModel.links = [];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
 describe("one branch", function () {
     beforeEach(() => {
         dataModel.nodes = [
@@ -16,7 +89,7 @@ describe("one branch", function () {
                 label: "Node",
                 internalLabel: "node",
                 type: 1,
-                isNegative: true
+                isNegative: false
             }
         ];
 
@@ -46,7 +119,7 @@ describe("one branch", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-branch))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
@@ -68,7 +141,7 @@ describe("one branch with one value", function () {
                 internalLabel: "node",
                 type: 1,
                 value: [{label: "Node", attributes: {Nid: "Vid", Nname: "Vname"}}],
-                isNegative: true
+                isNegative: false
             }
         ];
 
@@ -98,7 +171,7 @@ describe("one branch with one value", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-branch-with-value))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
@@ -123,7 +196,7 @@ describe("one branch with two value", function () {
                     {label: "Node", attributes: {Nid: "Vid", Nname: "Vname"}},
                     {label: "Node", attributes: {Nid: "Vid2", Nname: "Vname2"}}
                 ],
-                isNegative: true
+                isNegative: false
             }
         ];
 
@@ -153,7 +226,7 @@ describe("one branch with two value", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-branch-with-value))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
@@ -180,7 +253,7 @@ describe("one long-branch", function () {
                 label: "Node",
                 internalLabel: "node2",
                 type: 1,
-                isNegative: true
+                isNegative: false
             }
         ];
 
@@ -217,7 +290,7 @@ describe("one long-branch", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-long-branch))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
@@ -245,7 +318,7 @@ describe("one long-branch with value leaf", function () {
                 internalLabel: "node2",
                 value: [{label: "Node", attributes: {Nid: "Vid", Nname: "Vname"}}],
                 type: 1,
-                isNegative: true
+                isNegative: false
             }
         ];
 
@@ -282,7 +355,7 @@ describe("one long-branch with value leaf", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-long-branch-with-value))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
@@ -310,7 +383,7 @@ describe("one long-branch with value mid", function () {
                 label: "Node",
                 internalLabel: "node2",
                 type: 1,
-                isNegative: true
+                isNegative: false
             }
         ];
 
@@ -347,14 +420,14 @@ describe("one long-branch with value mid", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-long-branch-with-value))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
     });
 });
 
-describe("one long-branch with value mid and leaf", function () {
+describe("one long-branch with two values", function () {
     beforeEach(() => {
         dataModel.nodes = [
             {
@@ -368,6 +441,7 @@ describe("one long-branch with value mid and leaf", function () {
                 label: "Node",
                 internalLabel: "node1",
                 value: [{label: "Node", attributes: {Nid: "Vid", Nname: "Vname"}}],
+                isNegative: false,
                 type: 1,
             },
             {
@@ -376,7 +450,6 @@ describe("one long-branch with value mid and leaf", function () {
                 internalLabel: "node2",
                 value: [{label: "Node", attributes: {Nid: "Vid2", Nname: "Vname2"}}],
                 type: 1,
-                isNegative: true
             }
         ];
 
@@ -413,72 +486,7 @@ describe("one long-branch with value mid and leaf", function () {
         delete provider.node.Provider;
     });
 
-    test("WHERE (NOT exists (path-to-long-branch-with-value))", () => {
-        var generateResultQuery = query.generateResultQuery(false);
-        expect(generateResultQuery.statement).toMatchSnapshot();
-        expect(generateResultQuery.parameters).toMatchSnapshot();
-    });
-});
-
-describe("one long-branch with NOT value mid", function () {
-    beforeEach(() => {
-        dataModel.nodes = [
-            {
-                id: 0,
-                label: "Root",
-                internalLabel: "root",
-                type: 0
-            },
-            {
-                id: 1,
-                label: "Node",
-                internalLabel: "node1",
-                value: [{label: "Node", attributes: {Nid: "Vid", Nname: "Vname"}}],
-                isNegative: true,
-                type: 1,
-            },
-            {
-                id: 3,
-                label: "Node",
-                internalLabel: "node2",
-                type: 1,
-            }
-        ];
-
-        dataModel.links = [
-            {
-                id: 1,
-                label: "LINKED_TO1",
-                source: dataModel.nodes[0],
-                target: dataModel.nodes[1],
-                type: 1
-            },
-            {
-                id: 2,
-                label: "LINKED_TO2",
-                source: dataModel.nodes[1],
-                target: dataModel.nodes[2],
-                type: 1
-            }
-        ];
-
-        provider.node.Provider = {
-            "Root": {
-                returnAttributes: ["name", "id"],
-                constraintAttribute: "id",
-            },
-            "Node": {
-                returnAttributes: ["Nname", "Nid"],
-                constraintAttribute: "Nid",
-            }
-        };
-    });
-
-    afterEach(() => {
-        delete provider.node.Provider;
-    });
-
-    test("WHERE (NOT exists (path-to-long-branch-with-value))", () => {
+    test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();

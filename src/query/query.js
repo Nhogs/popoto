@@ -199,9 +199,9 @@ query.generateNodeValueConstraints = function (node, useCustomConstraints) {
                     });
 
                     if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                        whereElements.push("ID(" + node.internalLabel + ") IN " + "{`" + paramName + "`}");
+                        whereElements.push("ID(" + node.internalLabel + ") IN " + "$" + paramName);
                     } else {
-                        whereElements.push(node.internalLabel + "." + constraintAttr + " IN " + "{`" + paramName + "`}");
+                        whereElements.push(node.internalLabel + "." + constraintAttr + " IN " + "$" + paramName);
                     }
                 } else {
                     var count = 0;
@@ -233,9 +233,9 @@ query.generateNodeValueConstraints = function (node, useCustomConstraints) {
                     var operator = "=";
 
                     if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                        whereElements.push("ID(" + node.internalLabel + ") " + operator + " " + "{`" + paramName + "`}");
+                        whereElements.push("ID(" + node.internalLabel + ") " + operator + " " + "$" + paramName);
                     } else {
-                        whereElements.push(node.internalLabel + "." + constraintAttr + " " + operator + " " + "{`" + paramName + "`}");
+                        whereElements.push(node.internalLabel + "." + constraintAttr + " " + operator + " " + "$" + paramName);
                     }
                 }
             }

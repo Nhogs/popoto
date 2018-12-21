@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`one branch WHERE (NOT exists (path-to-branch)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one branch WHERE (NOT exists (path-to-branch)) 2`] = `
+Object {
+  "limit": 100,
+}
+`;
+
+exports[`one branch generateNegativeNodeValueConstraints generateResultQuery 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists (root)-[]->()) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one branch generateNegativeNodeValueConstraints generateResultQuery 2`] = `
+Object {
+  "customParam": "Custom Param Value",
+  "limit": 100,
+}
+`;
+
+exports[`one branch with one value WHERE (NOT exists (path-to-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`{Nid:$node_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one branch with one value WHERE (NOT exists (path-to-branch-with-value)) 2`] = `
+Object {
+  "limit": 100,
+  "node_Nid": "Vid",
+}
+`;
+
+exports[`one branch with two value WHERE (NOT exists (path-to-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`{Nid:$node_Nid_0}))) AND (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`{Nid:$node_Nid_1}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one branch with two value WHERE (NOT exists (path-to-branch-with-value)) 2`] = `
+Object {
+  "limit": 100,
+  "node_Nid_0": "Vid",
+  "node_Nid_1": "Vid2",
+}
+`;
+
+exports[`one long-branch WHERE (NOT exists (path-to-long-branch)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch WHERE (NOT exists (path-to-long-branch)) 2`] = `
+Object {
+  "limit": 100,
+}
+`;
+
+exports[`one long-branch with NOT value mid WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node\`{Nid:$node1_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with NOT value mid WHERE (NOT exists (path-to-long-branch-with-value)) 2`] = `
+Object {
+  "limit": 100,
+  "node1_Nid": "Vid",
+}
+`;
+
+exports[`one long-branch with value leaf WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`{Nid:$node2_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with value leaf WHERE (NOT exists (path-to-long-branch-with-value)) 2`] = `
+Object {
+  "limit": 100,
+  "node2_Nid": "Vid",
+}
+`;
+
+exports[`one long-branch with value mid WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node1.Nid = $node1_Nid AND (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with value mid WHERE (NOT exists (path-to-long-branch-with-value)) 2`] = `
+Object {
+  "limit": 100,
+  "node1_Nid": "Vid",
+}
+`;
+
+exports[`one long-branch with value mid and leaf WHERE (NOT exists (path-to-long-branch-with-value)) 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node1.Nid = $node1_Nid AND (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`{Nid:$node2_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one long-branch with value mid and leaf WHERE (NOT exists (path-to-long-branch-with-value)) 2`] = `
+Object {
+  "limit": 100,
+  "node1_Nid": "Vid",
+  "node2_Nid": "Vid2",
+}
+`;
+
+exports[`one very long-branch with value leaf and reverse order generation 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`one very long-branch with value leaf and reverse order generation 2`] = `
+Object {
+  "label3_Nid": "Vid3",
+  "limit": 100,
+}
+`;

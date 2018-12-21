@@ -2,10 +2,6 @@ import provider from "../../src/provider/provider";
 import query from '../../src/query/query.js'
 import dataModel from "../../src/datamodel/dataModel";
 
-test("MAX_RESULTS_COUNT Should be initialized", () => {
-    expect(query.MAX_RESULTS_COUNT).toEqual(100);
-});
-
 describe("order by generation", function () {
     beforeEach(() => {
         dataModel.nodes = [

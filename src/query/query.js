@@ -51,6 +51,93 @@ query.generateTaxonomyCountQuery = function (label) {
     }
 };
 
+query.generateNegativeQueryElements = function () {
+    var whereElements = [];
+    var parameters = {};
+
+    var negativeNodes = dataModel.nodes.filter(function (n) {
+        return n.isNegative === true;
+    });
+
+    negativeNodes.forEach(
+        function (n) {
+            if (provider.node.getGenerateNegativeNodeValueConstraints(n) !== undefined) {
+                var custom = provider.node.getGenerateNegativeNodeValueConstraints(n)(n);
+                whereElements = whereElements.concat(custom.whereElements);
+                for (var prop in custom.parameters) {
+                    if (custom.parameters.hasOwnProperty(prop)) {
+                        parameters[prop] = custom.parameters[prop];
+                    }
+                }
+            } else {
+                var linksToRoot = query.getLinksToRoot(n, dataModel.links);
+
+                var i = linksToRoot.length - 1;
+                var statement = "(NOT exists(";
+
+                statement += "(" + dataModel.getRootNode().internalLabel + ")";
+
+                while (i >= 0) {
+                    var l = linksToRoot[i];
+                    var targetNode = l.target;
+
+                    if (targetNode.isParentRelReverse === true && query.USE_RELATION_DIRECTION === true) {
+                        statement += "<-";
+                    } else {
+                        statement += "-";
+                    }
+
+                    statement += "[:`" + l.label + "`]";
+
+                    if (targetNode.isParentRelReverse !== true && query.USE_RELATION_DIRECTION === true) {
+                        statement += "->";
+                    } else {
+                        statement += "-";
+                    }
+
+                    if (targetNode === n && targetNode.value !== undefined && targetNode.value.length > 0) {
+                        var constraintAttr = provider.node.getConstraintAttribute(targetNode.label);
+                        var paramName = targetNode.internalLabel + "_" + constraintAttr;
+
+                        if (targetNode.value.length > 1) {
+                            for (var pid = 0; pid < targetNode.value.length; pid++) {
+                                parameters[paramName + "_" + pid] = targetNode.value[pid].attributes[constraintAttr];
+                            }
+
+                            statement += "(:`" + targetNode.label + "`{" + constraintAttr + ":$x$})";
+                        } else {
+                            parameters[paramName] = targetNode.value[0].attributes[constraintAttr];
+                            statement += "(:`" + targetNode.label + "`{" + constraintAttr + ":$" + paramName + "})";
+                        }
+                    } else {
+                        statement += "(:`" + targetNode.label + "`)";
+                    }
+
+                    i--;
+                }
+
+                statement += "))";
+
+                if (n.value !== undefined && n.value.length > 1) {
+                    var cAttr = provider.node.getConstraintAttribute(n.label);
+                    var pn = n.internalLabel + "_" + cAttr;
+
+                    for (var nid = 0; nid < targetNode.value.length; nid++) {
+                        whereElements.push(statement.replace("$x$", "$" + pn + "_" + nid));
+                    }
+                } else {
+                    whereElements.push(statement);
+                }
+            }
+        }
+    );
+
+    return {
+        "whereElements": whereElements,
+        "parameters": parameters
+    };
+};
+
 /**
  * Generate Cypher query match and where elements from root node, selected node and a set of the graph links.
  *
@@ -108,45 +195,23 @@ query.generateQueryElements = function (rootNode, selectedNode, links, isConstra
             whereElements.push(predefinedConstraint.replace(new RegExp("\\$identifier", 'g'), targetNode.internalLabel));
         });
 
-        if (targetNode !== selectedNode && targetNode.isNegative === true) {
-            if (targetNode.value !== undefined && targetNode.value.length > 0) {
-                var count = 0;
-
-                targetNode.value.forEach(function (v) {
-                    var constraintAttr = provider.node.getConstraintAttribute(v.label);
-                    var param;
-                    if (count === 0) {
-                        param = targetNode.internalLabel + "_" + constraintAttr;
-                        count++;
-                    } else {
-                        param = targetNode.internalLabel + "_" + constraintAttr + count++;
-                    }
-
-                    whereElements.push("(NOT (" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[:`" + l.label + "`]" + rel + "(:`" + targetNode.label + "`{" + constraintAttr + ":$" + param + "}) )");
-                });
-            } else {
-                whereElements.push("(NOT (" + sourceNode.internalLabel + ":`" + sourceNode.label + "`)-[:`" + l.label + "`]" + rel + "(:`" + targetNode.label + "`) )");
-            }
-        } else {
-            if (query.COLLECT_RELATIONS_WITH_VALUES && targetNode === selectedNode) {
-                returnElements.push("COLLECT(" + relIdentifier + ") AS incomingRels");
-            }
-
-            var sourceLabelStatement = "";
-
-            if (!useCustomConstraints || provider.node.getGenerateNodeValueConstraints(sourceNode) === undefined) {
-                sourceLabelStatement = ":`" + sourceNode.label + "`";
-            }
-
-            var targetLabelStatement = "";
-
-            if (!useCustomConstraints || provider.node.getGenerateNodeValueConstraints(targetNode) === undefined) {
-                targetLabelStatement = ":`" + targetNode.label + "`";
-            }
-
-            matchElements.push("(" + sourceNode.internalLabel + sourceLabelStatement + ")-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + targetLabelStatement + ")");
+        if (query.COLLECT_RELATIONS_WITH_VALUES && targetNode === selectedNode) {
+            returnElements.push("COLLECT(" + relIdentifier + ") AS incomingRels");
         }
 
+        var sourceLabelStatement = "";
+
+        if (!useCustomConstraints || provider.node.getGenerateNodeValueConstraints(sourceNode) === undefined) {
+            sourceLabelStatement = ":`" + sourceNode.label + "`";
+        }
+
+        var targetLabelStatement = "";
+
+        if (!useCustomConstraints || provider.node.getGenerateNodeValueConstraints(targetNode) === undefined) {
+            targetLabelStatement = ":`" + targetNode.label + "`";
+        }
+
+        matchElements.push("(" + sourceNode.internalLabel + sourceLabelStatement + ")-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + targetLabelStatement + ")");
 
         if (targetNode !== selectedNode && (isConstraintNeeded || targetNode.immutable)) {
             var nodeValueConstraints = query.generateNodeValueConstraints(targetNode, useCustomConstraints);
@@ -181,47 +246,32 @@ query.generateNodeValueConstraints = function (node, useCustomConstraints) {
         var parameters = {}, whereElements = [];
         if (node.value !== undefined && node.value.length > 0) {
             var constraintAttr = provider.node.getConstraintAttribute(node.label);
-            var paramName = node.internalLabel + "_" + constraintAttr;
+            var paramName;
+            if (constraintAttr === query.NEO4J_INTERNAL_ID) {
+                paramName = node.internalLabel + "_internalID";
+            } else {
+                paramName = node.internalLabel + "_" + constraintAttr;
+            }
 
             if (node.value.length > 1) { // Generate IN constraint
-                if (node.isNegative === undefined || !node.isNegative) {
-                    parameters[paramName] = [];
+                parameters[paramName] = [];
 
-                    node.value.forEach(function (value) {
-                        var constraintValue;
-                        if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                            constraintValue = value.internalID
-                        } else {
-                            constraintValue = value.attributes[constraintAttr];
-                        }
-
-                        parameters[paramName].push(constraintValue);
-                    });
-
+                node.value.forEach(function (value) {
+                    var constraintValue;
                     if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                        whereElements.push("ID(" + node.internalLabel + ") IN " + "$" + paramName);
+                        constraintValue = value.internalID
                     } else {
-                        whereElements.push(node.internalLabel + "." + constraintAttr + " IN " + "$" + paramName);
+                        constraintValue = value.attributes[constraintAttr];
                     }
+
+                    parameters[paramName].push(constraintValue);
+                });
+
+                if (constraintAttr === query.NEO4J_INTERNAL_ID) {
+                    whereElements.push("ID(" + node.internalLabel + ") IN " + "$" + paramName);
                 } else {
-                    var count = 0;
-
-                    node.value.forEach(function (value) {
-                        var constraintValue;
-                        if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                            constraintValue = value.internalID
-                        } else {
-                            constraintValue = value.attributes[constraintAttr];
-                        }
-                        if (count === 0) {
-                            parameters[paramName] = constraintValue;
-                            count++;
-                        } else {
-                            parameters[paramName + count++] = constraintValue;
-                        }
-                    });
+                    whereElements.push(node.internalLabel + "." + constraintAttr + " IN " + "$" + paramName);
                 }
-
             } else { // Generate = constraint
                 if (constraintAttr === query.NEO4J_INTERNAL_ID) {
                     parameters[paramName] = node.value[0].internalID;
@@ -229,14 +279,12 @@ query.generateNodeValueConstraints = function (node, useCustomConstraints) {
                     parameters[paramName] = node.value[0].attributes[constraintAttr];
                 }
 
-                if (node.isNegative === undefined || !node.isNegative) {
-                    var operator = "=";
+                var operator = "=";
 
-                    if (constraintAttr === query.NEO4J_INTERNAL_ID) {
-                        whereElements.push("ID(" + node.internalLabel + ") " + operator + " " + "$" + paramName);
-                    } else {
-                        whereElements.push(node.internalLabel + "." + constraintAttr + " " + operator + " " + "$" + paramName);
-                    }
+                if (constraintAttr === query.NEO4J_INTERNAL_ID) {
+                    whereElements.push("ID(" + node.internalLabel + ") " + operator + " " + "$" + paramName);
+                } else {
+                    whereElements.push(node.internalLabel + "." + constraintAttr + " " + operator + " " + "$" + paramName);
                 }
             }
         }
@@ -254,20 +302,17 @@ query.generateNodeValueConstraints = function (node, useCustomConstraints) {
  *
  * @param rootNode root node of the graph.
  * @param targetNode node in the graph target of the query.
- * @param initialLinks list of links repreasenting the graph to filter.
+ * @param initialLinks list of links representing the graph to filter.
  * @returns {Array} list of relevant links.
  */
 query.getRelevantLinks = function (rootNode, targetNode, initialLinks) {
-
     var links = initialLinks.slice();
-    var filteredLinks = [];
     var finalLinks = [];
 
     // Filter all links to keep only those containing a value or being the selected node.
-    links.forEach(function (l) {
-        if ((l.target.value !== undefined && l.target.value.length > 0) || l.target === targetNode || l.target.isNegative) {
-            filteredLinks.push(l);
-        }
+    // Negatives nodes are handled separately.
+    var filteredLinks = links.filter(function (l) {
+        return l.target === targetNode || ((l.target.value !== undefined && l.target.value.length > 0) && (!l.target.isNegative === true));
     });
 
     // All the filtered links are removed from initial links list.
@@ -346,13 +391,20 @@ query.getLinksToRoot = function (node, links) {
  */
 query.generateResultQuery = function (isGraph) {
     var rootNode = dataModel.getRootNode();
+    var negativeElements = query.generateNegativeQueryElements();
     var queryElements = query.generateQueryElements(rootNode, rootNode, query.getRelevantLinks(rootNode, rootNode, dataModel.links), true, true);
     var queryMatchElements = queryElements.matchElements,
-        queryWhereElements = queryElements.whereElements,
+        queryWhereElements = queryElements.whereElements.concat(negativeElements.whereElements),
         queryRelationElements = queryElements.relationElements,
         queryReturnElements = [],
         queryEndElements = [],
         queryParameters = queryElements.parameters;
+
+    for (var prop in negativeElements.parameters) {
+        if (negativeElements.parameters.hasOwnProperty(prop)) {
+            queryParameters[prop] = negativeElements.parameters[prop];
+        }
+    }
 
     // Sort results by specified attribute
     var resultOrderByAttribute = provider.node.getResultOrderByAttribute(rootNode.label);

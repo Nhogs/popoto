@@ -713,6 +713,10 @@ provider.node.getGenerateNodeValueConstraints = function (node) {
     return provider.node.getProperty(node.label, "generateNodeValueConstraints");
 };
 
+provider.node.getGenerateNegativeNodeValueConstraints = function (node) {
+    return provider.node.getProperty(node.label, "generateNegativeNodeValueConstraints");
+};
+
 /**
  * Return the displayResults function defined in label parameter's provider.
  *
@@ -1179,6 +1183,20 @@ provider.node.DEFAULT_PROVIDER = (
         "filterNodeRelationQuery": function (node, initialQuery) {
             return initialQuery;
         },
+
+        /**
+         * Customize, in query, the generated constraint for the node.
+         *
+         * If undefined use default constraint generation.
+         */
+        "generateNodeValueConstraints": undefined,
+
+        /**
+         * Customize, in query, the generated negative constraint for the node.
+         *
+         * If undefined use default negative constraint generation.
+         */
+        "generateNegativeNodeValueConstraints": undefined,
 
         /**********************************************************************
          * Results specific parameters:

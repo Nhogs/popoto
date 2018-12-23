@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Predefined constraints Neo4j id generation Neo4j id 1`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r0:\`ACTED_IN\`]->(movie:\`Movie\`) WHERE person.born > 1976 RETURN count(DISTINCT ID(movie)) as count"`;
+
+exports[`Predefined constraints Neo4j id generation Neo4j id 2`] = `Object {}`;
+
+exports[`Predefined constraints Neo4j id generation predefined constraints 1`] = `"MATCH (person:\`Person\`) WHERE person.born > 1976 RETURN count(DISTINCT ID(person)) as count"`;
+
+exports[`Predefined constraints Neo4j id generation predefined constraints 2`] = `Object {}`;
+
 exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 1`] = `"MATCH (root:\`Root\`), (label1:\`Label1\`)-[r0:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN count(DISTINCT label2.Nid) as count"`;
 
 exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 2`] = `

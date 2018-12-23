@@ -128,3 +128,59 @@ describe("one very long-branch with value leaf and reverse order", function () {
         expect(generateNodeCountQuery.parameters).toMatchSnapshot();
     });
 });
+
+describe("Predefined constraints Neo4j id generation", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                label: "Person",
+                internalLabel: "person",
+                type: 0
+            },
+            {
+                id: 1,
+                label: "Movie",
+                internalLabel: "movie",
+                type: 1
+            }
+        ];
+
+        dataModel.links = [
+            {
+                id: 1,
+                label: "ACTED_IN",
+                source: dataModel.nodes[0],
+                target: dataModel.nodes[1],
+                type: 1
+            }
+        ];
+
+        provider.node.Provider = {
+            "Person": {
+                returnAttributes: ["name", "born"],
+                getPredefinedConstraints: function () {
+                    return ["$identifier.born > 1976"];
+                }
+            },
+            "Movie": {
+                returnAttributes: ["title", "born"],
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("predefined constraints", () => {
+        var generateNodeCountQuery = query.generateNodeCountQuery(dataModel.nodes[0]);
+        expect(generateNodeCountQuery.statement).toMatchSnapshot();
+        expect(generateNodeCountQuery.parameters).toMatchSnapshot();
+    });
+
+    test("Neo4j id", () => {
+        var generateNodeCountQuery = query.generateNodeCountQuery(dataModel.nodes[1]);
+        expect(generateNodeCountQuery.statement).toMatchSnapshot();
+        expect(generateNodeCountQuery.parameters).toMatchSnapshot();
+    });
+});

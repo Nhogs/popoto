@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Predefined constraints Neo4j id generation Person 1`] = `"MATCH (n:\`Person\`) WHERE n.born > 1976 RETURN count(DISTINCT n.name) as count"`;
+
+exports[`Predefined constraints generation Person 1`] = `"MATCH (n:\`Person\`) WHERE n.born > 1976 RETURN count(DISTINCT n.name) as count"`;

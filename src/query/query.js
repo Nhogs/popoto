@@ -2,6 +2,7 @@ import provider from "../provider/provider";
 import dataModel from "../datamodel/dataModel";
 
 var query = {};
+
 /**
  * Define the number of results displayed in result list.
  */
@@ -13,6 +14,16 @@ query.USE_RELATION_DIRECTION = true;
 query.COLLECT_RELATIONS_WITH_VALUES = false;
 query.prefilter = "";
 query.prefilterParameters = {};
+
+query.applyPrefilters = function (queryStructure) {
+    queryStructure.statement = query.prefilter + queryStructure.statement;
+
+    Object.keys(query.prefilterParameters).forEach(function (key) {
+        queryStructure.parameters[key] = query.prefilterParameters[key];
+    });
+
+    return queryStructure;
+};
 
 /**
  * Immutable constant object to identify Neo4j internal ID
@@ -477,13 +488,7 @@ query.generateResultQuery = function (isGraph) {
         parameters: queryParameters
     });
 
-    queryStructure.statement = query.prefilter + queryStructure.statement;
-
-    Object.keys(query.prefilterParameters).forEach(function (key) {
-        queryStructure.parameters[key] = query.prefilterParameters[key];
-    });
-
-    return queryStructure;
+    return query.applyPrefilters(queryStructure);
 };
 
 /**
@@ -527,14 +532,7 @@ query.generateNodeCountQuery = function (countedNode) {
         parameters: queryParameters
     });
 
-    Object.keys(query.prefilterParameters).forEach(function (key) {
-        queryStructure.parameters[key] = query.prefilterParameters[key];
-    });
-
-    return {
-        statement: query.prefilter + queryStructure.statement,
-        parameters: queryStructure.parameters
-    };
+    return query.applyPrefilters(queryStructure);
 };
 
 /**
@@ -606,15 +604,7 @@ query.generateNodeValueQuery = function (targetNode) {
         parameters: queryParameters
     });
 
-    Object.keys(query.prefilterParameters).forEach(function (key) {
-        queryStructure.parameters[key] = query.prefilterParameters[key];
-    });
-
-    return {
-        statement: query.prefilter + queryStructure.statement,
-        parameters: queryStructure.parameters
-    };
-
+    return query.applyPrefilters(queryStructure);
 };
 
 /**
@@ -657,15 +647,7 @@ query.generateNodeRelationQuery = function (targetNode) {
         parameters: queryParameters
     });
 
-    Object.keys(query.prefilterParameters).forEach(function (key) {
-        queryStructure.parameters[key] = query.prefilterParameters[key];
-    });
-
-    return {
-        statement: query.prefilter + queryStructure.statement,
-        parameters: queryStructure.parameters
-    };
-
+    return query.applyPrefilters(queryStructure);
 };
 
 export default query

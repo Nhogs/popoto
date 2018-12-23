@@ -38,6 +38,83 @@ describe("root only", function () {
     });
 });
 
+describe("root only isGraph", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            }
+        ];
+
+        dataModel.links = [];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(true);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
+describe("root only with prefilters", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            }
+        ];
+
+        dataModel.links = [];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+
+        query.prefilter = "MATCH root WHERE root.id > $x AND root.name = $y WITH root ";
+        query.prefilterParameters = {x: 7, y: "John"};
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+        query.prefilter = "";
+        query.prefilterParameters = {};
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
 describe("root only with value", function () {
     beforeEach(() => {
         dataModel.nodes = [
@@ -121,6 +198,57 @@ describe("one branch", function () {
 
     test("generation", () => {
         var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
+describe("one branch isGraph", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            },
+            {
+                id: 1,
+                label: "Node",
+                internalLabel: "node",
+                value: [{label: "Node", attributes: {Nid: "Vid", Nname: "Vname"}}],
+                type: 1,
+            }
+        ];
+
+        dataModel.links = [
+            {
+                id: 1,
+                label: "LINKED_TO",
+                source: dataModel.nodes[0],
+                target: dataModel.nodes[1],
+                type: 1
+            }
+        ];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(true);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();
     });
@@ -718,6 +846,56 @@ describe("one branch with one value", function () {
     });
 
     test("generateResultQuery", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
+describe("Predefined constraints Neo4j id generation", function () {
+    beforeEach(() => {
+        dataModel.nodes = [
+            {
+                label: "Person",
+                internalLabel: "person",
+                type: 0
+            },
+            {
+                id: 1,
+                label: "Movie",
+                internalLabel: "movie",
+                type: 1
+            }
+        ];
+
+        dataModel.links = [
+            {
+                id: 1,
+                label: "ACTED_IN",
+                source: dataModel.nodes[0],
+                target: dataModel.nodes[1],
+                type: 1
+            }
+        ];
+
+        provider.node.Provider = {
+            "Person": {
+                returnAttributes: ["name", "born"],
+                getPredefinedConstraints: function () {
+                    return ["$identifier.born > 1976"];
+                }
+            },
+            "Movie": {
+                returnAttributes: ["title", "born"],
+            }
+        };
+    });
+
+    afterEach(() => {
+        delete provider.node.Provider;
+    });
+
+    test("predefined constraints", () => {
         var generateResultQuery = query.generateResultQuery(false);
         expect(generateResultQuery.statement).toMatchSnapshot();
         expect(generateResultQuery.parameters).toMatchSnapshot();

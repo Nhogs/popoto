@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`node relation query Movie 1`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r0:\`ACTED_IN\`]->(movie:\`Movie\`), (movie:\`Movie\`)-[r]->(x) RETURN type(r) AS label, last(labels(x)) AS target, count(r) AS count ORDER BY count(r) DESC"`;
+
+exports[`node relation query Movie 2`] = `Object {}`;
+
+exports[`node relation query Movie 3`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r0:\`ACTED_IN\`]->(movie:\`Movie\`), (movie:\`Movie\`)-[r]->(x) RETURN type(r) AS label, head(labels(x)) AS target, count(r) AS count ORDER BY count(r) DESC"`;
+
+exports[`node relation query Movie 4`] = `Object {}`;
+
+exports[`node relation query Person 1`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r]->(x) RETURN type(r) AS label, last(labels(x)) AS target, count(r) AS count ORDER BY count(r) DESC"`;
+
+exports[`node relation query Person 2`] = `Object {}`;
+
+exports[`node relation query Person 3`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r]->(x) RETURN type(r) AS label, head(labels(x)) AS target, count(r) AS count ORDER BY count(r) DESC"`;
+
+exports[`node relation query Person 4`] = `Object {}`;

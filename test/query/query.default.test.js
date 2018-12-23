@@ -29,3 +29,7 @@ test("prefilter should be initialized", () => {
 test("prefilterParameters to be empty", () => {
     expect(query.prefilterParameters).toEqual({});
 });
+
+test("filterRelation call to return true", () => {
+    expect(query.filterRelation()).toEqual(true);
+});

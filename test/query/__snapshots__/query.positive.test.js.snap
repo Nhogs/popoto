@@ -1,10 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Predefined constraints Neo4j id generation predefined constraints 1`] = `"MATCH (person:\`Person\`) WHERE person.born > 1976 RETURN DISTINCT person.name AS name, person.born AS born, ID(person) AS NEO4JID LIMIT $limit"`;
+
+exports[`Predefined constraints Neo4j id generation predefined constraints 2`] = `
+Object {
+  "limit": 100,
+}
+`;
+
 exports[`one branch generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
 
 exports[`one branch generation 2`] = `
 Object {
   "limit": 100,
+}
+`;
+
+exports[`one branch isGraph generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid = $node_Nid RETURN DISTINCT root, r0 LIMIT $limit"`;
+
+exports[`one branch isGraph generation 2`] = `
+Object {
+  "limit": 100,
+  "node_Nid": "Vid",
 }
 `;
 
@@ -97,6 +114,24 @@ exports[`root only generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root
 exports[`root only generation 2`] = `
 Object {
   "limit": 100,
+}
+`;
+
+exports[`root only isGraph generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root LIMIT $limit"`;
+
+exports[`root only isGraph generation 2`] = `
+Object {
+  "limit": 100,
+}
+`;
+
+exports[`root only with prefilters generation 1`] = `"MATCH root WHERE root.id > $x AND root.name = $y WITH root MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+
+exports[`root only with prefilters generation 2`] = `
+Object {
+  "limit": 100,
+  "x": 7,
+  "y": "John",
 }
 `;
 

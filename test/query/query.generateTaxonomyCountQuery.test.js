@@ -36,11 +36,14 @@ describe("Predefined constraints Neo4j id generation", function () {
                 returnAttributes: ["name", "born"],
                 constraintAttribute: "name",
                 getPredefinedConstraints: function () {
-                    return ["$identifier.born > 1976"];
+                    return ["$identifier.born > 1976", "$identifier.born <= 1990"];
                 }
             },
             "Movie": {
-                returnAttributes: ["title", "born"],
+                returnAttributes: ["title", "released"],
+                getPredefinedConstraints: function () {
+                    return ["$identifier.released > 1976", "$identifier.released <= 1990"];
+                }
             }
         };
     });
@@ -51,6 +54,11 @@ describe("Predefined constraints Neo4j id generation", function () {
 
     test("Person", () => {
         var countQuery = query.generateTaxonomyCountQuery("Person");
+        expect(countQuery).toMatchSnapshot();
+    });
+
+    test("Movie", () => {
+        var countQuery = query.generateTaxonomyCountQuery("Movie");
         expect(countQuery).toMatchSnapshot();
     });
 });

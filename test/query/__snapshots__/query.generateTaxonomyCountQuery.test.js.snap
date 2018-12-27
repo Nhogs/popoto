@@ -1,6 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Predefined constraints Neo4j id generation Person 1`] = `"MATCH (n:\`Person\`) WHERE n.born > 1976 RETURN count(DISTINCT n.name) as count"`;
+exports[`Predefined constraints Neo4j id generation Movie 1`] = `"MATCH (n:\`Movie\`) WHERE n.released > 1976 AND n.released <= 1990 RETURN count(DISTINCT ID(n)) as count"`;
+
+exports[`Predefined constraints Neo4j id generation Person 1`] = `"MATCH (n:\`Person\`) WHERE n.born > 1976 AND n.born <= 1990 RETURN count(DISTINCT n.name) as count"`;
 
 exports[`taxonomy count generation Movie 1`] = `"MATCH (n:\`Movie\`) RETURN count(DISTINCT ID(n)) as count"`;
 

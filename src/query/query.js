@@ -192,10 +192,20 @@ query.generateQueryElements = function (rootNode, selectedNode, links, isConstra
         var sourceNode = l.source;
         var targetNode = l.target;
 
-        var rel = "->";
+        var sourceRel = "";
+        var targetRel = "";
 
-        if (!query.USE_RELATION_DIRECTION || targetNode.isParentRelReverse === true) {
-            rel = "-";
+        if (!query.USE_RELATION_DIRECTION) {
+            sourceRel = "-";
+            targetRel = "-";
+        } else {
+            if (targetNode.isParentRelReverse === true) {
+                sourceRel = "<-";
+                targetRel = "-";
+            } else {
+                sourceRel = "-";
+                targetRel = "->";
+            }
         }
 
         var relIdentifier = "r" + relId++;
@@ -222,7 +232,7 @@ query.generateQueryElements = function (rootNode, selectedNode, links, isConstra
             targetLabelStatement = ":`" + targetNode.label + "`";
         }
 
-        matchElements.push("(" + sourceNode.internalLabel + sourceLabelStatement + ")-[" + relIdentifier + ":`" + l.label + "`]" + rel + "(" + targetNode.internalLabel + targetLabelStatement + ")");
+        matchElements.push("(" + sourceNode.internalLabel + sourceLabelStatement + ")" + sourceRel + "[" + relIdentifier + ":`" + l.label + "`]" + targetRel + "(" + targetNode.internalLabel + targetLabelStatement + ")");
 
         if (targetNode !== selectedNode && (isConstraintNeeded || targetNode.immutable)) {
             var nodeValueConstraints = query.generateNodeValueConstraints(targetNode, useCustomConstraints);

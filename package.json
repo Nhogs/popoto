@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",

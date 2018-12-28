@@ -8,7 +8,7 @@ exports[`Predefined constraints Neo4j id generation predefined constraints 1`] =
 
 exports[`Predefined constraints Neo4j id generation predefined constraints 2`] = `Object {}`;
 
-exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 1`] = `"MATCH (root:\`Root\`), (label1:\`Label1\`)-[r0:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN count(DISTINCT label2.Nid) as count"`;
+exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 1`] = `"MATCH (root:\`Root\`), (label1:\`Label1\`)<-[r0:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN count(DISTINCT label2.Nid) as count"`;
 
 exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 2`] = `
 Object {
@@ -16,7 +16,7 @@ Object {
 }
 `;
 
-exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 3`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)-[r1:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN count(DISTINCT label3.Nid) as count"`;
+exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 3`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)<-[r1:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN count(DISTINCT label3.Nid) as count"`;
 
 exports[`one very long-branch with value leaf and reverse order generateNodeCountQuery 4`] = `
 Object {

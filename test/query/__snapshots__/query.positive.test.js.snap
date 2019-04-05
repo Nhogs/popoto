@@ -125,6 +125,22 @@ Object {
 }
 `;
 
+exports[`root only with labels and labels attr generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id, root.labels AS labels, labels(root) LIMIT $limit"`;
+
+exports[`root only with labels and labels attr generation 2`] = `
+Object {
+  "limit": 100,
+}
+`;
+
+exports[`root only with labels generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id, labels(root) AS labels LIMIT $limit"`;
+
+exports[`root only with labels generation 2`] = `
+Object {
+  "limit": 100,
+}
+`;
+
 exports[`root only with prefilters generation 1`] = `"MATCH root WHERE root.id > $x AND root.name = $y WITH root MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
 
 exports[`root only with prefilters generation 2`] = `

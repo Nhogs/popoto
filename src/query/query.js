@@ -11,6 +11,7 @@ query.MAX_RESULTS_COUNT = 100;
 query.VALUE_QUERY_LIMIT = 100;
 query.USE_PARENT_RELATION = false;
 query.USE_RELATION_DIRECTION = true;
+query.RETURN_LABELS = false;
 query.COLLECT_RELATIONS_WITH_VALUES = false;
 query.prefilter = "";
 query.prefilterParameters = {};
@@ -464,18 +465,7 @@ query.generateResultQuery = function (isGraph) {
     queryParameters.limit = query.MAX_RESULTS_COUNT;
     queryEndElements.push("LIMIT $limit");
 
-    var resultAttributes = provider.node.getReturnAttributes(rootNode.label);
-
-    if (!isGraph) {
-        for (var i = 0; i < resultAttributes.length; i++) {
-            var attribute = resultAttributes[i];
-            if (attribute === query.NEO4J_INTERNAL_ID) {
-                queryReturnElements.push("ID(" + rootNode.internalLabel + ") AS " + query.NEO4J_INTERNAL_ID.queryInternalName);
-            } else {
-                queryReturnElements.push(rootNode.internalLabel + "." + attribute + " AS " + attribute);
-            }
-        }
-    } else {
+    if (isGraph) {
         // Only return relations
         queryReturnElements.push(rootNode.internalLabel);
         queryRelationElements.forEach(
@@ -483,6 +473,26 @@ query.generateResultQuery = function (isGraph) {
                 queryReturnElements.push(el);
             }
         );
+    } else {
+        var resultAttributes = provider.node.getReturnAttributes(rootNode.label);
+
+        queryReturnElements = resultAttributes.map(function (attribute) {
+            if (attribute === query.NEO4J_INTERNAL_ID) {
+                return "ID(" + rootNode.internalLabel + ") AS " + query.NEO4J_INTERNAL_ID.queryInternalName;
+            } else {
+                return rootNode.internalLabel + "." + attribute + " AS " + attribute;
+            }
+        });
+
+        if (query.RETURN_LABELS === true) {
+            var element = "labels(" + rootNode.internalLabel + ")";
+
+            if (resultAttributes.indexOf("labels") < 0) {
+                element = element + " AS labels";
+            }
+
+            queryReturnElements.push(element);
+        }
     }
 
     var queryStatement = "MATCH " + queryMatchElements.join(", ") + ((queryWhereElements.length > 0) ? " WHERE " + queryWhereElements.join(" AND ") : "") + " RETURN DISTINCT " + queryReturnElements.join(", ") + " " + queryEndElements.join(" ");

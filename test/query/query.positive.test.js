@@ -152,6 +152,84 @@ describe("root only with value", function () {
     });
 });
 
+describe("root only with labels", function () {
+    beforeEach(() => {
+        query.RETURN_LABELS = true;
+
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            }
+        ];
+
+        dataModel.links = [];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        query.RETURN_LABELS = false;
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
+describe("root only with labels and labels attr", function () {
+    beforeEach(() => {
+        query.RETURN_LABELS = true;
+
+        dataModel.nodes = [
+            {
+                id: 0,
+                label: "Root",
+                internalLabel: "root",
+                type: 0
+            }
+        ];
+
+        dataModel.links = [];
+
+        provider.node.Provider = {
+            "Root": {
+                returnAttributes: ["name", "id", "labels"],
+                constraintAttribute: "id",
+            },
+            "Node": {
+                returnAttributes: ["Nname", "Nid"],
+                constraintAttribute: "Nid",
+            }
+        };
+    });
+
+    afterEach(() => {
+        query.RETURN_LABELS = false;
+        delete provider.node.Provider;
+    });
+
+    test("generation", () => {
+        var generateResultQuery = query.generateResultQuery(false);
+        expect(generateResultQuery.statement).toMatchSnapshot();
+        expect(generateResultQuery.parameters).toMatchSnapshot();
+    });
+});
+
 describe("one branch", function () {
     beforeEach(() => {
         dataModel.nodes = [

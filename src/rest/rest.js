@@ -1,4 +1,4 @@
-import jQuery from 'jquery';
+import * as neo4j from 'neo4j-driver';
 import logger from "../logger/logger";
 
 /**
@@ -7,6 +7,26 @@ import logger from "../logger/logger";
  */
 
 var rest = {};
+
+rest.PROTOCOL = "bolt";
+rest.HOST = "localhost";
+rest.PORT = 7687;
+
+rest.USERNAME = "neo4j";
+rest.PASSWORD = "password";
+rest.CONFIG = {trust: "TRUST_ALL_CERTIFICATES"};
+
+rest.createDriver = function () {
+    return neo4j.driver(
+        rest.PROTOCOL + "://" + rest.HOST + ":" + rest.PORT,
+        neo4j.auth.basic(rest.USERNAME, rest.PASSWORD),
+        rest.CONFIG
+    );
+};
+
+rest.createSession = function () {
+    return rest.createDriver().session(neo4j.session.READ)
+};
 
 /**
  * Default REST URL used to call Neo4j server with cypher queries to execute.
@@ -52,8 +72,6 @@ rest.post = function (data, url) {
     if (url !== undefined) {
         postURL = url;
     }
-
-    return jQuery.ajax(postURL, settings);
 };
 
 rest.response = {

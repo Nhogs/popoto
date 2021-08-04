@@ -1,6 +1,6 @@
 <p align="center"><a href="https://popotojs.com" target="_blank"><img width="301"src="http://www.popotojs.com/logo.png"></a></p>
 
-[![Build Status](https://travis-ci.org/Nhogs/popoto.svg?branch=master)](https://travis-ci.org/Nhogs/popoto)
+[![Build Status](https://travis-ci.com/Nhogs/popoto.svg?branch=feature%2Fneo4jdrivers)](https://travis-ci.org/Nhogs/popoto)
 [![npm version](https://img.shields.io/npm/v/popoto.svg)](https://www.npmjs.com/package/popoto)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![dependencies](https://david-dm.org/Nhogs/popoto.svg)](https://david-dm.org/Nhogs/popoto)

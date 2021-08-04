@@ -3,7 +3,7 @@ import dataModel from "../datamodel/dataModel";
 import query from "../query/query";
 import provider from "../provider/provider";
 import logger from "../logger/logger";
-import rest from "../rest/rest";
+import runner from "../runner/runner";
 import result from "../result/result";
 import tools from "../tools/tools";
 import graph from "../graph/graph";
@@ -99,22 +99,27 @@ taxonomy.updateCount = function (taxonomyData) {
 
     (function (taxonomies) {
         logger.info("Count taxonomies ==>");
-        rest.post(
+        runner.run(
             {
                 "statements": statements
             })
-            .done(function (response) {
+            .then(function (results) {
                 logger.info("<== Count taxonomies");
-                var parsedData = rest.response.parse(response);
+
                 for (var i = 0; i < taxonomies.length; i++) {
-                    var count = parsedData[i][0].count;
+                    var count = results[i].records[0].get('count').toString();
                     d3.select("#" + taxonomies[i].id)
                         .select(".ppt-count")
                         .text(" (" + count + ")");
                 }
+            }, function (error) {
+                logger.error(error);
+                d3.select("#popoto-taxonomy")
+                    .selectAll(".ppt-count")
+                    .text(" (0)");
             })
-            .fail(function (xhr, textStatus, errorThrown) {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
+            .catch(function (error) {
+                logger.error(error);
                 d3.select("#popoto-taxonomy")
                     .selectAll(".ppt-count")
                     .text(" (0)");

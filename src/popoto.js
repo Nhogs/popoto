@@ -6,7 +6,7 @@ import graph from "./graph/graph";
 import logger from "./logger/logger";
 import provider from "./provider/provider";
 import queryviewer from "./queryviewer/queryviewer";
-import rest from "./rest/rest";
+import runner from "./runner/runner";
 import result from "./result/result";
 import taxonomy from "./taxonomy/taxonomy";
 
@@ -16,52 +16,46 @@ import taxonomy from "./taxonomy/taxonomy";
  *
  * @param startParam Root label or graph schema to use in the graph query builder.
  */
-//TODO add instance creation + config
 export function start(startParam) {
     logger.info("Popoto " + version + " start on " + startParam);
 
     graph.mainLabel = startParam;
 
-    if (rest.CYPHER_URL === undefined) {
-        logger.error("popoto.rest.CYPHER_URL is not set but is required.");
-    } else {
-        // TODO introduce component generator mechanism instead for future plugin extensions
-        checkHtmlComponents();
+    checkHtmlComponents();
 
-        if (taxonomy.isActive) {
-            taxonomy.createTaxonomyPanel();
-        }
-
-        if (graph.isActive) {
-            graph.createGraphArea();
-            graph.createForceLayout();
-
-            if (typeof startParam === 'string' || startParam instanceof String) {
-                var labelSchema = provider.node.getSchema(startParam);
-                if (labelSchema !== undefined) {
-                    graph.addSchema(labelSchema);
-                } else {
-                    graph.addRootNode(startParam);
-                }
-            } else {
-                graph.loadSchema(startParam);
-            }
-        }
-
-        if (queryviewer.isActive) {
-            queryviewer.createQueryArea();
-        }
-
-        if (cypherviewer.isActive) {
-            cypherviewer.createQueryArea();
-        }
-
-        if (graph.USE_VORONOI_LAYOUT === true) {
-            graph.voronoi.extent([[-popoto.graph.getSVGWidth(), -popoto.graph.getSVGWidth()], [popoto.graph.getSVGWidth() * 2, popoto.graph.getSVGHeight() * 2]]);
-        }
-
-        update();
+    if (taxonomy.isActive) {
+        taxonomy.createTaxonomyPanel();
     }
+
+    if (graph.isActive) {
+        graph.createGraphArea();
+        graph.createForceLayout();
+
+        if (typeof startParam === 'string' || startParam instanceof String) {
+            var labelSchema = provider.node.getSchema(startParam);
+            if (labelSchema !== undefined) {
+                graph.addSchema(labelSchema);
+            } else {
+                graph.addRootNode(startParam);
+            }
+        } else {
+            graph.loadSchema(startParam);
+        }
+    }
+
+    if (queryviewer.isActive) {
+        queryviewer.createQueryArea();
+    }
+
+    if (cypherviewer.isActive) {
+        cypherviewer.createQueryArea();
+    }
+
+    if (graph.USE_VORONOI_LAYOUT === true) {
+        graph.voronoi.extent([[-popoto.graph.getSVGWidth(), -popoto.graph.getSVGWidth()], [popoto.graph.getSVGWidth() * 2, popoto.graph.getSVGHeight() * 2]]);
+    }
+
+    update();
 }
 
 /**

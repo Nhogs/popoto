@@ -11,7 +11,7 @@ export default {
             verbose: true
         })
     ],
-    external: ["d3", "neo4j-driver"],
+    external: ["d3"],
     output: {
         extend: true,
         file: "dist/popoto.js",
@@ -20,7 +20,6 @@ export default {
         name: "popoto",
         globals: {
             d3: "d3",
-            "neo4j-driver": "neo4j"
         }
     }
 };

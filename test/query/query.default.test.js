@@ -1,6 +1,8 @@
-import provider from "../../src/provider/provider";
+/**
+ * @jest-environment jsdom
+ */
+
 import query from '../../src/query/query.js'
-import dataModel from "../../src/datamodel/dataModel";
 
 test("MAX_RESULTS_COUNT should be initialized", () => {
     expect(query.MAX_RESULTS_COUNT).toEqual(100);

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import provider from "../../src/provider/provider";
 import query from '../../src/query/query.js'
 import dataModel from "../../src/datamodel/dataModel";
@@ -610,7 +614,7 @@ describe("one branch generateNegativeNodeValueConstraints", function () {
             "Node": {
                 returnAttributes: ["Nname", "Nid"],
                 constraintAttribute: "Nid",
-                generateNegativeNodeValueConstraints: function (node) {
+                generateNegativeNodeValueConstraints: function () {
                     return {
                         whereElements: [
                             "(NOT exists (root)-[]->())"

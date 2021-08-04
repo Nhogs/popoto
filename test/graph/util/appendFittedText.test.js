@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as d3 from "d3"
 import {default as appendFittedText, measureTextWidth, extractLines} from '../../../src/graph/util/appendFittedText'
 
@@ -95,13 +99,13 @@ describe("appendFittedText", function () {
 
     describe('Should works with text, radius, class parameters as function without data in selection', () => {
         beforeEach(() => {
-            const textMockValue = function (d) {
+            const textMockValue = function () {
                 return "mocked_text_value"
             };
-            const radiusMockValue = function (d) {
+            const radiusMockValue = function () {
                 return 50
             };
-            const cssClassMockValue = function (d) {
+            const cssClassMockValue = function () {
                 return "mocked_css_class_value"
             };
 

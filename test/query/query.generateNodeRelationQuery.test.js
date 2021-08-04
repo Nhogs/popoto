@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import provider from "../../src/provider/provider";
 import query from '../../src/query/query.js'
 import dataModel from "../../src/datamodel/dataModel";

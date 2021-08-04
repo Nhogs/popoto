@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -44,20 +44,20 @@
   },
   "dependencies": {
     "d3": "^5.15.0",
-    "neo4j-driver": "^4.0.2"
+    "neo4j-driver": "^4.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-jest": "^25.2.1",
+    "babel-jest": "^27.0.6",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "jest": "^25.2.1",
+    "jest": "^27.0.6",
     "jest-canvas-mock": "^1.1.0",
     "json2module": "^0.0.3",
     "rimraf": "^3.0.2",
-    "rollup": "^2.2.0",
-    "rollup-plugin-copy": "^3.3.0",
+    "rollup": "^2.55.1",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "uglify-js": "^3.8.0",
+    "uglify-js": "^3.14.1",
     "uglifycss": "^0.0.29"
   }
 }

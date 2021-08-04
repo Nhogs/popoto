@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as d3 from 'd3';
 import tools from "../../src/tools/tools"
 import toolBar from "../../src/toolbar/toolbar"

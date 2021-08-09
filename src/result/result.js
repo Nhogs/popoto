@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import query from "../query/query";
 import provider from "../provider/provider";
 import logger from "../logger/logger";
-import rest from "../rest/rest";
+import runner from "../runner/runner";
 import dataModel from "../datamodel/dataModel";
 
 var result = {};
@@ -76,11 +76,6 @@ result.updateResults = function () {
         var resultsIndex = {};
         var index = 0;
 
-        // Abort any old running request before starting a new one
-        if (result.resultsXhr !== undefined) {
-            result.resultsXhr.abort();
-        }
-
         var resultQuery = query.generateResultQuery();
         result.lastGeneratedQuery = resultQuery;
 
@@ -89,7 +84,6 @@ result.updateResults = function () {
                 {
                     "statement": resultQuery.statement,
                     "parameters": resultQuery.parameters,
-                    "resultDataContents": ["row"]
                 }
             ]
         };
@@ -104,7 +98,6 @@ result.updateResults = function () {
                 {
                     "statement": graphQuery.statement,
                     "parameters": graphQuery.parameters,
-                    "resultDataContents": ["row", "graph"]
                 });
             resultsIndex["graph"] = index++;
         }
@@ -122,11 +115,11 @@ result.updateResults = function () {
 
         logger.info("Results ==>");
 
-        result.resultsXhr = rest.post(postData)
-            .done(function (response) {
+        runner.run(postData)
+            .then(function (res) {
                 logger.info("<== Results");
 
-                var parsedData = rest.response.parse(response);
+                var parsedData = runner.toObject(res);
 
                 var resultObjects = parsedData[resultsIndex["results"]].map(function (d, i) {
                     return {
@@ -185,17 +178,13 @@ result.updateResults = function () {
 
                 result.hasChanged = false;
             })
-            .fail(function (xhr, textStatus, errorThrown) {
-                if (textStatus !== "abort") {
-                    logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
+            .catch(function (error) {
+                logger.error(error);
 
-                    // Notify listeners
-                    result.resultListeners.forEach(function (listener) {
-                        listener([]);
-                    });
-                } else {
-                    logger.info("<=X= Results - Aborted!");
-                }
+                // Notify listeners
+                result.resultListeners.forEach(function (listener) {
+                    listener([]);
+                });
             });
     }
 };

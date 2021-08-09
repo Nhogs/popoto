@@ -1,53 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Predefined constraints Neo4j id generation predefined constraints 1`] = `"MATCH (person:\`Person\`) WHERE person.born > 1976 RETURN DISTINCT person.name AS name, person.born AS born, ID(person) AS NEO4JID LIMIT $limit"`;
+exports[`Predefined constraints Neo4j id generation predefined constraints 1`] = `"MATCH (person:\`Person\`) WHERE person.born > 1976 RETURN DISTINCT person.name AS name, person.born AS born, ID(person) AS NEO4JID LIMIT 100"`;
 
-exports[`Predefined constraints Neo4j id generation predefined constraints 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`Predefined constraints Neo4j id generation predefined constraints 2`] = `Object {}`;
 
-exports[`one branch generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one branch generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
-exports[`one branch generation 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`one branch generation 2`] = `Object {}`;
 
-exports[`one branch isGraph generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid = $node_Nid RETURN DISTINCT root, r0 LIMIT $limit"`;
+exports[`one branch isGraph generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid = $node_Nid RETURN DISTINCT root, r0 LIMIT 100"`;
 
 exports[`one branch isGraph generation 2`] = `
 Object {
-  "limit": 100,
   "node_Nid": "Vid",
 }
 `;
 
-exports[`one branch with one value generateResultQuery 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node) WHERE (node.status <> 'Closed' OR node:\`Client\`:\`Active\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one branch with one value generateResultQuery 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node) WHERE (node.status <> 'Closed' OR node:\`Client\`:\`Active\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one branch with one value generateResultQuery 2`] = `
 Object {
   "customParamName": "customParamValue",
-  "limit": 100,
 }
 `;
 
-exports[`one branch with one value generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid = $node_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one branch with one value generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid = $node_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one branch with one value generation 2`] = `
 Object {
-  "limit": 100,
   "node_Nid": "Vid",
 }
 `;
 
-exports[`one branch with two value generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid IN $node_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one branch with two value generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO\`]->(node:\`Node\`) WHERE node.Nid IN $node_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one branch with two value generation 2`] = `
 Object {
-  "limit": 100,
   "node_Nid": Array [
     "Vid",
     "Vid2",
@@ -55,107 +43,80 @@ Object {
 }
 `;
 
-exports[`one long-branch generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one long-branch generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
-exports[`one long-branch generation 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`one long-branch generation 2`] = `Object {}`;
 
-exports[`one long-branch with two values generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`), (node1:\`Node\`)-[r1:\`LINKED_TO2\`]->(node2:\`Node\`) WHERE node1.Nid = $node1_Nid AND node2.Nid = $node2_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one long-branch with two values generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`), (node1:\`Node\`)-[r1:\`LINKED_TO2\`]->(node2:\`Node\`) WHERE node1.Nid = $node1_Nid AND node2.Nid = $node2_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one long-branch with two values generation 2`] = `
 Object {
-  "limit": 100,
   "node1_Nid": "Vid",
   "node2_Nid": "Vid2",
 }
 `;
 
-exports[`one long-branch with value leaf generation 1`] = `"MATCH (root:\`Root\`), (node1:\`Node\`)-[r0:\`LINKED_TO2\`]->(node2:\`Node\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node2.Nid = $node2_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one long-branch with value leaf generation 1`] = `"MATCH (root:\`Root\`), (node1:\`Node\`)-[r0:\`LINKED_TO2\`]->(node2:\`Node\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node2.Nid = $node2_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one long-branch with value leaf generation 2`] = `
 Object {
-  "limit": 100,
   "node2_Nid": "Vid",
 }
 `;
 
-exports[`one long-branch with value mid generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node1.Nid = $node1_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one long-branch with value mid generation 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE node1.Nid = $node1_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one long-branch with value mid generation 2`] = `
 Object {
-  "limit": 100,
   "node1_Nid": "Vid",
 }
 `;
 
-exports[`one very long-branch with value leaf and reverse order generation 1`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)<-[r1:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE label3.Nid = $label3_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one very long-branch with value leaf and reverse order generation 1`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)<-[r1:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE label3.Nid = $label3_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one very long-branch with value leaf and reverse order generation 2`] = `
 Object {
   "label3_Nid": "Vid3",
-  "limit": 100,
 }
 `;
 
-exports[`one very long-branch with value leaf generation 1`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)-[r1:\`LINKED_TO2\`]->(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE label3.Nid = $label3_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`one very long-branch with value leaf generation 1`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)-[r1:\`LINKED_TO2\`]->(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE label3.Nid = $label3_Nid RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`one very long-branch with value leaf generation 2`] = `
 Object {
   "label3_Nid": "Vid3",
-  "limit": 100,
 }
 `;
 
-exports[`root only generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`root only generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
-exports[`root only generation 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`root only generation 2`] = `Object {}`;
 
-exports[`root only isGraph generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root LIMIT $limit"`;
+exports[`root only isGraph generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root LIMIT 100"`;
 
-exports[`root only isGraph generation 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`root only isGraph generation 2`] = `Object {}`;
 
-exports[`root only with labels and labels attr generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id, root.labels AS labels, labels(root) LIMIT $limit"`;
+exports[`root only with labels and labels attr generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id, root.labels AS labels, labels(root) LIMIT 100"`;
 
-exports[`root only with labels and labels attr generation 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`root only with labels and labels attr generation 2`] = `Object {}`;
 
-exports[`root only with labels generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id, labels(root) AS labels LIMIT $limit"`;
+exports[`root only with labels generation 1`] = `"MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id, labels(root) AS labels LIMIT 100"`;
 
-exports[`root only with labels generation 2`] = `
-Object {
-  "limit": 100,
-}
-`;
+exports[`root only with labels generation 2`] = `Object {}`;
 
-exports[`root only with prefilters generation 1`] = `"MATCH root WHERE root.id > $x AND root.name = $y WITH root MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`root only with prefilters generation 1`] = `"MATCH root WHERE root.id > $x AND root.name = $y WITH root MATCH (root:\`Root\`) RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`root only with prefilters generation 2`] = `
 Object {
-  "limit": 100,
   "x": 7,
   "y": "John",
 }
 `;
 
-exports[`root only with value generation 1`] = `"MATCH (root:\`Root\`) WHERE root.id = $root_id RETURN DISTINCT root.name AS name, root.id AS id LIMIT $limit"`;
+exports[`root only with value generation 1`] = `"MATCH (root:\`Root\`) WHERE root.id = $root_id RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 
 exports[`root only with value generation 2`] = `
 Object {
-  "limit": 100,
   "root_id": "Rid",
 }
 `;

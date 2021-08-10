@@ -6,9 +6,11 @@ export default {
     plugins: [
         resolve({}),
         copy({
-            "css/font": "dist/font",
-            "css/font-icon-list.html": "dist/font-icon-list.html",
-            verbose: true
+            targets: [{
+                src: "css/font/popoto/*", dest: "dist/font/popoto/"
+            }, {
+                src: "css/font-icon-list.html", dest: "dist/"
+            }]
         })
     ],
     external: ["d3"],

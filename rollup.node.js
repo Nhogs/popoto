@@ -5,12 +5,11 @@ var fs = require("fs"),
 rollup.rollup({
     input: "index.js",
     external: Object.keys(dependencies)
-}).then(function(bundle) {
+}).then(function (bundle) {
     return bundle.generate({format: "cjs"});
-}).then(function(result) {
-    var code = result.code;
-    return new Promise(function(resolve, reject) {
-        fs.writeFile("dist/popoto.node.js", code, "utf8", function(error) {
+}).then(function (result) {
+    return new Promise(function (resolve, reject) {
+        fs.writeFile("dist/popoto.node.js", result.output[0].code, "utf8", function (error) {
             if (error) return reject(error);
             else resolve();
         });

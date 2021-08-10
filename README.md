@@ -80,8 +80,22 @@ For source version:
 
 ## Quick start guide:
  - Edit the "index.html" file, by default this application is based on Neo4j movie graph example.
- - Change the value of `popoto.rest.CYPHER_URL` property to your running server REST API. The default value is `http://localhost:7474/db/data/transaction/commit`.
- - Change the value of "popoto.rest.AUTHORIZATION" with an authorized user credentials, see comments in index.html file for details.
+ - Create your driver instance following Neo4j developer guide: https://neo4j.com/developer/javascript/
+```javascript
+const driver = neo4j.driver(
+    "neo4j://dff437fa.databases.neo4j.io", // Unencrypted 
+    //"neo4j+s://dff437fa.databases.neo4j.io", //Encrypted with Full Certificate
+    neo4j.auth.basic("popoto", "popotopassword"),
+    //{disableLosslessIntegers: true} // Enabling native numbers
+);
+```
+ - Change the value of `popoto.runner.DRIVER = driver` to your running server driver instance.
+ - If needed you can change the default session creation to add parameters:
+```javascript
+popoto.runner.createSession = function () {
+    return runner.DRIVER.session({defaultAccessMode: "READ"})
+};
+```
  - Update the list of labels defined in "popoto.provider.node.Provider" definition. All node labels to display in the graph should be added in this list.
  - Add any other customization you need in this file. See [Nhogs/popoto-examples](https://github.com/Nhogs/popoto-examples) for detailed configuration examples.
  - Open index.html file in your preferred web browser to see the result.

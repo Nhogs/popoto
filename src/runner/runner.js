@@ -7,11 +7,9 @@ import logger from "../logger/logger";
 
 var runner = {};
 
-runner.DATABASE = "neo4j";
-
 runner.createSession = function () {
     if (runner.DRIVER !== undefined) {
-        return runner.DRIVER.session({defaultAccessMode: "READ", database: runner.DATABASE})
+        return runner.DRIVER.session({defaultAccessMode: "READ"})
     } else {
         throw new Error("popoto.runner.DRIVER must be defined");
     }

@@ -462,8 +462,7 @@ query.generateResultQuery = function (isGraph) {
         queryEndElements.push("ORDER BY " + sorts.join(", "));
     }
 
-    queryParameters.limit = query.MAX_RESULTS_COUNT;
-    queryEndElements.push("LIMIT $limit");
+    queryEndElements.push("LIMIT " + query.MAX_RESULTS_COUNT);
 
     if (isGraph) {
         // Only return relations

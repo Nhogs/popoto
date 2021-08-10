@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import rest from "../../rest/rest";
+import runner from "../../runner/runner";
 import result from "../../result/result";
 import cypherviewer from "../../cypherviewer/cypherviewer";
 import graph from "../graph";
@@ -114,12 +114,6 @@ node.updateData = function () {
  * Update nodes and result counts by executing a query for every nodes with the new graph structure.
  */
 node.updateCount = function () {
-
-    // Abort any old running request before starting a new one
-    if (node.updateCountXhr !== undefined) {
-        node.updateCountXhr.abort();
-    }
-
     var statements = [];
 
     var countedNodes = dataModel.nodes
@@ -138,24 +132,16 @@ node.updateCount = function () {
     });
 
     logger.info("Count nodes ==>");
-    node.updateCountXhr = rest.post(
+    runner.run(
         {
             "statements": statements
         })
-        .done(function (response) {
+        .then(function (results) {
             logger.info("<== Count nodes");
-            var parsedData = rest.response.parse(response);
-
-            // TODO throw exception in parser in case of failure?
-            // if (parsedData.status === "success") {
-            //     logger.error("Cypher query error:" + JSON.stringify(parsedData.errors));
-            //     countedNodes.forEach(function (node) {
-            //         node.count = 0;
-            //     });
-            // }
+            var data = runner.toObject(results);
 
             for (var i = 0; i < countedNodes.length; i++) {
-                countedNodes[i].count = parsedData[i][0].count;
+                countedNodes[i].count = data[i][0].count;
             }
 
             // Update result count with root node new count
@@ -166,17 +152,13 @@ node.updateCount = function () {
             node.updateElements();
             graph.link.updateElements();
         })
-        .fail(function (xhr, textStatus, errorThrown) {
-            if (textStatus !== "abort") {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
-                countedNodes.forEach(function (n) {
-                    n.count = 0;
-                });
-                node.updateElements();
-                graph.link.updateElements();
-            } else {
-                logger.info("<=X= Count nodes - Aborted!");
-            }
+        .catch(function (error) {
+            logger.error(error);
+            countedNodes.forEach(function (n) {
+                n.count = 0;
+            });
+            node.updateElements();
+            graph.link.updateElements();
         });
 };
 
@@ -201,20 +183,20 @@ node.updateAutoLoadValues = function () {
 
     if (statements.length > 0) {
         logger.info("AutoLoadValue ==>");
-        rest.post(
+        runner.run(
             {
                 "statements": statements
             })
-            .done(function (response) {
+            .then(function (results) {
                 logger.info("<== AutoLoadValue");
 
-                var parsedData = rest.response.parse(response);
+                var data = runner.toObject(results)
 
                 for (var i = 0; i < nodesToLoadData.length; i++) {
                     var nodeToQuery = nodesToLoadData[i];
                     var constraintAttr = provider.node.getConstraintAttribute(nodeToQuery.label);
                     // Here results are parsed and values already selected are filtered out
-                    nodeToQuery.data = parsedData[i].filter(function (dataToFilter) {
+                    nodeToQuery.data = data[i].filter(function (dataToFilter) {
                         var keepData = true;
                         if (nodeToQuery.hasOwnProperty("value") && nodeToQuery.value.length > 0) {
                             nodeToQuery.value.forEach(function (value) {
@@ -231,8 +213,8 @@ node.updateAutoLoadValues = function () {
 
                 graph.notifyListeners(graph.Events.GRAPH_NODE_DATA_LOADED, [nodesToLoadData]);
             })
-            .fail(function (xhr, textStatus, errorThrown) {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
+            .catch(function (error) {
+                logger.error(error);
             });
     }
 };
@@ -1156,7 +1138,7 @@ node.chooseNodeClick = function (clickedNode) {
         } else {
             logger.info("Values (" + clickedNode.label + ") ==>");
             var nodeValueQuery = query.generateNodeValueQuery(clickedNode);
-            rest.post(
+            runner.run(
                 {
                     "statements": [
                         {
@@ -1164,9 +1146,9 @@ node.chooseNodeClick = function (clickedNode) {
                             "parameters": nodeValueQuery.parameters
                         }]
                 })
-                .done(function (response) {
+                .then(function (results) {
                     logger.info("<== Values (" + clickedNode.label + ")");
-                    var parsedData = rest.response.parse(response);
+                    var parsedData = runner.toObject(results);
                     var constraintAttr = provider.node.getConstraintAttribute(clickedNode.label);
 
                     clickedNode.data = parsedData[0].filter(function (dataToFilter) {
@@ -1185,9 +1167,9 @@ node.chooseNodeClick = function (clickedNode) {
                     node.expandNode(clickedNode);
                     node.chooseWaiting = false;
                 })
-                .fail(function (xhr, textStatus, errorThrown) {
+                .catch(function (error) {
                     node.chooseWaiting = false;
-                    logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
+                    logger.error(error);
                 });
         }
     }
@@ -1513,14 +1495,14 @@ node.addRelatedValues = function (n, values, isNegative) {
     });
 
     logger.info("addRelatedValues ==>");
-    rest.post(
+    runner.run(
         {
             "statements": statements
         })
-        .done(function (response) {
+        .then(function (results) {
             logger.info("<== addRelatedValues");
 
-            var parsedData = rest.response.parse(response);
+            var parsedData = runner.toObject(results);
             var count = 0;
             parsedData.forEach(function (data) {
                 if (data.length > 0) {
@@ -1560,8 +1542,8 @@ node.addRelatedValues = function (n, values, isNegative) {
                 }
             });
         })
-        .fail(function (xhr, textStatus, errorThrown) {
-            console.error(xhr, textStatus, errorThrown);
+        .catch(function (error) {
+            logger.error(error);
         });
 };
 
@@ -1743,7 +1725,7 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
         var nodeRelationQuery = query.generateNodeRelationQuery(n);
 
         logger.info("Relations (" + n.label + ") ==>");
-        rest.post(
+        runner.run(
             {
                 "statements": [
                     {
@@ -1751,9 +1733,9 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
                         "parameters": nodeRelationQuery.parameters
                     }]
             })
-            .done(function (response) {
+            .then(function (results) {
                 logger.info("<== Relations (" + n.label + ")");
-                var parsedData = rest.response.parse(response);
+                var parsedData = runner.toObject(results);
 
                 // Filter data to eventually remove relations if a filter has been defined in config.
                 var filteredData = parsedData[0].filter(function (d) {
@@ -1765,7 +1747,7 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
                         id: d.data.label + d.data.target,
                         label: d.data.label,
                         target: d.data.target,
-                        count: d.data.count,
+                        count: d.data.count.toString(),
                         startAngle: d.startAngle,
                         endAngle: d.endAngle,
                         directionAngle: (d.startAngle + d.endAngle) / 2
@@ -1774,8 +1756,8 @@ node.loadRelationshipData = function (n, callback, directionAngle) {
 
                 callback(filteredData);
             })
-            .fail(function (xhr, textStatus, errorThrown) {
-                logger.error(textStatus + ": error while accessing Neo4j server on URL:\"" + rest.CYPHER_URL + "\" defined in \"rest.CYPHER_URL\" property: " + errorThrown);
+            .catch(function (error) {
+                logger.error(error);
                 callback([]);
             });
     }

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>Popoto Search</title>
-    <link rel="stylesheet" href="dist/popoto.min.css">
+    <link rel="stylesheet" href="/dist/popoto.min.css">
     <style>
         #popoto-graph:fullscreen {
             width: 100%;
@@ -24,6 +24,29 @@
         #popoto-graph:-ms-fullscreen {
             width: 100%;
             height: 100%;
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        #modal-content {
+            background-color: #fefefe;
+            color: #2e3138;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
         }
     </style>
 </head>
@@ -61,35 +84,46 @@
     </div>
 
 </section>
+<div id="modal">
+    <div id="modal-content">
+        <p id="error-title">An error occurred while trying to start Popoto please check your configuration and/or the
+            console log:</p>
+        <p><code id="error-content">Error content</code></p>
+    </div>
+</div>
 
 <!---------------------->
 <!-- Required scripts -->
 
-<!-- Jquery is only used in popoto.js to send ajax POST request on Neo4j REST API -->
-<!-- This dependency will definitely be removed in future releases -->
-<script src="https://unpkg.com/jquery" charset="utf-8"></script>
-<script src="https://unpkg.com/d3" charset="utf-8"></script>
-<script src="dist/popoto.min.js" charset="utf-8"></script>
+<script src="/node_modules/d3/dist/d3.min.js" charset="utf-8"></script>
+<script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
+<script src="dist/popoto.js" charset="utf-8"></script>
 
 <script>
-    /**
-     * URL used to access Neo4j REST API to execute queries.
-     * Update this parameter to your running server instance.
-     *
-     * For more information on Neo4J REST API the documentation is available here: http://neo4j.com/docs/stable/rest-api-cypher.html
-     */
-    popoto.rest.CYPHER_URL = "http://localhost:7474/db/data/transaction/commit";
 
     /**
-     * Add this authorization property if your Neo4j server uses basic HTTP authentication.
-     * The value of this property must be "Basic <payload>", where "payload" is a base64 encoded string of "username:password".
+     * Create the neo4j driver to use in Popoto query runner
      *
-     * "btoa" is a JavaScript function that can be used to encode the user and password value in base64 but it is recommended to directly use the Base64 value.
-     *
-     *  For example Base64 encoded value of "neo4j:password" is "bmVvNGo6cGFzc3dvcmQ="
-     *  Note that it is not a safe way to keep credentials as anyone can have access to this code in your web page.
+     * See Neo4j driver documentation here:
+     * https://neo4j.com/docs/javascript-manual/current/get-started/
+     * https://neo4j.com/docs/api/javascript-driver/4.3/
      */
-    //popoto.rest.AUTHORIZATION = "Basic " + btoa("neo4j:password");
+    var driver = neo4j.driver(
+        "neo4j://dff437fa.databases.neo4j.io", // Unencrypted
+        //"neo4j+s://dff437fa.databases.neo4j.io", //Encrypted with Full Certificate
+        neo4j.auth.basic("popoto", "popotopassword"),
+        //{disableLosslessIntegers: true} // Enabling native numbers
+    );
+
+    /**
+     * Set the driver to Popoto's query runner
+     */
+    popoto.runner.DRIVER = driver
+
+    // If needed session creation can also be overridden here
+    // popoto.runner.createSession = function () {
+    //     return runner.DRIVER.session({defaultAccessMode: "READ"})
+    // };
 
     /**
      * Define the Label provider you need for your application.
@@ -137,13 +171,19 @@
      * With INFO level all the executed cypher query can be seen in the navigator console.
      * Default is NONE
      */
-    // popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;
+    popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;
 
-    /**
-     * Start popoto.js generation.
-     * The function requires the label to use as root element in the graph.
-     */
-    popoto.start("Person");
+    driver.verifyConnectivity().then(function () {
+        /**
+         * Start popoto.js generation.
+         * The function requires the label to use as root element in the graph.
+         */
+        popoto.start("Person");
+    }).catch(function (error) {
+        document.getElementById("modal").style.display = "block";
+        document.getElementById("error-content").innerText = error;
+        console.error(error)
+    })
 </script>
 </body>
 </html>

@@ -1,5 +1,12 @@
-## popoto-2.0
-2018/05/05
+## popoto-3.0.0
+2021-10-08
+
+* Remove JQuery dependency
+* Remove rest module and introduce runner module using Neo4j Javascript divers to run queries
+* Add modal with config errors in index.html page 
+
+## popoto-2.0.0
+2018-05-05
 
 * Added fit text option. 
 * Updated to D3 V5.

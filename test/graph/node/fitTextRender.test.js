@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import fitTextRenderer from '../../../src/graph/node/fitTextRenderer'
 import provider from '../../../src/provider/provider';
 import * as d3 from 'd3';

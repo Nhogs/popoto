@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import textRenderer from '../../../src/graph/node/textRenderer'
 import provider from '../../../src/provider/provider';
 import * as d3 from 'd3';

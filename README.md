@@ -1,10 +1,8 @@
-<p align="center"><a href="https://popotojs.com" target="_blank"><img width="301"src="http://www.popotojs.com/logo.png"></a></p>
+<p align="center"><a href="https://github.com/Nhogs/popoto" target="_blank"><img width="301"src="https://raw.githubusercontent.com/wiki/Nhogs/popoto/img/logo.png"></a></p>
 
-[![Build Status](https://travis-ci.com/Nhogs/popoto.svg?branch=master)](https://travis-ci.org/Nhogs/popoto)
+[![Build Status](https://app.travis-ci.com/Nhogs/popoto.svg?branch=master)](https://app.travis-ci.com/Nhogs/popoto)
 [![npm version](https://img.shields.io/npm/v/popoto.svg)](https://www.npmjs.com/package/popoto)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![dependencies](https://david-dm.org/Nhogs/popoto.svg)](https://david-dm.org/Nhogs/popoto)
-[![dependencies](https://david-dm.org/Nhogs/popoto/dev-status.svg)](https://david-dm.org/Nhogs/popoto?type=dev)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d00736e10d4c630c2010/maintainability)](https://codeclimate.com/github/Nhogs/popoto/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/d00736e10d4c630c2010/test_coverage)](https://codeclimate.com/github/Nhogs/popoto/test_coverage)
 

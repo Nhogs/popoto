@@ -175,8 +175,8 @@ taxonomy.addTaxonomyChildren = function (selection) {
     });
 };
 
-taxonomy.onClick = function () {
-    d3.event.stopPropagation();
+taxonomy.onClick = function (event) {
+    event.stopPropagation();
 
     var label = this.attributes.value.value;
 

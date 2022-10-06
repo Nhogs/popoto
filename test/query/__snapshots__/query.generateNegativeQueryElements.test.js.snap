@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`one branch  1`] = `
-Array [
+[
   "(NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node1\`)-[:\`LINKED_TO2\`]->(:\`Node2\`)))",
 ]
 `;
 
 exports[`one branch with 2 values  1`] = `
-Array [
+[
   "(NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Node\`)-[:\`LINKED_TO2\`]->(:\`Node\`{Nid:$node2_Nid})))",
 ]
 `;

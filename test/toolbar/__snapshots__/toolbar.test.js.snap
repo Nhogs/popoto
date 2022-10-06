@@ -1,19 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`render Should render correctly CENTER_GRAPH 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-center-menu\\" class=\\"ppt-icon ppt-menu center\\"></span></div>"`;
+exports[`render Should render correctly CENTER_GRAPH 1`] = `"<div class="ppt-toolbar"><span id="popoto-center-menu" class="ppt-icon ppt-menu center"></span></div>"`;
 
-exports[`render Should render correctly RESET_GRAPH 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-reset-menu\\" class=\\"ppt-icon ppt-menu reset\\"></span></div>"`;
+exports[`render Should render correctly RESET_GRAPH 1`] = `"<div class="ppt-toolbar"><span id="popoto-reset-menu" class="ppt-icon ppt-menu reset"></span></div>"`;
 
-exports[`render Should render correctly SAVE_GRAPH 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-save-menu\\" class=\\"ppt-icon ppt-menu save\\"></span></div>"`;
+exports[`render Should render correctly SAVE_GRAPH 1`] = `"<div class="ppt-toolbar"><span id="popoto-save-menu" class="ppt-icon ppt-menu save"></span></div>"`;
 
-exports[`render Should render correctly TOGGLE_FIT_TEXT 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-fit-text-menu\\" class=\\"ppt-icon ppt-menu fit-text\\"></span></div>"`;
+exports[`render Should render correctly TOGGLE_FIT_TEXT 1`] = `"<div class="ppt-toolbar"><span id="popoto-fit-text-menu" class="ppt-icon ppt-menu fit-text"></span></div>"`;
 
-exports[`render Should render correctly TOGGLE_FULL_SCREEN 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-fullscreen-menu\\" class=\\"ppt-icon ppt-menu fullscreen\\"></span></div>"`;
+exports[`render Should render correctly TOGGLE_FULL_SCREEN 1`] = `"<div class="ppt-toolbar"><span id="popoto-fullscreen-menu" class="ppt-icon ppt-menu fullscreen"></span></div>"`;
 
-exports[`render Should render correctly TOGGLE_TAXONOMY 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-taxonomy-menu\\" class=\\"ppt-icon ppt-menu taxonomy\\"></span></div>"`;
+exports[`render Should render correctly TOGGLE_TAXONOMY 1`] = `"<div class="ppt-toolbar"><span id="popoto-taxonomy-menu" class="ppt-icon ppt-menu taxonomy"></span></div>"`;
 
-exports[`render Should render correctly TOGGLE_VIEW_RELATION 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-toggle-relation\\" class=\\"ppt-icon ppt-menu relation\\"></span></div>"`;
+exports[`render Should render correctly TOGGLE_VIEW_RELATION 1`] = `"<div class="ppt-toolbar"><span id="popoto-toggle-relation" class="ppt-icon ppt-menu relation"></span></div>"`;
 
-exports[`render Should render correctly all 1`] = `"<div class=\\"ppt-toolbar\\"><span id=\\"popoto-toggle-relation\\" class=\\"ppt-icon ppt-menu relation\\"></span><span id=\\"popoto-reset-menu\\" class=\\"ppt-icon ppt-menu reset\\"></span><span id=\\"popoto-taxonomy-menu\\" class=\\"ppt-icon ppt-menu taxonomy\\"></span><span id=\\"popoto-center-menu\\" class=\\"ppt-icon ppt-menu center\\"></span><span id=\\"popoto-fullscreen-menu\\" class=\\"ppt-icon ppt-menu fullscreen\\"></span><span id=\\"popoto-save-menu\\" class=\\"ppt-icon ppt-menu save\\"></span><span id=\\"popoto-fit-text-menu\\" class=\\"ppt-icon ppt-menu fit-text\\"></span></div>"`;
+exports[`render Should render correctly all 1`] = `"<div class="ppt-toolbar"><span id="popoto-toggle-relation" class="ppt-icon ppt-menu relation"></span><span id="popoto-reset-menu" class="ppt-icon ppt-menu reset"></span><span id="popoto-taxonomy-menu" class="ppt-icon ppt-menu taxonomy"></span><span id="popoto-center-menu" class="ppt-icon ppt-menu center"></span><span id="popoto-fullscreen-menu" class="ppt-icon ppt-menu fullscreen"></span><span id="popoto-save-menu" class="ppt-icon ppt-menu save"></span><span id="popoto-fit-text-menu" class="ppt-icon ppt-menu fit-text"></span></div>"`;
 
-exports[`render Should render correctly empty 1`] = `"<div class=\\"ppt-toolbar\\"></div>"`;
+exports[`render Should render correctly empty 1`] = `"<div class="ppt-toolbar"></div>"`;

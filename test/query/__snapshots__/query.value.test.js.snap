@@ -2,13 +2,13 @@
 
 exports[`COLLECT_RELATIONS_WITH_VALUES generateNodeValueQuery 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(label1:\`Label1\`) RETURN label1.Nname AS Nname, label1.Nid AS Nid, count(DISTINCT root.id) AS count, COLLECT(r0) AS incomingRels ORDER BY count DESC LIMIT 100"`;
 
-exports[`COLLECT_RELATIONS_WITH_VALUES generateNodeValueQuery 2`] = `Object {}`;
+exports[`COLLECT_RELATIONS_WITH_VALUES generateNodeValueQuery 2`] = `{}`;
 
 exports[`Predefined constraints Neo4j id generation Neo4j id 1`] = `"MATCH (root:\`Root\`), (node1:\`Node\`)-[r0:\`LINKED_TO2\`]->(node2:\`Node\`), (root:\`Root\`)-[r1:\`LINKED_TO3\`]->(node3:\`Node\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE root.x > 18 AND node2.y < 20 AND node3.y < 20 AND ID(node3) IN $node3_internalID AND node1.y < 20 RETURN node2.Nname AS Nname, ID(node2) AS NEO4JID, count(DISTINCT ID(root)) AS count ORDER BY count DESC LIMIT 100"`;
 
 exports[`Predefined constraints Neo4j id generation Neo4j id 2`] = `
-Object {
-  "node3_internalID": Array [
+{
+  "node3_internalID": [
     1031,
     1032,
   ],
@@ -18,7 +18,7 @@ Object {
 exports[`Predefined constraints Neo4j id generation Neo4j id 3`] = `"MATCH (root:\`Root\`), (node1:\`Node\`)-[r0:\`LINKED_TO2\`]->(node2:\`Node\`), (root:\`Root\`)-[r1:\`LINKED_TO3\`]->(node3:\`Node\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE root.x > 18 AND node2.y < 20 AND ID(node2) = $node2_internalID AND node3.y < 20 AND node1.y < 20 RETURN node3.Nname AS Nname, ID(node3) AS NEO4JID, count(DISTINCT ID(root)) AS count ORDER BY count DESC LIMIT 100"`;
 
 exports[`Predefined constraints Neo4j id generation Neo4j id 4`] = `
-Object {
+{
   "node2_internalID": 102,
 }
 `;
@@ -26,9 +26,9 @@ Object {
 exports[`Predefined constraints Neo4j id generation predefined constraints 1`] = `"MATCH (root:\`Root\`), (node1:\`Node\`)-[r0:\`LINKED_TO2\`]->(node2:\`Node\`), (root:\`Root\`)-[r1:\`LINKED_TO3\`]->(node3:\`Node\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(node1:\`Node\`) WHERE root.x > 18 AND node2.y < 20 AND ID(node2) = $node2_internalID AND node3.y < 20 AND ID(node3) IN $node3_internalID AND node1.y < 20 RETURN ID(root) AS NEO4JID, count(DISTINCT ID(root)) AS count ORDER BY count DESC LIMIT 100"`;
 
 exports[`Predefined constraints Neo4j id generation predefined constraints 2`] = `
-Object {
+{
   "node2_internalID": 102,
-  "node3_internalID": Array [
+  "node3_internalID": [
     1031,
     1032,
   ],
@@ -38,7 +38,7 @@ Object {
 exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 1`] = `"MATCH (root:\`Root\`), (label1:\`Label1\`)<-[r0:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r1:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN label2.Nname AS Nname, label2.Nid AS Nid, count(DISTINCT root.id) AS count ORDER BY count DESC LIMIT 100"`;
 
 exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 2`] = `
-Object {
+{
   "label3_Nid": "Vid3",
 }
 `;
@@ -46,11 +46,11 @@ Object {
 exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 3`] = `"MATCH (root:\`Root\`), (label2:\`Label2\`)-[r0:\`LINKED_TO3\`]->(label3:\`Label3\`), (label1:\`Label1\`)<-[r1:\`LINKED_TO2\`]-(label2:\`Label2\`), (root:\`Root\`)-[r2:\`LINKED_TO1\`]->(label1:\`Label1\`) WHERE (NOT exists((root)-[:\`LINKED_TO1\`]->(:\`Label1\`)<-[:\`LINKED_TO2\`]-(:\`Label2\`)-[:\`LINKED_TO3\`]->(:\`Label3\`{Nid:$label3_Nid}))) RETURN label3.Nname AS Nname, label3.Nid AS Nid, count(DISTINCT root.id) AS count ORDER BY count DESC LIMIT 100"`;
 
 exports[`one very long-branch with value leaf and reverse order generateNodeValueQuery 4`] = `
-Object {
+{
   "label3_Nid": "Vid3",
 }
 `;
 
 exports[`root only generateNodeValueQuery 1`] = `"MATCH (root:\`Root\`) RETURN root.name AS name, root.id AS id, count(DISTINCT root.id) AS count ORDER BY count DESC LIMIT 100"`;
 
-exports[`root only generateNodeValueQuery 2`] = `Object {}`;
+exports[`root only generateNodeValueQuery 2`] = `{}`;

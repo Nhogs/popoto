@@ -261,9 +261,9 @@ node.addNewElements = function (enteringData) {
     // Disable right click context menu on value nodes
     gNewNodeElements.filter(function (d) {
         return d.type === node.NodeTypes.VALUE;
-    }).on("contextmenu", function () {
+    }).on("contextmenu", function (event) {
         // Disable context menu on
-        d3.event.preventDefault();
+        event.preventDefault();
     });
 
     var nodeDefs = gNewNodeElements.append("defs");
@@ -344,8 +344,8 @@ node.addForegroundElements = function (gNewNodeElements) {
         .attr("class", "ppt-arrow")
         .attr("d", "m -44.905361,-23 6.742,-6.742 c 0.81,-0.809 0.81,-2.135 0,-2.944 l -0.737,-0.737 c -0.81,-0.811 -2.135,-0.811 -2.945,0 l -8.835,8.835 c -0.435,0.434 -0.628,1.017 -0.597,1.589 -0.031,0.571 0.162,1.154 0.597,1.588 l 8.835,8.834 c 0.81,0.811 2.135,0.811 2.945,0 l 0.737,-0.737 c 0.81,-0.808 0.81,-2.134 0,-2.943 l -6.742,-6.743 z");
 
-    glArrow.on("click", function (clickedNode) {
-        d3.event.stopPropagation(); // To avoid click event on svg element in background
+    glArrow.on("click", function (event, clickedNode) {
+        event.stopPropagation(); // To avoid click event on svg element in background
 
         // On left arrow click page number is decreased and node expanded to display the new page
         if (clickedNode.page > 1) {
@@ -369,8 +369,8 @@ node.addForegroundElements = function (gNewNodeElements) {
         .attr("class", "ppt-arrow")
         .attr("d", "m 51.027875,-24.5875 -8.835,-8.835 c -0.811,-0.811 -2.137,-0.811 -2.945,0 l -0.738,0.737 c -0.81,0.81 -0.81,2.136 0,2.944 l 6.742,6.742 -6.742,6.742 c -0.81,0.81 -0.81,2.136 0,2.943 l 0.737,0.737 c 0.81,0.811 2.136,0.811 2.945,0 l 8.835,-8.836 c 0.435,-0.434 0.628,-1.017 0.597,-1.588 0.032,-0.569 -0.161,-1.152 -0.596,-1.586 z");
 
-    grArrow.on("click", function (clickedNode) {
-        d3.event.stopPropagation(); // To avoid click event on svg element in background
+    grArrow.on("click", function (event, clickedNode) {
+        event.stopPropagation(); // To avoid click event on svg element in background
 
         if (clickedNode.page * node.PAGE_SIZE < clickedNode.count) {
             clickedNode.page++;
@@ -434,14 +434,6 @@ node.updateElements = function () {
             return provider.node.getSize(n);
         });
 
-    // Display voronoi paths
-    // TODO ZZZ re|move
-    // nUdeXXX.selectAllData.selectAll(".gra").data(["unique"]).enter().append("g").attr("class", "gra").append("use");
-    // nUdeXXX.selectAllData.selectAll("use").attr("xlink:href",function(d){
-    //     console.log("#pvoroclip-"+d3.select(this.parentNode.parentNode).datum().id);
-    //     return "#pvoroclip-"+d3.select(this.parentNode.parentNode).datum().id;
-    // }).attr("fill","none").attr("stroke","red").attr("stroke-width","1px");
-
     // TODO ZZZ move functions?
     toUpdateElem.filter(function (n) {
         return n.type !== node.NodeTypes.ROOT
@@ -450,19 +442,19 @@ node.updateElements = function () {
         .on("drag", dragged)
         .on("end", dragended));
 
-    function dragstarted(d) {
-        if (!d3.event.active) graph.force.alphaTarget(0.3).restart();
+    function dragstarted(event, d) {
+        if (!event.active) graph.force.alphaTarget(0.3).restart();
         d.fx = d.x;
         d.fy = d.y;
     }
 
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
     }
 
-    function dragended(d) {
-        if (!d3.event.active) graph.force.alphaTarget(0);
+    function dragended(event, d) {
+        if (!event.active) graph.force.alphaTarget(0);
         if (d.fixed === false) {
             d.fx = null;
             d.fy = null;
@@ -897,8 +889,8 @@ node.updateForegroundElements = function () {
         });
 };
 
-node.segmentClick = function (d) {
-    d3.event.preventDefault();
+node.segmentClick = function (event, d) {
+    event.preventDefault();
 
     var n = d3.select(this.parentNode.parentNode).datum();
 
@@ -919,8 +911,8 @@ node.segmentClick = function (d) {
 /**
  * Handle the mouse over event on nodes.
  */
-node.mouseOverNode = function () {
-    d3.event.preventDefault();
+node.mouseOverNode = function (event) {
+    event.preventDefault();
 
     // TODO don't work on IE (nodes unstable) find another way to move node in foreground on mouse over?
     // d3.select(this).moveToFront();
@@ -946,22 +938,11 @@ node.mouseOverNode = function () {
     }
 };
 
-// nUdeXXX.mouseMoveNode = function () {
-//     d3.event.preventDefault();
-//
-//     var hoveredNode = d3.select(this).data()[0];
-//
-//     tootip.div
-//         .text(provider.node.getTextValue(hoveredNode, nUdeXXX.NODE_TITLE_MAX_CHARS))
-//         .style("left", (d3.event.pageX - 34) + "px")
-//         .style("top", (d3.event.pageY - 12) + "px");
-// };
-
 /**
  * Handle mouse out event on nodes.
  */
-node.mouseOutNode = function () {
-    d3.event.preventDefault();
+node.mouseOutNode = function (event) {
+    event.preventDefault();
 
     // tootip.div.style("display", "none");
 
@@ -987,15 +968,15 @@ node.mouseOutNode = function () {
 /**
  * Handle the click event on nodes.
  */
-node.nodeClick = function () {
-    if (!d3.event.defaultPrevented) { // To avoid click on drag end
+node.nodeClick = function (event) {
+    if (!event.defaultPrevented) { // To avoid click on drag end
         var clickedNode = d3.select(this).data()[0]; // Clicked node data
         logger.debug("nodeClick (" + clickedNode.label + ")");
 
         if (clickedNode.type === node.NodeTypes.VALUE) {
             node.valueNodeClick(clickedNode);
         } else if (clickedNode.type === node.NodeTypes.CHOOSE || clickedNode.type === node.NodeTypes.ROOT) {
-            if (d3.event.ctrlKey) {
+            if (event.ctrlKey) {
                 if (clickedNode.type === node.NodeTypes.CHOOSE) {
                     clickedNode.isNegative = !clickedNode.hasOwnProperty("isNegative") || !clickedNode.isNegative;
 
@@ -1874,9 +1855,9 @@ node.getTrunkNode = function (n) {
  * Function to add on node event to clear the selection.
  * Call to this function on a node will remove the selected value and trigger a graph update.
  */
-node.clearSelection = function () {
+node.clearSelection = function (event) {
     // Prevent default event like right click  opening menu.
-    d3.event.preventDefault();
+    event.preventDefault();
 
     // Get clicked node.
     var clickedNode = d3.select(this).data()[0];

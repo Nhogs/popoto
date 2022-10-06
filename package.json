@@ -1,6 +1,6 @@
 {
   "name": "popoto",
-  "version": "3.0.3",
+  "version": "4.0.0",
   "description": "Graph based search interface for Neo4j database.",
   "keywords": [
     "popoto",
@@ -34,7 +34,10 @@
   "jest": {
     "setupFiles": [
       "jest-canvas-mock"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^d3$": "<rootDir>/node_modules/d3/dist/d3.min.js"
+    }
   },
   "scripts": {
     "build": "rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node && rollup -c --banner \"// Copyright (c) 2018 NHOGS Interactive.\" && npm run uglify",
@@ -43,20 +46,21 @@
     "uglify": "uglifyjs -b beautify=false,preamble=\"'// Copyright (c) 2018 NHOGS Interactive.'\" dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js && uglifycss css/popoto.css css/popoto-svg.css --output dist/popoto.min.css"
   },
   "dependencies": {
-    "d3": "^5.15.0"
+    "d3": "^7.6.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-jest": "^27.0.6",
+    "babel-jest": "^29.1.2",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "jest": "^27.0.6",
-    "jest-canvas-mock": "^1.1.0",
+    "jest": "^29.1.2",
+    "jest-canvas-mock": "^2.4.0",
+    "jest-environment-jsdom": "^29.1.2",
     "json2module": "^0.0.3",
     "rimraf": "^3.0.2",
-    "rollup": "^2.55.1",
+    "rollup": "^2.79.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "uglify-js": "^3.14.1",
+    "uglify-js": "^3.17.3",
     "uglifycss": "^0.0.29"
   }
 }

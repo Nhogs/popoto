@@ -262,8 +262,8 @@ graph.getSVGHeight = function () {
 /**
  * Function to call on SVG zoom event to update the svg transform attribute.
  */
-graph.rescale = function () {
-    var transform = d3.event.transform;
+graph.rescale = function (event) {
+    var transform = event.transform;
     if (isNaN(transform.x) || isNaN(transform.y) || isNaN(transform.k)) {
         graph.svg.attr("transform", d3.zoomIdentity);
     } else {
@@ -1037,39 +1037,6 @@ graph.addRelationshipData = function (n, l, callback, values, isNegative) {
     );
 
 
-};
-
-graph.voronoi = d3.voronoi()
-    .x(function (d) {
-        return d.x;
-    })
-    .y(function (d) {
-        return d.y;
-    });
-
-graph.recenterVoronoi = function (nodes) {
-    var shapes = [];
-
-    var voronois = graph.voronoi.polygons(nodes.map(function (d) {
-        d.x = d.x || 0;
-        d.y = d.y || 0;
-        return d
-    }));
-
-    voronois.forEach(function (d) {
-        if (!d.length) {
-            return;
-        }
-
-        var n = [];
-        d.forEach(function (c) {
-            n.push([c[0] - d.data.x, c[1] - d.data.y]);
-        });
-
-        n.point = d.data;
-        shapes.push(n);
-    });
-    return shapes;
 };
 
 export default graph

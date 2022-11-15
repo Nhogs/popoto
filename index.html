@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>Popoto Search</title>
-    <link rel="stylesheet" href="/dist/popoto.min.css">
+    <link rel="stylesheet" href="./dist/popoto.min.css">
     <style>
         #popoto-graph:fullscreen {
             width: 100%;
@@ -109,10 +109,8 @@
      * https://neo4j.com/docs/api/javascript-driver/4.3/
      */
     var driver = neo4j.driver(
-        "neo4j://dff437fa.databases.neo4j.io", // Unencrypted
-        //"neo4j+s://dff437fa.databases.neo4j.io", //Encrypted with Full Certificate
-        neo4j.auth.basic("popoto", "popotopassword"),
-        //{disableLosslessIntegers: true} // Enabling native numbers
+        "neo4j+s://demo.neo4jlabs.com:7687",
+        neo4j.auth.basic("movies", "movies"),
     );
 
     /**

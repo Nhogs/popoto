@@ -46,7 +46,7 @@
     "uglify": "uglifyjs -b beautify=false,preamble=\"'// Copyright (c) 2018 NHOGS Interactive.'\" dist/popoto.js -c negate_iife=false -m -o dist/popoto.min.js && uglifycss css/popoto.css css/popoto-svg.css --output dist/popoto.min.css"
   },
   "dependencies": {
-    "d3": "^7.8.5"
+    "d3": "^7.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

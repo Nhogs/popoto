@@ -11,7 +11,7 @@
 The graph queries are translated into Cypher and run on the database. Popoto also helps to display and customize the results.
 
 An application is composed of various components, each one can be included independently anywhere in a web application.
-It just need to be bound to a container ID in an HTML page and the content will be generated automatically.
+It just needs to be bound to a container ID in an HTML page and the content will be generated automatically.
 
 A common example application contains the following components: 
 

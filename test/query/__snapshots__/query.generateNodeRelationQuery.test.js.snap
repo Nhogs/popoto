@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`node relation query Movie 1`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r0:\`ACTED_IN\`]->(movie:\`Movie\`), (movie:\`Movie\`)-[r]->(x) RETURN type(r) AS label, last(labels(x)) AS target, count(r) AS count ORDER BY count(r) DESC"`;
 

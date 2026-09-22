@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`order by generation test array order by attr array order [born ASC, name DESC] 1`] = `"MATCH (person:\`Person\`) RETURN DISTINCT person.name AS name, person.born AS born ORDER BY born ASC, name DESC LIMIT 100"`;
 

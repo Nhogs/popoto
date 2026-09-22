@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Predefined constraints Neo4j id generation Neo4j id 1`] = `"MATCH (person:\`Person\`), (person:\`Person\`)-[r0:\`ACTED_IN\`]->(movie:\`Movie\`) WHERE person.born > 1976 RETURN count(DISTINCT ID(movie)) as count"`;
 

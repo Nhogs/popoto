@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`appendFittedText Should not mutate data Should works with text, radius, class parameters as value without data in selection Should render correctly 1`] = `"<div><g><text class="fitted-text mocked_css_class_value" style="text-anchor: middle; font: 10px sans-serif" transform="translate(0,0) scale(4.805693313322127)"><tspan x="0" y="3.6000000000000005">mocked_text_value</tspan></text></g></div>"`;
 

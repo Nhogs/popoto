@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`COLLECT_RELATIONS_WITH_VALUES generateNodeValueQuery 1`] = `"MATCH (root:\`Root\`), (root:\`Root\`)-[r0:\`LINKED_TO1\`]->(label1:\`Label1\`) RETURN label1.Nname AS Nname, label1.Nid AS Nid, count(DISTINCT root.id) AS count, COLLECT(r0) AS incomingRels ORDER BY count DESC LIMIT 100"`;
 

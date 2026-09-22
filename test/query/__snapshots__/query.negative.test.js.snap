@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`one branch WHERE (NOT exists (path-to-branch)) 1`] = `"MATCH (root:\`Root\`) WHERE (NOT exists((root)-[:\`LINKED_TO\`]->(:\`Node\`))) RETURN DISTINCT root.name AS name, root.id AS id LIMIT 100"`;
 

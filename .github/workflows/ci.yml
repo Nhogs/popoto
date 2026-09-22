@@ -23,7 +23,7 @@ jobs:
         run: npm run build
       - name: Run all the tests
         run: npm test
-      - name: publish code coverage on CC
-        uses: paambaati/codeclimate-action@v3.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+#      - name: publish code coverage on CC
+#        uses: paambaati/codeclimate-action@v3.0.0
+#        env:
+#          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
